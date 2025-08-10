@@ -187,6 +187,16 @@ export default function Header() {
             <Phone className="h-4 w-4" />
           </Button>
 
+          {/* Chat Button */}
+          <Button variant="ghost" size="icon" asChild className="hidden sm:flex">
+            <Link to="/chat">
+              <MessageCircle className="h-4 w-4" />
+            </Link>
+          </Button>
+
+          {/* Chat Notifications */}
+          <ChatNotifications />
+
           {/* Authentication Buttons */}
           <div className="hidden md:flex items-center space-x-2">
             <Button variant="ghost" asChild>
@@ -200,7 +210,7 @@ export default function Header() {
             </Button>
           </div>
 
-          {/* Notifications */}
+          {/* Old Notifications - keeping for now but will replace */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
