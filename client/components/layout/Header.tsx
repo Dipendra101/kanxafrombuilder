@@ -186,6 +186,16 @@ export default function Header() {
             <Phone className="h-4 w-4" />
           </Button>
 
+          {/* Authentication Buttons */}
+          <div className="hidden md:flex items-center space-x-2">
+            <Button variant="ghost" asChild>
+              <Link to="/login">Sign In</Link>
+            </Button>
+            <Button asChild className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy hover:from-kanxa-navy hover:to-kanxa-blue">
+              <Link to="/signup">Get Started</Link>
+            </Button>
+          </div>
+
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
