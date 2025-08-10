@@ -27,7 +27,7 @@ export default function Index() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-kanxa-navy via-kanxa-blue to-kanxa-navy text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="container relative z-10 py-20 lg:py-32">
+        <div className="container relative z-10 py-16 lg:py-32 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="mb-6 bg-kanxa-orange/20 text-kanxa-orange border-kanxa-orange/30">
               Premium Transportation & Construction Services
@@ -60,8 +60,8 @@ export default function Index() {
 
       {/* Quick Action Cards */}
       <section className="py-16 bg-gray-50">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="container px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
               <div className="absolute inset-0 bg-gradient-to-br from-kanxa-light-blue to-white"></div>
               <CardHeader className="relative z-10">
@@ -121,7 +121,7 @@ export default function Index() {
 
       {/* Live Transportation Board */}
       <section className="py-16">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-kanxa-navy mb-4">
               Live Transportation Board
@@ -131,7 +131,7 @@ export default function Index() {
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg border p-6">
+          <div className="bg-white rounded-xl shadow-lg border p-4 sm:p-6">
             <div className="flex flex-col lg:flex-row gap-6">
               <div className="flex-1">
                 <h3 className="font-semibold text-kanxa-navy mb-4">Available Today</h3>
@@ -197,7 +197,7 @@ export default function Index() {
 
       {/* Featured Construction Materials */}
       <section className="py-16 bg-gradient-to-br from-kanxa-light-orange to-white">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-kanxa-navy mb-4">
               Premium Construction Materials
@@ -207,7 +207,7 @@ export default function Index() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { name: "Cement", description: "High-grade Portland cement", price: "From NPR 850/bag", icon: "🏗️" },
               { name: "Steel Rebars", description: "Grade 60 reinforcement bars", price: "From NPR 85/kg", icon: "🔗" },
@@ -234,7 +234,7 @@ export default function Index() {
 
       {/* Why Choose Kanxa Safari */}
       <section className="py-16">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-kanxa-navy mb-4">
               Why Choose Kanxa Safari?
@@ -244,7 +244,7 @@ export default function Index() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {[
               {
                 icon: <Shield className="h-8 w-8 text-kanxa-blue" />,
@@ -281,7 +281,7 @@ export default function Index() {
 
       {/* Customer Reviews */}
       <section className="py-16 bg-gray-50">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-kanxa-navy mb-4">
               What Our Customers Say
@@ -294,7 +294,7 @@ export default function Index() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 name: "Raj Kumar Sharma",
@@ -336,7 +336,7 @@ export default function Index() {
 
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-kanxa-navy to-kanxa-blue text-white">
-        <div className="container text-center">
+        <div className="container text-center px-4">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
             Ready to Experience Premium Service?
           </h2>
