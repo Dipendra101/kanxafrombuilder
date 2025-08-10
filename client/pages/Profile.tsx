@@ -29,6 +29,8 @@ import Layout from "@/components/layout/Layout";
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState({
     name: "John Doe",
     email: "john.doe@example.com",
