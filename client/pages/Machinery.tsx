@@ -686,7 +686,7 @@ export default function Machinery() {
                           <span className="text-gray-600 capitalize">
                             {key}:
                           </span>
-                          <span className="font-medium">{value}</span>
+                          <span className="font-medium">{String(value)}</span>
                         </div>
                       ))}
                   </div>
