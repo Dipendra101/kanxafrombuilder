@@ -613,7 +613,7 @@ export default function Garage() {
           <Button
             variant="outline"
             size="lg"
-            onClick={() => setIsDialogOpen(false)}
+            onClick={closeDialog}
           >
             Cancel
           </Button>
