@@ -13,7 +13,7 @@ import {
   Volume2,
   VolumeX,
   Moon,
-  Clock
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,10 +27,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-  DropdownMenuLabel
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useChatNotifications, ChatNotification } from "@/services/chatNotifications";
+import {
+  useChatNotifications,
+  ChatNotification,
+} from "@/services/chatNotifications";
 
 export default function ChatNotifications() {
   const {
@@ -42,38 +45,46 @@ export default function ChatNotifications() {
     settings,
     updateSettings,
     toggleDoNotDisturb,
-    testNotification
+    testNotification,
   } = useChatNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
 
   const formatTime = (date: Date) => {
     const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    const diffInMinutes = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60),
+    );
 
-    if (diffInMinutes < 1) return 'now';
+    if (diffInMinutes < 1) return "now";
     if (diffInMinutes < 60) return `${diffInMinutes}m`;
     if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h`;
     return `${Math.floor(diffInMinutes / 1440)}d`;
   };
 
-  const getNotificationIcon = (type: ChatNotification['type']) => {
+  const getNotificationIcon = (type: ChatNotification["type"]) => {
     switch (type) {
-      case 'call':
+      case "call":
         return <Phone className="w-4 h-4 text-green-600" />;
-      case 'video':
+      case "video":
         return <Video className="w-4 h-4 text-blue-600" />;
-      case 'file':
+      case "file":
         return <FileText className="w-4 h-4 text-purple-600" />;
       default:
         return <MessageCircle className="w-4 h-4 text-kanxa-blue" />;
     }
   };
 
-  const NotificationItem = ({ notification }: { notification: ChatNotification }) => (
+  const NotificationItem = ({
+    notification,
+  }: {
+    notification: ChatNotification;
+  }) => (
     <div
       className={`flex items-start space-x-3 p-3 rounded-lg cursor-pointer transition-colors ${
-        notification.isRead ? 'hover:bg-gray-50' : 'bg-blue-50 hover:bg-blue-100'
+        notification.isRead
+          ? "hover:bg-gray-50"
+          : "bg-blue-50 hover:bg-blue-100"
       }`}
       onClick={() => {
         markAsRead(notification.id);
@@ -96,9 +107,11 @@ export default function ChatNotifications() {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <p className={`text-sm font-medium truncate ${
-            notification.isRead ? 'text-gray-700' : 'text-gray-900'
-          }`}>
+          <p
+            className={`text-sm font-medium truncate ${
+              notification.isRead ? "text-gray-700" : "text-gray-900"
+            }`}
+          >
             {notification.senderName}
           </p>
           <div className="flex items-center space-x-1">
@@ -110,10 +123,12 @@ export default function ChatNotifications() {
             )}
           </div>
         </div>
-        
-        <p className={`text-sm mt-1 truncate ${
-          notification.isRead ? 'text-gray-500' : 'text-gray-700'
-        }`}>
+
+        <p
+          className={`text-sm mt-1 truncate ${
+            notification.isRead ? "text-gray-500" : "text-gray-700"
+          }`}
+        >
           {notification.message}
         </p>
       </div>
@@ -131,13 +146,16 @@ export default function ChatNotifications() {
           )}
           {unreadCount > 0 && (
             <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs bg-kanxa-orange hover:bg-kanxa-orange">
-              {unreadCount > 99 ? '99+' : unreadCount}
+              {unreadCount > 99 ? "99+" : unreadCount}
             </Badge>
           )}
         </Button>
       </DropdownMenuTrigger>
-      
-      <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-hidden p-0">
+
+      <DropdownMenuContent
+        align="end"
+        className="w-80 max-h-96 overflow-hidden p-0"
+      >
         <Tabs defaultValue="notifications" className="w-full">
           <div className="px-4 py-3 border-b">
             <div className="flex items-center justify-between">
@@ -167,7 +185,7 @@ export default function ChatNotifications() {
                 )}
               </div>
             </div>
-            
+
             <TabsList className="grid w-full grid-cols-2 mt-2">
               <TabsTrigger value="notifications" className="text-xs">
                 Messages
@@ -177,17 +195,25 @@ export default function ChatNotifications() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="settings" className="text-xs">Settings</TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs">
+                Settings
+              </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="notifications" className="max-h-80 overflow-y-auto p-0">
+          <TabsContent
+            value="notifications"
+            className="max-h-80 overflow-y-auto p-0"
+          >
             {notifications.length > 0 ? (
               <div className="space-y-1 p-2">
                 {notifications.slice(0, 10).map((notification) => (
-                  <NotificationItem key={notification.id} notification={notification} />
+                  <NotificationItem
+                    key={notification.id}
+                    notification={notification}
+                  />
                 ))}
-                
+
                 {notifications.length > 10 && (
                   <div className="text-center p-2">
                     <Button variant="ghost" size="sm" className="text-xs">
@@ -221,7 +247,9 @@ export default function ChatNotifications() {
                 </div>
                 <Switch
                   checked={settings.enabled}
-                  onCheckedChange={(checked) => updateSettings({ enabled: checked })}
+                  onCheckedChange={(checked) =>
+                    updateSettings({ enabled: checked })
+                  }
                 />
               </div>
 
@@ -236,7 +264,9 @@ export default function ChatNotifications() {
                 </div>
                 <Switch
                   checked={settings.sound}
-                  onCheckedChange={(checked) => updateSettings({ sound: checked })}
+                  onCheckedChange={(checked) =>
+                    updateSettings({ sound: checked })
+                  }
                 />
               </div>
 
@@ -247,7 +277,9 @@ export default function ChatNotifications() {
                 </div>
                 <Switch
                   checked={settings.messagePreview}
-                  onCheckedChange={(checked) => updateSettings({ messagePreview: checked })}
+                  onCheckedChange={(checked) =>
+                    updateSettings({ messagePreview: checked })
+                  }
                 />
               </div>
 
@@ -258,7 +290,9 @@ export default function ChatNotifications() {
                 </div>
                 <Switch
                   checked={settings.callNotifications}
-                  onCheckedChange={(checked) => updateSettings({ callNotifications: checked })}
+                  onCheckedChange={(checked) =>
+                    updateSettings({ callNotifications: checked })
+                  }
                 />
               </div>
 
@@ -280,9 +314,9 @@ export default function ChatNotifications() {
                 </div>
                 <Switch
                   checked={settings.quietHours.enabled}
-                  onCheckedChange={(checked) => 
-                    updateSettings({ 
-                      quietHours: { ...settings.quietHours, enabled: checked }
+                  onCheckedChange={(checked) =>
+                    updateSettings({
+                      quietHours: { ...settings.quietHours, enabled: checked },
                     })
                   }
                 />
@@ -300,12 +334,12 @@ export default function ChatNotifications() {
               >
                 Test Notification
               </Button>
-              
+
               <Button
                 variant="ghost"
                 size="sm"
                 className="w-full text-xs"
-                onClick={() => window.location.href = '/chat'}
+                onClick={() => (window.location.href = "/chat")}
               >
                 Open Chat Center
               </Button>

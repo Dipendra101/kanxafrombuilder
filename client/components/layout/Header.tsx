@@ -188,7 +188,12 @@ export default function Header() {
           </Button>
 
           {/* Chat Button */}
-          <Button variant="ghost" size="icon" asChild className="hidden sm:flex">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="hidden sm:flex"
+          >
             <Link to="/chat">
               <MessageCircle className="h-4 w-4" />
             </Link>

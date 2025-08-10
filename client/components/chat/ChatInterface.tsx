@@ -19,7 +19,7 @@ import {
   Reply,
   Info,
   CheckCheck,
-  Check
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { kanxaChatbot, ChatMessage } from "@/services/chatbot";
@@ -45,11 +45,14 @@ interface ChatInterfaceProps {
     avatar?: string;
     isOnline: boolean;
     lastSeen?: Date;
-    type: 'bot' | 'admin' | 'user';
+    type: "bot" | "admin" | "user";
   };
 }
 
-export default function ChatInterface({ onClose, initialContact }: ChatInterfaceProps) {
+export default function ChatInterface({
+  onClose,
+  initialContact,
+}: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -62,23 +65,23 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
 
   // Mock contact data
   const contact = initialContact || {
-    id: 'kanxa-bot',
-    name: 'Kanxa Safari Assistant',
-    avatar: '',
+    id: "kanxa-bot",
+    name: "Kanxa Safari Assistant",
+    avatar: "",
     isOnline: true,
-    type: 'bot' as const
+    type: "bot" as const,
   };
 
   useEffect(() => {
     // Initialize with welcome message from bot
-    if (contact.type === 'bot') {
+    if (contact.type === "bot") {
       const welcomeMessage: ChatMessage = {
-        id: 'welcome',
+        id: "welcome",
         text: "🙏 Namaste! Welcome to Kanxa Safari! I'm your AI assistant. How can I help you today?",
-        sender: 'bot',
+        sender: "bot",
         timestamp: new Date(),
-        type: 'text',
-        status: 'read'
+        type: "text",
+        status: "read",
       };
       setMessages([welcomeMessage]);
     }
@@ -98,47 +101,54 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       text: newMessage,
-      sender: 'user',
+      sender: "user",
       timestamp: new Date(),
-      type: 'text',
-      status: 'sending',
-      replyTo: replyingTo?.id
+      type: "text",
+      status: "sending",
+      replyTo: replyingTo?.id,
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setNewMessage("");
     setReplyingTo(null);
-    
+
     // Update message status to sent
     setTimeout(() => {
-      setMessages(prev => prev.map(msg => 
-        msg.id === userMessage.id ? { ...msg, status: 'sent' } : msg
-      ));
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === userMessage.id ? { ...msg, status: "sent" } : msg,
+        ),
+      );
     }, 500);
 
     // Generate bot response if chatting with bot
-    if (contact.type === 'bot') {
+    if (contact.type === "bot") {
       setIsLoading(true);
       try {
-        const response = await kanxaChatbot.generateResponse(newMessage, messages);
-        
+        const response = await kanxaChatbot.generateResponse(
+          newMessage,
+          messages,
+        );
+
         const botMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
           text: response,
-          sender: 'bot',
+          sender: "bot",
           timestamp: new Date(),
-          type: 'text',
-          status: 'read'
+          type: "text",
+          status: "read",
         };
 
-        setMessages(prev => [...prev, botMessage]);
-        
+        setMessages((prev) => [...prev, botMessage]);
+
         // Mark user message as read
-        setMessages(prev => prev.map(msg => 
-          msg.id === userMessage.id ? { ...msg, status: 'read' } : msg
-        ));
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === userMessage.id ? { ...msg, status: "read" } : msg,
+          ),
+        );
       } catch (error) {
-        console.error('Bot response error:', error);
+        console.error("Bot response error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -146,7 +156,7 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -158,19 +168,21 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
 
     const fileMessage: ChatMessage = {
       id: Date.now().toString(),
-      text: `Shared ${file.type.startsWith('image/') ? 'photo' : 'file'}: ${file.name}`,
-      sender: 'user',
+      text: `Shared ${file.type.startsWith("image/") ? "photo" : "file"}: ${file.name}`,
+      sender: "user",
       timestamp: new Date(),
-      type: file.type.startsWith('image/') ? 'image' : 'file',
+      type: file.type.startsWith("image/") ? "image" : "file",
       metadata: {
         fileName: file.name,
         fileSize: file.size,
-        imageUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined
+        imageUrl: file.type.startsWith("image/")
+          ? URL.createObjectURL(file)
+          : undefined,
       },
-      status: 'sent'
+      status: "sent",
     };
 
-    setMessages(prev => [...prev, fileMessage]);
+    setMessages((prev) => [...prev, fileMessage]);
   };
 
   const toggleRecording = () => {
@@ -179,22 +191,24 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     });
   };
 
-  const getStatusIcon = (status: ChatMessage['status']) => {
+  const getStatusIcon = (status: ChatMessage["status"]) => {
     switch (status) {
-      case 'sending':
-        return <div className="w-3 h-3 bg-gray-400 rounded-full animate-pulse" />;
-      case 'sent':
+      case "sending":
+        return (
+          <div className="w-3 h-3 bg-gray-400 rounded-full animate-pulse" />
+        );
+      case "sent":
         return <Check className="w-3 h-3 text-gray-400" />;
-      case 'delivered':
+      case "delivered":
         return <CheckCheck className="w-3 h-3 text-gray-400" />;
-      case 'read':
+      case "read":
         return <CheckCheck className="w-3 h-3 text-blue-500" />;
       default:
         return null;
@@ -202,42 +216,42 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
   };
 
   const MessageBubble = ({ message }: { message: ChatMessage }) => {
-    const isUser = message.sender === 'user';
-    const isBot = message.sender === 'bot';
+    const isUser = message.sender === "user";
+    const isBot = message.sender === "bot";
 
     return (
-      <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-2`}>
-        <div className={`max-w-[80%] ${isUser ? 'order-2' : 'order-1'}`}>
+      <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-2`}>
+        <div className={`max-w-[80%] ${isUser ? "order-2" : "order-1"}`}>
           {/* Reply indicator */}
           {message.replyTo && (
             <div className="text-xs text-gray-500 mb-1 px-3">
               Replying to previous message
             </div>
           )}
-          
+
           <div
             className={`px-4 py-2 rounded-2xl ${
               isUser
-                ? 'bg-kanxa-blue text-white ml-auto'
+                ? "bg-kanxa-blue text-white ml-auto"
                 : isBot
-                ? 'bg-gray-100 text-gray-900'
-                : 'bg-blue-500 text-white'
+                  ? "bg-gray-100 text-gray-900"
+                  : "bg-blue-500 text-white"
             }`}
           >
             {/* Image message */}
-            {message.type === 'image' && message.metadata?.imageUrl && (
+            {message.type === "image" && message.metadata?.imageUrl && (
               <div className="mb-2">
                 <img
                   src={message.metadata.imageUrl}
                   alt="Shared image"
                   className="max-w-full rounded-lg"
-                  style={{ maxHeight: '300px', objectFit: 'cover' }}
+                  style={{ maxHeight: "300px", objectFit: "cover" }}
                 />
               </div>
             )}
 
             {/* File message */}
-            {message.type === 'file' && (
+            {message.type === "file" && (
               <div className="flex items-center space-x-2 mb-2">
                 <FileText className="w-5 h-5" />
                 <div>
@@ -251,16 +265,16 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
 
             {/* Text content */}
             <p className="whitespace-pre-wrap break-words">{message.text}</p>
-            
+
             {/* Message footer */}
-            <div className={`flex items-center justify-between mt-1 text-xs ${
-              isUser ? 'text-white/70' : 'text-gray-500'
-            }`}>
+            <div
+              className={`flex items-center justify-between mt-1 text-xs ${
+                isUser ? "text-white/70" : "text-gray-500"
+              }`}
+            >
               <span>{formatTime(message.timestamp)}</span>
               {isUser && (
-                <div className="ml-2">
-                  {getStatusIcon(message.status)}
-                </div>
+                <div className="ml-2">{getStatusIcon(message.status)}</div>
               )}
             </div>
           </div>
@@ -268,10 +282,16 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
 
         {/* Avatar for non-user messages */}
         {!isUser && (
-          <Avatar className={`w-8 h-8 ${isUser ? 'order-1 mr-2' : 'order-2 ml-2'}`}>
+          <Avatar
+            className={`w-8 h-8 ${isUser ? "order-1 mr-2" : "order-2 ml-2"}`}
+          >
             <AvatarImage src={contact.avatar} />
-            <AvatarFallback className={isBot ? 'bg-kanxa-blue text-white' : 'bg-blue-500 text-white'}>
-              {isBot ? 'KS' : contact.name.charAt(0)}
+            <AvatarFallback
+              className={
+                isBot ? "bg-kanxa-blue text-white" : "bg-blue-500 text-white"
+              }
+            >
+              {isBot ? "KS" : contact.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
         )}
@@ -287,16 +307,20 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
           <Button variant="ghost" size="icon" onClick={onClose}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          
+
           <Avatar className="w-10 h-10">
             <AvatarImage src={contact.avatar} />
-            <AvatarFallback className={
-              contact.type === 'bot' ? 'bg-kanxa-blue text-white' : 'bg-blue-500 text-white'
-            }>
-              {contact.type === 'bot' ? 'KS' : contact.name.charAt(0)}
+            <AvatarFallback
+              className={
+                contact.type === "bot"
+                  ? "bg-kanxa-blue text-white"
+                  : "bg-blue-500 text-white"
+              }
+            >
+              {contact.type === "bot" ? "KS" : contact.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="flex-1">
             <h3 className="font-semibold text-gray-900">{contact.name}</h3>
             <div className="flex items-center space-x-1">
@@ -310,7 +334,7 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
                   Last seen {contact.lastSeen?.toLocaleTimeString()}
                 </span>
               )}
-              {contact.type === 'bot' && (
+              {contact.type === "bot" && (
                 <Badge variant="secondary" className="ml-2 text-xs">
                   AI Assistant
                 </Badge>
@@ -320,7 +344,7 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
         </div>
 
         <div className="flex items-center space-x-2">
-          {contact.type !== 'bot' && (
+          {contact.type !== "bot" && (
             <>
               <Button variant="ghost" size="icon">
                 <Phone className="w-5 h-5" />
@@ -330,7 +354,7 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
               </Button>
             </>
           )}
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -361,7 +385,7 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
         {messages.map((message) => (
           <MessageBubble key={message.id} message={message} />
         ))}
-        
+
         {isLoading && (
           <div className="flex justify-start mb-2">
             <div className="bg-gray-100 rounded-2xl px-4 py-2">
@@ -369,7 +393,7 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -379,9 +403,15 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-500">Replying to:</p>
-              <p className="text-sm text-gray-700 truncate">{replyingTo.text}</p>
+              <p className="text-sm text-gray-700 truncate">
+                {replyingTo.text}
+              </p>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => setReplyingTo(null)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setReplyingTo(null)}
+            >
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
@@ -392,10 +422,18 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
       <div className="p-4 border-t bg-white">
         <div className="flex items-end space-x-2">
           <div className="flex space-x-1">
-            <Button variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => fileInputRef.current?.click()}
+            >
               <Paperclip className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => fileInputRef.current?.click()}
+            >
               <ImageIcon className="w-5 h-5" />
             </Button>
             <Button variant="ghost" size="icon">
@@ -435,9 +473,13 @@ export default function ChatInterface({ onClose, initialContact }: ChatInterface
               variant="ghost"
               size="icon"
               onClick={toggleRecording}
-              className={isRecording ? 'text-red-500' : ''}
+              className={isRecording ? "text-red-500" : ""}
             >
-              {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              {isRecording ? (
+                <MicOff className="w-5 h-5" />
+              ) : (
+                <Mic className="w-5 h-5" />
+              )}
             </Button>
           )}
         </div>

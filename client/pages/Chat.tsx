@@ -12,7 +12,7 @@ interface Contact {
   avatar?: string;
   isOnline: boolean;
   lastSeen?: Date;
-  type: 'bot' | 'admin' | 'user';
+  type: "bot" | "admin" | "user";
 }
 
 export default function Chat() {
@@ -43,7 +43,8 @@ export default function Chat() {
               Chat & Support Center
             </h1>
             <p className="text-lg text-white/90 max-w-2xl mx-auto">
-              Get instant help from our AI assistant or connect with our support team for personalized assistance.
+              Get instant help from our AI assistant or connect with our support
+              team for personalized assistance.
             </p>
           </div>
         </div>
@@ -62,7 +63,7 @@ export default function Chat() {
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card className="text-center">
               <CardContent className="p-6">
                 <Users className="h-8 w-8 text-kanxa-orange mx-auto mb-3" />
@@ -72,7 +73,7 @@ export default function Chat() {
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card className="text-center">
               <CardContent className="p-6">
                 <Phone className="h-8 w-8 text-kanxa-green mx-auto mb-3" />
@@ -91,21 +92,25 @@ export default function Chat() {
         <div className="container px-0 h-screen max-h-[calc(100vh-200px)]">
           <div className="grid grid-cols-1 lg:grid-cols-12 h-full">
             {/* Chat List - Hidden on mobile when chat is open */}
-            <div className={`lg:col-span-4 xl:col-span-3 border-r bg-white ${
-              isMobileView ? 'hidden lg:block' : 'block'
-            }`}>
-              <ChatList 
+            <div
+              className={`lg:col-span-4 xl:col-span-3 border-r bg-white ${
+                isMobileView ? "hidden lg:block" : "block"
+              }`}
+            >
+              <ChatList
                 onSelectContact={handleSelectContact}
                 selectedContactId={selectedContact?.id}
               />
             </div>
 
             {/* Chat Interface */}
-            <div className={`lg:col-span-8 xl:col-span-9 ${
-              !selectedContact ? 'hidden lg:flex' : 'flex'
-            } flex-col`}>
+            <div
+              className={`lg:col-span-8 xl:col-span-9 ${
+                !selectedContact ? "hidden lg:flex" : "flex"
+              } flex-col`}
+            >
               {selectedContact ? (
-                <ChatInterface 
+                <ChatInterface
                   onClose={handleCloseChat}
                   initialContact={selectedContact}
                 />
@@ -120,31 +125,36 @@ export default function Chat() {
                       Welcome to Kanxa Safari Chat
                     </h3>
                     <p className="text-gray-600 mb-6">
-                      Select a conversation from the sidebar to start chatting, or begin a new conversation with our AI assistant.
+                      Select a conversation from the sidebar to start chatting,
+                      or begin a new conversation with our AI assistant.
                     </p>
-                    
+
                     <div className="space-y-3">
-                      <Button 
-                        onClick={() => handleSelectContact({
-                          id: 'kanxa-bot',
-                          name: 'Kanxa Safari Assistant',
-                          type: 'bot',
-                          isOnline: true
-                        })}
+                      <Button
+                        onClick={() =>
+                          handleSelectContact({
+                            id: "kanxa-bot",
+                            name: "Kanxa Safari Assistant",
+                            type: "bot",
+                            isOnline: true,
+                          })
+                        }
                         className="w-full bg-kanxa-blue hover:bg-kanxa-navy"
                       >
                         <Bot className="mr-2 h-4 w-4" />
                         Start Chat with AI Assistant
                       </Button>
-                      
-                      <Button 
+
+                      <Button
                         variant="outline"
-                        onClick={() => handleSelectContact({
-                          id: 'admin-support',
-                          name: 'Customer Support',
-                          type: 'admin',
-                          isOnline: true
-                        })}
+                        onClick={() =>
+                          handleSelectContact({
+                            id: "admin-support",
+                            name: "Customer Support",
+                            type: "admin",
+                            isOnline: true,
+                          })
+                        }
                         className="w-full"
                       >
                         <Users className="mr-2 h-4 w-4" />
@@ -153,7 +163,9 @@ export default function Chat() {
                     </div>
 
                     <div className="mt-8 pt-6 border-t border-gray-200">
-                      <p className="text-sm text-gray-500 mb-3">Need immediate help?</p>
+                      <p className="text-sm text-gray-500 mb-3">
+                        Need immediate help?
+                      </p>
                       <div className="flex space-x-3 justify-center">
                         <Button variant="outline" size="sm">
                           <Phone className="mr-2 h-4 w-4" />
@@ -177,7 +189,9 @@ export default function Chat() {
       <section className="py-12 bg-gray-50">
         <div className="container px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-center mb-8">Quick Questions</h2>
+            <h2 className="text-2xl font-bold text-center mb-8">
+              Quick Questions
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 "How to book a bus ticket?",
@@ -185,7 +199,7 @@ export default function Chat() {
                 "When is my next booking?",
                 "How to track my order?",
                 "What services do you offer?",
-                "How to cancel a booking?"
+                "How to cancel a booking?",
               ].map((question, index) => (
                 <Button
                   key={index}
@@ -193,10 +207,10 @@ export default function Chat() {
                   className="text-left justify-start p-4 h-auto"
                   onClick={() => {
                     const botContact = {
-                      id: 'kanxa-bot',
-                      name: 'Kanxa Safari Assistant',
-                      type: 'bot' as const,
-                      isOnline: true
+                      id: "kanxa-bot",
+                      name: "Kanxa Safari Assistant",
+                      type: "bot" as const,
+                      isOnline: true,
                     };
                     setSelectedContact(botContact);
                     setIsMobileView(true);

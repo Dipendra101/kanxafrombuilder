@@ -5,9 +5,9 @@
 interface ChatMessage {
   id: string;
   text: string;
-  sender: 'user' | 'bot' | 'admin';
+  sender: "user" | "bot" | "admin";
   timestamp: Date;
-  type: 'text' | 'image' | 'voice' | 'video' | 'file' | 'system';
+  type: "text" | "image" | "voice" | "video" | "file" | "system";
   metadata?: {
     imageUrl?: string;
     audioUrl?: string;
@@ -16,7 +16,7 @@ interface ChatMessage {
     fileSize?: number;
     duration?: number;
   };
-  status?: 'sending' | 'sent' | 'delivered' | 'read';
+  status?: "sending" | "sent" | "delivered" | "read";
   replyTo?: string;
 }
 
@@ -39,8 +39,8 @@ class KanxaSafariChatbot {
 
   constructor() {
     // In production, this should come from environment variables
-    this.apiKey = 'YOUR_GEMINI_API_KEY'; // Replace with actual API key
-    this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
+    this.apiKey = "YOUR_GEMINI_API_KEY"; // Replace with actual API key
+    this.baseUrl = "https://generativelanguage.googleapis.com/v1beta";
     this.kanxaData = this.initializeKanxaData();
   }
 
@@ -49,52 +49,97 @@ class KanxaSafariChatbot {
     return {
       buses: [
         {
-          id: 'BUS001',
-          name: 'Kathmandu Express',
-          route: 'Lamjung - Kathmandu',
+          id: "BUS001",
+          name: "Kathmandu Express",
+          route: "Lamjung - Kathmandu",
           price: 800,
-          departure: '06:00',
-          arrival: '12:00',
+          departure: "06:00",
+          arrival: "12:00",
           seats: 45,
-          amenities: ['AC', 'WiFi', 'Entertainment', 'Charging Port'],
-          type: 'Deluxe'
+          amenities: ["AC", "WiFi", "Entertainment", "Charging Port"],
+          type: "Deluxe",
         },
         {
-          id: 'BUS002',
-          name: 'Pokhara Premium',
-          route: 'Lamjung - Pokhara',
+          id: "BUS002",
+          name: "Pokhara Premium",
+          route: "Lamjung - Pokhara",
           price: 600,
-          departure: '08:00',
-          arrival: '11:00',
+          departure: "08:00",
+          arrival: "11:00",
           seats: 50,
-          amenities: ['AC', 'WiFi', 'Refreshments'],
-          type: 'Standard'
-        }
+          amenities: ["AC", "WiFi", "Refreshments"],
+          type: "Standard",
+        },
       ],
       routes: [
-        { from: 'Lamjung', to: 'Kathmandu', distance: '200km', duration: '6 hours' },
-        { from: 'Lamjung', to: 'Pokhara', distance: '120km', duration: '3 hours' },
-        { from: 'Lamjung', to: 'Chitwan', distance: '150km', duration: '4 hours' }
+        {
+          from: "Lamjung",
+          to: "Kathmandu",
+          distance: "200km",
+          duration: "6 hours",
+        },
+        {
+          from: "Lamjung",
+          to: "Pokhara",
+          distance: "120km",
+          duration: "3 hours",
+        },
+        {
+          from: "Lamjung",
+          to: "Chitwan",
+          distance: "150km",
+          duration: "4 hours",
+        },
       ],
       materials: [
-        { name: 'Cement', price: 1200, unit: 'bag', category: 'Building Materials' },
-        { name: 'Steel Rods', price: 85, unit: 'kg', category: 'Construction Steel' },
-        { name: 'Bricks', price: 25, unit: 'piece', category: 'Building Materials' }
+        {
+          name: "Cement",
+          price: 1200,
+          unit: "bag",
+          category: "Building Materials",
+        },
+        {
+          name: "Steel Rods",
+          price: 85,
+          unit: "kg",
+          category: "Construction Steel",
+        },
+        {
+          name: "Bricks",
+          price: 25,
+          unit: "piece",
+          category: "Building Materials",
+        },
       ],
       machinery: [
-        { name: 'Excavator', price: 15000, unit: 'day', category: 'Heavy Machinery' },
-        { name: 'Concrete Mixer', price: 2500, unit: 'day', category: 'Construction Equipment' },
-        { name: 'Bulldozer', price: 18000, unit: 'day', category: 'Heavy Machinery' }
+        {
+          name: "Excavator",
+          price: 15000,
+          unit: "day",
+          category: "Heavy Machinery",
+        },
+        {
+          name: "Concrete Mixer",
+          price: 2500,
+          unit: "day",
+          category: "Construction Equipment",
+        },
+        {
+          name: "Bulldozer",
+          price: 18000,
+          unit: "day",
+          category: "Heavy Machinery",
+        },
       ],
       services: [
-        { name: 'Vehicle Maintenance', category: 'Garage', startingPrice: 500 },
-        { name: 'Tractor Repair', category: 'Garage', startingPrice: 2000 },
-        { name: 'Engine Overhaul', category: 'Garage', startingPrice: 15000 }
+        { name: "Vehicle Maintenance", category: "Garage", startingPrice: 500 },
+        { name: "Tractor Repair", category: "Garage", startingPrice: 2000 },
+        { name: "Engine Overhaul", category: "Garage", startingPrice: 15000 },
       ],
       bookings: [],
       orders: [],
       prices: [],
-      schedules: []
+      schedules: [],
     };
   }
 
@@ -155,13 +200,16 @@ Always prioritize user satisfaction and try to convert inquiries into actual boo
 Respond in a conversational, helpful manner. Keep responses concise but informative.`;
   }
 
-  async generateResponse(userMessage: string, conversationHistory: ChatMessage[] = []): Promise<string> {
+  async generateResponse(
+    userMessage: string,
+    conversationHistory: ChatMessage[] = [],
+  ): Promise<string> {
     try {
       // Prepare the conversation context
       const context = conversationHistory
         .slice(-10) // Last 10 messages for context
-        .map(msg => `${msg.sender}: ${msg.text}`)
-        .join('\n');
+        .map((msg) => `${msg.sender}: ${msg.text}`)
+        .join("\n");
 
       const prompt = `${this.createSystemPrompt()}
 
@@ -176,7 +224,7 @@ ASSISTANT:`;
       const response = await this.callGeminiAPI(prompt);
       return response;
     } catch (error) {
-      console.error('Chatbot error:', error);
+      console.error("Chatbot error:", error);
       return "I apologize, but I'm having trouble processing your request right now. Please try again or contact our support team at 9856056782 for immediate assistance.";
     }
   }
@@ -184,18 +232,26 @@ ASSISTANT:`;
   private async callGeminiAPI(prompt: string): Promise<string> {
     // Mock implementation - replace with actual Gemini API call
     // In production, you would make an HTTP request to Gemini API
-    
+
     // For now, return intelligent responses based on keywords
     return this.generateMockResponse(prompt);
   }
 
   private generateMockResponse(prompt: string): string {
-    const userMessage = prompt.split('USER: ')[1]?.split('ASSISTANT:')[0]?.trim().toLowerCase();
-    
+    const userMessage = prompt
+      .split("USER: ")[1]
+      ?.split("ASSISTANT:")[0]
+      ?.trim()
+      .toLowerCase();
+
     if (!userMessage) return "How can I help you today?";
 
     // Bus/Transportation queries
-    if (userMessage.includes('bus') || userMessage.includes('ticket') || userMessage.includes('booking')) {
+    if (
+      userMessage.includes("bus") ||
+      userMessage.includes("ticket") ||
+      userMessage.includes("booking")
+    ) {
       return `🚌 I'd be happy to help you with bus bookings! 
 
 We have premium bus services from Lamjung to:
@@ -207,7 +263,11 @@ All our buses feature AC, WiFi, and entertainment systems. Would you like me to 
     }
 
     // Construction materials
-    if (userMessage.includes('cement') || userMessage.includes('construction') || userMessage.includes('materials')) {
+    if (
+      userMessage.includes("cement") ||
+      userMessage.includes("construction") ||
+      userMessage.includes("materials")
+    ) {
       return `🏗️ We supply high-quality construction materials:
 
 Popular items:
@@ -226,7 +286,11 @@ What materials do you need for your project? I can provide detailed quotes and d
     }
 
     // Machinery rental
-    if (userMessage.includes('excavator') || userMessage.includes('machinery') || userMessage.includes('equipment')) {
+    if (
+      userMessage.includes("excavator") ||
+      userMessage.includes("machinery") ||
+      userMessage.includes("equipment")
+    ) {
       return `🚜 Our heavy machinery rental services:
 
 Available equipment:
@@ -245,7 +309,11 @@ Which machinery do you need and for how many days? I can check availability and 
     }
 
     // Garage services
-    if (userMessage.includes('repair') || userMessage.includes('garage') || userMessage.includes('maintenance')) {
+    if (
+      userMessage.includes("repair") ||
+      userMessage.includes("garage") ||
+      userMessage.includes("maintenance")
+    ) {
       return `🔧 Our expert garage services:
 
 We repair and maintain:
@@ -264,7 +332,11 @@ Operating hours: 7 AM - 7 PM daily. What type of vehicle needs service? I can sc
     }
 
     // Price inquiries
-    if (userMessage.includes('price') || userMessage.includes('cost') || userMessage.includes('rate')) {
+    if (
+      userMessage.includes("price") ||
+      userMessage.includes("cost") ||
+      userMessage.includes("rate")
+    ) {
       return `💰 I can help you with pricing information!
 
 Quick price guide:
@@ -282,7 +354,11 @@ I'll provide you with exact pricing and availability!`;
     }
 
     // Contact/location queries
-    if (userMessage.includes('contact') || userMessage.includes('phone') || userMessage.includes('address')) {
+    if (
+      userMessage.includes("contact") ||
+      userMessage.includes("phone") ||
+      userMessage.includes("address")
+    ) {
       return `📞 Here's how to reach Kanxa Safari:
 
 Phone Numbers:
@@ -301,7 +377,11 @@ You can also book online through our website or continue chatting with me for im
     }
 
     // Greetings
-    if (userMessage.includes('hello') || userMessage.includes('hi') || userMessage.includes('namaste')) {
+    if (
+      userMessage.includes("hello") ||
+      userMessage.includes("hi") ||
+      userMessage.includes("namaste")
+    ) {
       return `🙏 Namaste! Welcome to Kanxa Safari! 
 
 I'm your AI assistant, here to help you with:
@@ -331,26 +411,26 @@ I'm here to help! 😊`;
 
   // Helper methods for specific queries
   searchBuses(route: string, date?: string) {
-    return this.kanxaData.buses.filter(bus => 
-      bus.route.toLowerCase().includes(route.toLowerCase())
+    return this.kanxaData.buses.filter((bus) =>
+      bus.route.toLowerCase().includes(route.toLowerCase()),
     );
   }
 
   getMaterialPrice(materialName: string) {
-    return this.kanxaData.materials.find(material =>
-      material.name.toLowerCase().includes(materialName.toLowerCase())
+    return this.kanxaData.materials.find((material) =>
+      material.name.toLowerCase().includes(materialName.toLowerCase()),
     );
   }
 
   getMachineryInfo(machineName: string) {
-    return this.kanxaData.machinery.find(machine =>
-      machine.name.toLowerCase().includes(machineName.toLowerCase())
+    return this.kanxaData.machinery.find((machine) =>
+      machine.name.toLowerCase().includes(machineName.toLowerCase()),
     );
   }
 
   getServiceInfo(serviceName: string) {
-    return this.kanxaData.services.find(service =>
-      service.name.toLowerCase().includes(serviceName.toLowerCase())
+    return this.kanxaData.services.find((service) =>
+      service.name.toLowerCase().includes(serviceName.toLowerCase()),
     );
   }
 }
