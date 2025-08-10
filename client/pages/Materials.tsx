@@ -175,7 +175,7 @@ export default function Materials() {
       price: 1200,
       unit: "per cubic ft",
       description: "Clean river sand for construction",
-      image: "⛰️",
+      image: "⛰���",
       inStock: true,
       stockQuantity: 100,
       brand: "Local Supplier",
@@ -386,8 +386,8 @@ export default function Materials() {
 
       {/* Search & Filter Section */}
       <section className="py-8 bg-white shadow-sm">
-        <div className="container">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
+        <div className="container px-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-6">
             <div className="flex-1 max-w-md">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -400,7 +400,7 @@ export default function Materials() {
               </div>
             </div>
             
-            <div className="flex gap-4 items-center">
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-40">
                   <SelectValue />
@@ -432,7 +432,7 @@ export default function Materials() {
 
           {/* Category Tabs */}
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-            <TabsList className="grid grid-cols-3 lg:grid-cols-9 w-full">
+            <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 w-full overflow-x-auto">
               {categories.map(category => (
                 <TabsTrigger key={category.id} value={category.id} className="text-xs">
                   <span className="mr-1">{category.icon}</span>
@@ -446,7 +446,7 @@ export default function Materials() {
 
       {/* Materials Grid */}
       <section className="py-12">
-        <div className="container">
+        <div className="container px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold text-kanxa-navy">
               {selectedCategory === "all" ? "All Materials" : categories.find(c => c.id === selectedCategory)?.name} 
@@ -454,7 +454,7 @@ export default function Materials() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {sortedMaterials.map(material => (
               <Card key={material.id} className="hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="pb-3">
@@ -568,13 +568,13 @@ export default function Materials() {
 
       {/* Services Section */}
       <section className="py-16 bg-gray-50">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-kanxa-navy mb-4">Our Services</h2>
             <p className="text-lg text-gray-600">Complete construction material solutions</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {[
               {
                 icon: <Truck className="h-8 w-8 text-kanxa-orange" />,
