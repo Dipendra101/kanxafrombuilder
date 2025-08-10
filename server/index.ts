@@ -7,8 +7,8 @@ import rateLimit from "express-rate-limit";
 import mongoose from "mongoose";
 import connectDB from "./config/database";
 // import { handleDemo } from "./routes/demo";
-import { authRoutes } from "./routes/auth";
-import { transportationRoutes } from "./routes/transportation";
+// import { authRoutes } from "./routes/auth";
+// import { transportationRoutes } from "./routes/transportation";
 // import { constructionRoutes } from "./routes/construction";
 // import { userRoutes } from "./routes/user";
 // import { bookingRoutes } from "./routes/booking";
@@ -22,13 +22,14 @@ import CargoService from "./models/CargoService";
 import TourPackage from "./models/TourPackage";
 
 export async function createServer() {
-  // Connect to MongoDB
-  await connectDB();
+  try {
+    // Connect to MongoDB
+    await connectDB();
 
-  // Initialize default data
-  await initializeDefaultData();
+    // Initialize default data
+    await initializeDefaultData();
 
-  const app = express();
+    const app = express();
 
   // Security middleware
   app.use(helmet());
@@ -58,8 +59,8 @@ export async function createServer() {
   });
 
   // API Routes
-  app.use("/api/auth", authRoutes);
-  app.use("/api/transportation", transportationRoutes);
+  // app.use("/api/auth", authRoutes);
+  // app.use("/api/transportation", transportationRoutes);
   // app.use("/api/construction", constructionRoutes);
   // app.use("/api/user", userRoutes);
   // app.use("/api/booking", bookingRoutes);
@@ -107,7 +108,11 @@ export async function createServer() {
     });
   });
 
-  return app;
+    return app;
+  } catch (error) {
+    console.error('Failed to create server:', error);
+    throw error;
+  }
 }
 
 // Initialize default data

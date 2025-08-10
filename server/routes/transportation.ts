@@ -162,8 +162,8 @@ router.get("/tours", async (req, res) => {
     }
     
     const tours = await TourPackage.find(filter).sort({ createdAt: -1 });
-    
-    res.json({
+  
+  res.json({
       success: true,
       data: tours,
       count: tours.length
@@ -187,9 +187,9 @@ router.get("/tours/:id", async (req, res) => {
         success: false,
         error: "Tour package not found"
       });
-    }
-    
-    res.json({
+  }
+  
+  res.json({
       success: true,
       data: tour
     });
@@ -245,9 +245,9 @@ router.get("/search", async (req, res) => {
         ];
       }
       results.tours = await TourPackage.find(tourFilter).limit(5);
-    }
-    
-    res.json({
+  }
+  
+  res.json({
       success: true,
       data: results,
       query,

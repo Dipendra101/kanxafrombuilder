@@ -88,12 +88,5 @@ const App = () => (
 );
 
 const container = document.getElementById("root")!;
-
-// Prevent multiple root creation during hot reloading
-if (!container._reactRootContainer) {
-  const root = createRoot(container);
-  container._reactRootContainer = root;
-  root.render(<App />);
-} else {
-  container._reactRootContainer.render(<App />);
-}
+const root = createRoot(container);
+root.render(<App />);
