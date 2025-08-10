@@ -1,6 +1,8 @@
 // Chat Notifications Service
 // Handles real-time chat notifications, sound alerts, and browser notifications
 
+import { useState, useEffect } from "react";
+
 interface ChatNotification {
   id: string;
   chatId: string;
