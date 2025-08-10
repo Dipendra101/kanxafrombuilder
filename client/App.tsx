@@ -12,6 +12,11 @@ import Transportation from "./pages/Transportation";
 import Construction from "./pages/Construction";
 import Garage from "./pages/Garage";
 import About from "./pages/About";
+import Buses from "./pages/Buses";
+import Cargo from "./pages/Cargo";
+import Tours from "./pages/Tours";
+import Materials from "./pages/Materials";
+import Machinery from "./pages/Machinery";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +32,11 @@ const App = () => (
           <Route path="/construction" element={<Construction />} />
           <Route path="/garage" element={<Garage />} />
           <Route path="/about" element={<About />} />
+          <Route path="/buses" element={<Buses />} />
+          <Route path="/cargo" element={<Cargo />} />
+          <Route path="/tours" element={<Tours />} />
+          <Route path="/materials" element={<Materials />} />
+          <Route path="/machinery" element={<Machinery />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
