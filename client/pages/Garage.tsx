@@ -131,7 +131,7 @@ export default function Garage() {
       description: "Regular maintenance to prevent major breakdowns",
       estimatedTime: "4-8 hours",
       priceRange: "NPR 3,000 - 15,000",
-      icon: "����️",
+      icon: "🛠️",
       features: [
         "Oil change",
         "Filter replacement",
@@ -311,29 +311,13 @@ export default function Garage() {
                       vehicleType: value,
                     });
                   }}
-                  onOpenChange={(open) => {
-                    // Prevent the dialog from closing when the select opens
-                    if (!open) {
-                      // Only allow closing if we're not just closing the select dropdown
-                      setTimeout(() => {
-                        // Small delay to ensure select dropdown closes properly
-                      }, 100);
-                    }
-                  }}
                 >
-                  <SelectTrigger onClick={(e) => e.stopPropagation()}>
+                  <SelectTrigger>
                     <SelectValue placeholder="Select vehicle type" />
                   </SelectTrigger>
-                  <SelectContent
-                    onClick={(e) => e.stopPropagation()}
-                    onCloseAutoFocus={(e) => e.preventDefault()}
-                  >
+                  <SelectContent>
                     {vehicleTypes.map((type) => (
-                      <SelectItem
-                        key={type}
-                        value={type}
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                      <SelectItem key={type} value={type}>
                         {type}
                       </SelectItem>
                     ))}
