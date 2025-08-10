@@ -21,7 +21,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <div className="h-8 w-8 bg-gradient-to-br from-kanxa-blue to-kanxa-orange rounded-lg flex items-center justify-center">
@@ -31,7 +31,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6">
+        <div className="hidden lg:flex items-center space-x-6">
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
@@ -144,12 +144,12 @@ export default function Header() {
         </div>
 
         {/* Right side actions */}
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" className="hidden md:flex">
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <Button variant="ghost" size="icon" className="hidden sm:flex">
             <Search className="h-4 w-4" />
           </Button>
 
-          <Button variant="ghost" size="icon" className="hidden md:flex">
+          <Button variant="ghost" size="icon" className="hidden sm:flex">
             <Phone className="h-4 w-4" />
           </Button>
 
@@ -209,7 +209,7 @@ export default function Header() {
           {/* Mobile menu */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
+              <Button variant="ghost" size="icon" className="lg:hidden">
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
