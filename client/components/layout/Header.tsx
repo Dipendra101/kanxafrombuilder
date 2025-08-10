@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import ChatNotifications from "@/components/chat/ChatNotifications";
 
 export default function Header() {
   return (
