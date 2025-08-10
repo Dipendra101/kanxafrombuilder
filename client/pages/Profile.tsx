@@ -129,13 +129,48 @@ export default function Profile() {
       <section className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy text-white py-16">
         <div className="container px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2Fe0e990aaf8214381b9783ad82133cc2a%2F9a1d931899894abdbc3faf8b1210308e?format=webp&width=800"
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
+            <div className="relative inline-block">
+              <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden group cursor-pointer border-2 border-white/30"
+                   onClick={handleProfilePictureClick}>
+                <img
+                  src={profilePicture || defaultImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Camera className="h-6 w-6 text-white" />
+                </div>
+              </div>
+              {profilePicture && (
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="absolute -top-2 -right-2 rounded-full w-6 h-6 p-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeProfilePicture();
+                  }}
+                >
+                  ×
+                </Button>
+              )}
             </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleProfilePictureUpload}
+              className="hidden"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="mb-4 bg-white/10 border-white/20 text-white hover:bg-white/20"
+              onClick={handleProfilePictureClick}
+            >
+              <Upload className="mr-2 h-4 w-4" />
+              {profilePicture ? 'Change Photo' : 'Upload Photo'}
+            </Button>
             <h1 className="text-4xl lg:text-5xl font-bold mb-4">
               My Profile
             </h1>
