@@ -45,6 +45,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Layout from "@/components/layout/Layout";
 
 export default function Garage() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [appointmentForm, setAppointmentForm] = useState({
     name: "",
     email: "",
