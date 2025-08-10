@@ -603,7 +603,7 @@ export default function Garage() {
                 pickupNeeded: false,
               });
               // Close dialog
-              setIsDialogOpen(false);
+              closeDialog();
               // Show success message (you can add toast notification here)
               alert('Appointment booked successfully!');
             }}
