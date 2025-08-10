@@ -142,11 +142,14 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-kanxa-orange flex-shrink-0" />
-                <p className="text-white/80">+977-XXX-XXXXXX</p>
+                <div className="text-white/80">
+                  <p>9856056782</p>
+                  <p>9856045678</p>
+                </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-kanxa-green flex-shrink-0" />
-                <p className="text-white/80">info@kanxasafari.com</p>
+                <p className="text-white/80">kanxasafari1@gmail.com</p>
               </div>
             </div>
 
