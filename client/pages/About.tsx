@@ -15,7 +15,7 @@ import {
   Heart,
   Shield,
   Star,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,30 +29,34 @@ export default function About() {
     { label: "Years of Service", value: "15+", icon: Calendar },
     { label: "Happy Customers", value: "10,000+", icon: Users },
     { label: "Projects Completed", value: "2,500+", icon: CheckCircle },
-    { label: "Fleet Vehicles", value: "150+", icon: Truck }
+    { label: "Fleet Vehicles", value: "150+", icon: Truck },
   ];
 
   const values = [
     {
       icon: Shield,
       title: "Reliability",
-      description: "We ensure dependable service delivery with punctuality and consistency in all our operations."
+      description:
+        "We ensure dependable service delivery with punctuality and consistency in all our operations.",
     },
     {
       icon: Heart,
       title: "Customer First",
-      description: "Our customers are at the heart of everything we do. We prioritize their needs and satisfaction."
+      description:
+        "Our customers are at the heart of everything we do. We prioritize their needs and satisfaction.",
     },
     {
       icon: Award,
       title: "Quality Excellence",
-      description: "We maintain the highest standards in service quality and continuously strive for improvement."
+      description:
+        "We maintain the highest standards in service quality and continuously strive for improvement.",
     },
     {
       icon: TrendingUp,
       title: "Innovation",
-      description: "We embrace technology and innovative solutions to enhance our service offerings."
-    }
+      description:
+        "We embrace technology and innovative solutions to enhance our service offerings.",
+    },
   ];
 
   const teamMembers = [
@@ -61,62 +65,62 @@ export default function About() {
       position: "Founder & CEO",
       experience: "20+ years",
       specialty: "Transportation & Logistics",
-      image: "👨‍💼"
+      image: "👨‍💼",
     },
     {
       name: "Sita Sharma",
       position: "Operations Director",
       experience: "15+ years",
       specialty: "Fleet Management",
-      image: "👩‍💼"
+      image: "👩‍💼",
     },
     {
       name: "Kumar Tamang",
       position: "Construction Manager",
       experience: "18+ years",
       specialty: "Heavy Machinery",
-      image: "👨‍🔧"
+      image: "👨‍🔧",
     },
     {
       name: "Anusha Regmi",
       position: "Customer Relations",
       experience: "10+ years",
       specialty: "Client Services",
-      image: "👩‍💻"
-    }
+      image: "👩‍💻",
+    },
   ];
 
   const milestones = [
     {
       year: "2009",
       title: "Company Founded",
-      description: "Started with a single bus route serving Lamjung district"
+      description: "Started with a single bus route serving Lamjung district",
     },
     {
       year: "2012",
       title: "Fleet Expansion",
-      description: "Expanded to 25 vehicles covering multiple routes"
+      description: "Expanded to 25 vehicles covering multiple routes",
     },
     {
       year: "2015",
       title: "Construction Division",
-      description: "Launched construction materials and machinery services"
+      description: "Launched construction materials and machinery services",
     },
     {
       year: "2018",
       title: "Digital Platform",
-      description: "Introduced online booking and tracking systems"
+      description: "Introduced online booking and tracking systems",
     },
     {
       year: "2020",
       title: "Garage Services",
-      description: "Added comprehensive vehicle maintenance services"
+      description: "Added comprehensive vehicle maintenance services",
     },
     {
       year: "2024",
       title: "Technology Integration",
-      description: "Full digital transformation with premium online platform"
-    }
+      description: "Full digital transformation with premium online platform",
+    },
   ];
 
   return (
@@ -132,8 +136,9 @@ export default function About() {
               About Kanxa Safari
             </h1>
             <p className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-              Pioneering premium transportation, construction, and garage services across Nepal 
-              with over 15 years of trusted excellence and innovation.
+              Pioneering premium transportation, construction, and garage
+              services across Nepal with over 15 years of trusted excellence and
+              innovation.
             </p>
           </div>
         </div>
@@ -150,7 +155,9 @@ export default function About() {
                   <div className="text-2xl sm:text-3xl font-bold text-kanxa-navy mb-1">
                     {stat.value}
                   </div>
-                  <div className="text-sm sm:text-base text-gray-600">{stat.label}</div>
+                  <div className="text-sm sm:text-base text-gray-600">
+                    {stat.label}
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -169,20 +176,24 @@ export default function About() {
                 </h2>
                 <div className="space-y-4 text-gray-700 leading-relaxed">
                   <p>
-                    Founded in 2009 in the heart of Lamjung, Nepal, Kanxa Safari began as a 
-                    vision to provide reliable and premium transportation services to connect 
-                    communities across the beautiful landscapes of Nepal.
+                    Founded in 2009 in the heart of Lamjung, Nepal, Kanxa Safari
+                    began as a vision to provide reliable and premium
+                    transportation services to connect communities across the
+                    beautiful landscapes of Nepal.
                   </p>
                   <p>
-                    What started as a single bus route has evolved into a comprehensive service 
-                    provider offering transportation, construction materials, heavy machinery 
-                    rental, and professional garage services. Our commitment to excellence and 
-                    customer satisfaction has made us a trusted name throughout the region.
+                    What started as a single bus route has evolved into a
+                    comprehensive service provider offering transportation,
+                    construction materials, heavy machinery rental, and
+                    professional garage services. Our commitment to excellence
+                    and customer satisfaction has made us a trusted name
+                    throughout the region.
                   </p>
                   <p>
-                    Today, we operate with a modern fleet of over 150 vehicles, serve thousands 
-                    of customers monthly, and continue to embrace technology to enhance our 
-                    service delivery while maintaining the personal touch that defines our brand.
+                    Today, we operate with a modern fleet of over 150 vehicles,
+                    serve thousands of customers monthly, and continue to
+                    embrace technology to enhance our service delivery while
+                    maintaining the personal touch that defines our brand.
                   </p>
                 </div>
               </div>
@@ -221,13 +232,16 @@ export default function About() {
               <Card className="border-2 border-kanxa-blue/20">
                 <CardHeader className="text-center">
                   <Target className="h-12 w-12 text-kanxa-blue mx-auto mb-4" />
-                  <CardTitle className="text-xl sm:text-2xl text-kanxa-navy">Our Mission</CardTitle>
+                  <CardTitle className="text-xl sm:text-2xl text-kanxa-navy">
+                    Our Mission
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-700 leading-relaxed text-center">
-                    To provide premium, reliable, and innovative transportation, construction, 
-                    and garage services that exceed customer expectations while contributing 
-                    to the economic development of Nepal through sustainable business practices.
+                    To provide premium, reliable, and innovative transportation,
+                    construction, and garage services that exceed customer
+                    expectations while contributing to the economic development
+                    of Nepal through sustainable business practices.
                   </p>
                 </CardContent>
               </Card>
@@ -235,13 +249,16 @@ export default function About() {
               <Card className="border-2 border-kanxa-orange/20">
                 <CardHeader className="text-center">
                   <Eye className="h-12 w-12 text-kanxa-orange mx-auto mb-4" />
-                  <CardTitle className="text-xl sm:text-2xl text-kanxa-navy">Our Vision</CardTitle>
+                  <CardTitle className="text-xl sm:text-2xl text-kanxa-navy">
+                    Our Vision
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-700 leading-relaxed text-center">
-                    To be Nepal's leading integrated service provider in transportation and 
-                    construction, recognized for innovation, reliability, and commitment to 
-                    building stronger communities across the nation.
+                    To be Nepal's leading integrated service provider in
+                    transportation and construction, recognized for innovation,
+                    reliability, and commitment to building stronger communities
+                    across the nation.
                   </p>
                 </CardContent>
               </Card>
@@ -265,7 +282,10 @@ export default function About() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {values.map((value, index) => (
-                <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                <Card
+                  key={index}
+                  className="text-center hover:shadow-lg transition-shadow"
+                >
                   <CardContent className="p-6">
                     <value.icon className="h-12 w-12 text-kanxa-blue mx-auto mb-4" />
                     <h3 className="text-lg font-bold text-kanxa-navy mb-3">
@@ -301,7 +321,9 @@ export default function About() {
                   <div className="w-16 h-16 bg-kanxa-light-blue rounded-full flex items-center justify-center mx-auto mb-4">
                     <Truck className="h-8 w-8 text-kanxa-blue" />
                   </div>
-                  <CardTitle className="text-xl text-kanxa-navy">Transportation</CardTitle>
+                  <CardTitle className="text-xl text-kanxa-navy">
+                    Transportation
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-gray-600">
@@ -335,7 +357,9 @@ export default function About() {
                   <div className="w-16 h-16 bg-kanxa-light-orange rounded-full flex items-center justify-center mx-auto mb-4">
                     <Building2 className="h-8 w-8 text-kanxa-orange" />
                   </div>
-                  <CardTitle className="text-xl text-kanxa-navy">Construction</CardTitle>
+                  <CardTitle className="text-xl text-kanxa-navy">
+                    Construction
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-gray-600">
@@ -369,7 +393,9 @@ export default function About() {
                   <div className="w-16 h-16 bg-kanxa-light-green rounded-full flex items-center justify-center mx-auto mb-4">
                     <Wrench className="h-8 w-8 text-kanxa-green" />
                   </div>
-                  <CardTitle className="text-xl text-kanxa-navy">Garage Services</CardTitle>
+                  <CardTitle className="text-xl text-kanxa-navy">
+                    Garage Services
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-gray-600">
@@ -420,7 +446,9 @@ export default function About() {
                 <div key={index} className="flex gap-4 sm:gap-6">
                   <div className="flex-shrink-0">
                     <div className="w-12 h-12 bg-kanxa-blue rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">{milestone.year}</span>
+                      <span className="text-white font-bold text-sm">
+                        {milestone.year}
+                      </span>
                     </div>
                   </div>
                   <div className="flex-1">
@@ -451,13 +479,20 @@ export default function About() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {teamMembers.map((member, index) => (
-                <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                <Card
+                  key={index}
+                  className="text-center hover:shadow-lg transition-shadow"
+                >
                   <CardContent className="p-6">
-                    <div className="text-4xl sm:text-5xl mb-4">{member.image}</div>
+                    <div className="text-4xl sm:text-5xl mb-4">
+                      {member.image}
+                    </div>
                     <h3 className="text-lg font-bold text-kanxa-navy mb-1">
                       {member.name}
                     </h3>
-                    <p className="text-kanxa-blue font-medium mb-2">{member.position}</p>
+                    <p className="text-kanxa-blue font-medium mb-2">
+                      {member.position}
+                    </p>
                     <div className="space-y-1 text-sm text-gray-600">
                       <p>{member.experience}</p>
                       <Badge variant="secondary" className="text-xs">
@@ -480,10 +515,10 @@ export default function About() {
               Ready to Experience Kanxa Safari Services?
             </h2>
             <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-3xl mx-auto">
-              Join thousands of satisfied customers who trust us for their transportation, 
-              construction, and garage service needs.
+              Join thousands of satisfied customers who trust us for their
+              transportation, construction, and garage service needs.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
               <div className="flex items-center gap-2">
                 <Phone className="h-5 w-5" />
@@ -500,10 +535,19 @@ export default function About() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-white text-kanxa-blue hover:bg-gray-100">
+              <Button
+                asChild
+                size="lg"
+                className="bg-white text-kanxa-blue hover:bg-gray-100"
+              >
                 <Link to="/booking">Book Now</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-kanxa-blue">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-kanxa-blue"
+              >
                 <Link to="/support">Contact Us</Link>
               </Button>
             </div>
