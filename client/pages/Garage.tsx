@@ -131,7 +131,7 @@ export default function Garage() {
       description: "Regular maintenance to prevent major breakdowns",
       estimatedTime: "4-8 hours",
       priceRange: "NPR 3,000 - 15,000",
-      icon: "🛠️",
+      icon: "����️",
       features: [
         "Oil change",
         "Filter replacement",
@@ -235,19 +235,7 @@ export default function Garage() {
   ];
 
   const AppointmentDialog = () => (
-    <DialogContent
-      className="max-w-4xl max-h-[90vh] overflow-y-auto"
-      onPointerDownOutside={(e) => {
-        // Prevent dialog from closing when clicking on select dropdowns
-        const target = e.target as Element;
-        if (
-          target.closest('[role="listbox"]') ||
-          target.closest("[data-radix-select-content]")
-        ) {
-          e.preventDefault();
-        }
-      }}
-    >
+    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle className="text-2xl font-bold text-kanxa-navy">
           Book Service Appointment
