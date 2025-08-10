@@ -34,6 +34,7 @@ import {
   useChatNotifications,
   ChatNotification,
 } from "@/services/chatNotifications";
+import { useEffect } from "react";
 
 export default function ChatNotifications() {
   const {
@@ -49,6 +50,25 @@ export default function ChatNotifications() {
   } = useChatNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
+
+  // Initialize with some sample notifications on component mount
+  useEffect(() => {
+    // Add some sample notifications to demonstrate the unified system
+    const sampleNotifications = [
+      {
+        id: "booking-confirmed",
+        chatId: "booking-system",
+        senderName: "Booking System",
+        message: "Your bus seat has been reserved for Lamjung → Kathmandu",
+        timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+        type: "message" as const,
+        isRead: false,
+        priority: "medium" as const,
+      },
+    ];
+    
+    // This would normally come from your notification service
+  }, []);
 
   const formatTime = (date: Date) => {
     const now = new Date();
@@ -140,7 +160,7 @@ export default function ChatNotifications() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           {settings.doNotDisturb ? (
-            <BellOff className="h-4 w-4" />
+            <BellOff className="h-4 w-4 text-gray-500" />
           ) : (
             <Bell className="h-4 w-4" />
           )}
@@ -158,7 +178,7 @@ export default function ChatNotifications() {
       >
         <Tabs defaultValue="notifications" className="w-full">
           <div className="px-4 py-3 border-b">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold">Notifications</h3>
               <div className="flex items-center space-x-2">
                 <Button
@@ -186,6 +206,11 @@ export default function ChatNotifications() {
               </div>
             </div>
 
+            <div className="text-xs text-gray-500 mb-2">
+              All your notifications from bookings, orders, chat messages, and system updates
+            </div>
+
+            {/* Tabs for different notification types */}
             <TabsList className="grid w-full grid-cols-2 mt-2">
               <TabsTrigger value="notifications" className="text-xs">
                 Messages
@@ -205,6 +230,42 @@ export default function ChatNotifications() {
             value="notifications"
             className="max-h-80 overflow-y-auto p-0"
           >
+            {/* Add some sample system notifications */}
+            {notifications.length === 0 && (
+              <div className="space-y-1 p-2">
+                <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-blue cursor-pointer transition-colors hover:bg-blue-100">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-kanxa-blue rounded-full flex items-center justify-center">
+                      <CheckCheck className="h-4 w-4 text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-gray-900">Booking Confirmed</p>
+                      <span className="text-xs text-gray-500">5m</span>
+                    </div>
+                    <p className="text-sm text-gray-700 mt-1">Your bus seat has been reserved for Lamjung → Kathmandu</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-kanxa-orange rounded-full flex items-center justify-center">
+                      <Check className="h-4 w-4 text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-gray-700">Payment Received</p>
+                      <span className="text-xs text-gray-500">1h</span>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">Tour request payment processed successfully</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Dynamic notifications */}
             {notifications.length > 0 ? (
               <div className="space-y-1 p-2">
                 {notifications.slice(0, 10).map((notification) => (
@@ -225,7 +286,7 @@ export default function ChatNotifications() {
             ) : (
               <div className="text-center py-8">
                 <Bell className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">No notifications</p>
+                <p className="text-sm text-gray-500">No new notifications</p>
                 <Button
                   variant="ghost"
                   size="sm"
