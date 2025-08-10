@@ -47,7 +47,9 @@ import Layout from "@/components/layout/Layout";
 
 export default function Garage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentDialogTrigger, setCurrentDialogTrigger] = useState<string | null>(null);
+  const [currentDialogTrigger, setCurrentDialogTrigger] = useState<
+    string | null
+  >(null);
 
   const openDialog = (triggerId: string) => {
     setCurrentDialogTrigger(triggerId);
@@ -253,7 +255,10 @@ export default function Garage() {
       onPointerDownOutside={(e) => {
         // Prevent dialog from closing when clicking on select dropdowns
         const target = e.target as Element;
-        if (target.closest('[role="listbox"]') || target.closest('[data-radix-select-content]')) {
+        if (
+          target.closest('[role="listbox"]') ||
+          target.closest("[data-radix-select-content]")
+        ) {
           e.preventDefault();
         }
       }}
@@ -430,7 +435,10 @@ export default function Garage() {
               <Select
                 value={appointmentForm.serviceType}
                 onValueChange={(value) => {
-                  setAppointmentForm({ ...appointmentForm, serviceType: value });
+                  setAppointmentForm({
+                    ...appointmentForm,
+                    serviceType: value,
+                  });
                 }}
               >
                 <SelectTrigger onClick={(e) => e.stopPropagation()}>
@@ -585,7 +593,7 @@ export default function Garage() {
             size="lg"
             onClick={() => {
               // Handle form submission
-              console.log('Appointment Form:', appointmentForm);
+              console.log("Appointment Form:", appointmentForm);
               // Reset form
               setAppointmentForm({
                 name: "",
@@ -606,16 +614,12 @@ export default function Garage() {
               // Close dialog
               closeDialog();
               // Show success message (you can add toast notification here)
-              alert('Appointment booked successfully!');
+              alert("Appointment booked successfully!");
             }}
           >
             Book Appointment
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={closeDialog}
-          >
+          <Button variant="outline" size="lg" onClick={closeDialog}>
             Cancel
           </Button>
         </div>
