@@ -10,7 +10,7 @@ import {
   Wrench,
   Clock,
   ArrowRight,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,12 @@ export interface NotificationProps {
   autoClose?: boolean;
   duration?: number;
   showProgress?: boolean;
-  category?: "transportation" | "construction" | "garage" | "account" | "system";
+  category?:
+    | "transportation"
+    | "construction"
+    | "garage"
+    | "account"
+    | "system";
   metadata?: {
     orderId?: string;
     bookingId?: string;
@@ -55,7 +60,7 @@ export function EnhancedToast({
   showProgress = true,
   category,
   metadata,
-  onClose
+  onClose,
 }: NotificationProps) {
   const [progress, setProgress] = useState(100);
   const [isVisible, setIsVisible] = useState(true);
@@ -65,7 +70,7 @@ export function EnhancedToast({
 
     const interval = setInterval(() => {
       setProgress((prev) => {
-        const newProgress = prev - (100 / (duration / 100));
+        const newProgress = prev - 100 / (duration / 100);
         if (newProgress <= 0) {
           handleClose();
           return 0;
@@ -119,7 +124,7 @@ export function EnhancedToast({
           icon: "text-green-600",
           title: "text-green-900",
           description: "text-green-700",
-          progress: "bg-green-500"
+          progress: "bg-green-500",
         };
       case "error":
         return {
@@ -127,7 +132,7 @@ export function EnhancedToast({
           icon: "text-red-600",
           title: "text-red-900",
           description: "text-red-700",
-          progress: "bg-red-500"
+          progress: "bg-red-500",
         };
       case "warning":
         return {
@@ -135,7 +140,7 @@ export function EnhancedToast({
           icon: "text-yellow-600",
           title: "text-yellow-900",
           description: "text-yellow-700",
-          progress: "bg-yellow-500"
+          progress: "bg-yellow-500",
         };
       case "info":
       default:
@@ -144,7 +149,7 @@ export function EnhancedToast({
           icon: "text-blue-600",
           title: "text-blue-900",
           description: "text-blue-700",
-          progress: "bg-blue-500"
+          progress: "bg-blue-500",
         };
     }
   };
@@ -157,7 +162,8 @@ export function EnhancedToast({
     const items = [];
     if (metadata.orderId) items.push(`Order: ${metadata.orderId}`);
     if (metadata.bookingId) items.push(`Booking: ${metadata.bookingId}`);
-    if (metadata.amount) items.push(`Amount: NPR ${metadata.amount.toLocaleString()}`);
+    if (metadata.amount)
+      items.push(`Amount: NPR ${metadata.amount.toLocaleString()}`);
     if (metadata.timestamp) {
       items.push(`Time: ${metadata.timestamp.toLocaleTimeString()}`);
     }
@@ -172,7 +178,7 @@ export function EnhancedToast({
       className={cn(
         "relative overflow-hidden rounded-lg border shadow-lg transition-all duration-300 transform",
         colors.bg,
-        isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+        isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0",
       )}
       style={{ maxWidth: "420px", minWidth: "320px" }}
     >
@@ -180,7 +186,10 @@ export function EnhancedToast({
       {showProgress && autoClose && (
         <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200">
           <div
-            className={cn("h-full transition-all duration-100 ease-linear", colors.progress)}
+            className={cn(
+              "h-full transition-all duration-100 ease-linear",
+              colors.progress,
+            )}
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -213,7 +222,7 @@ export function EnhancedToast({
                 onClick={handleClose}
                 className={cn(
                   "flex-shrink-0 ml-2 p-1 rounded-md hover:bg-gray-200 transition-colors",
-                  colors.icon
+                  colors.icon,
                 )}
               >
                 <X className="h-4 w-4" />
@@ -255,7 +264,9 @@ export function EnhancedToast({
                       rel={link.external ? "noopener noreferrer" : undefined}
                     >
                       {link.label}
-                      {link.external && <ExternalLink className="ml-1 h-3 w-3" />}
+                      {link.external && (
+                        <ExternalLink className="ml-1 h-3 w-3" />
+                      )}
                     </a>
                   </Button>
                 )}
@@ -272,20 +283,22 @@ export function EnhancedToast({
 export function useNotifications() {
   const [notifications, setNotifications] = useState<NotificationProps[]>([]);
 
-  const addNotification = (notification: Omit<NotificationProps, "id" | "onClose">) => {
+  const addNotification = (
+    notification: Omit<NotificationProps, "id" | "onClose">,
+  ) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newNotification: NotificationProps = {
       ...notification,
       id,
-      onClose: () => removeNotification(id)
+      onClose: () => removeNotification(id),
     };
 
-    setNotifications(prev => [...prev, newNotification]);
+    setNotifications((prev) => [...prev, newNotification]);
     return id;
   };
 
   const removeNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
   const clearAll = () => {
@@ -297,7 +310,7 @@ export function useNotifications() {
     return addNotification({
       type: "success",
       title,
-      ...options
+      ...options,
     });
   };
 
@@ -306,7 +319,7 @@ export function useNotifications() {
       type: "error",
       title,
       autoClose: false, // Errors should not auto-close
-      ...options
+      ...options,
     });
   };
 
@@ -315,7 +328,7 @@ export function useNotifications() {
       type: "warning",
       title,
       duration: 7000, // Longer duration for warnings
-      ...options
+      ...options,
     });
   };
 
@@ -323,7 +336,7 @@ export function useNotifications() {
     return addNotification({
       type: "info",
       title,
-      ...options
+      ...options,
     });
   };
 
@@ -334,12 +347,12 @@ export function useNotifications() {
       category: "transportation",
       metadata: {
         bookingId,
-        timestamp: new Date()
+        timestamp: new Date(),
       },
       action: {
         label: "View Booking",
-        onClick: () => window.location.href = `/booking?id=${bookingId}`
-      }
+        onClick: () => (window.location.href = `/booking?id=${bookingId}`),
+      },
     });
   };
 
@@ -350,12 +363,12 @@ export function useNotifications() {
       metadata: {
         orderId,
         amount,
-        timestamp: new Date()
+        timestamp: new Date(),
       },
       action: {
         label: "Track Order",
-        onClick: () => window.location.href = `/orders?id=${orderId}`
-      }
+        onClick: () => (window.location.href = `/orders?id=${orderId}`),
+      },
     });
   };
 
@@ -365,8 +378,8 @@ export function useNotifications() {
       category: "account",
       metadata: {
         amount,
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     });
   };
 
@@ -381,7 +394,7 @@ export function useNotifications() {
     showInfo,
     showBookingSuccess,
     showOrderSuccess,
-    showPaymentSuccess
+    showPaymentSuccess,
   };
 }
 

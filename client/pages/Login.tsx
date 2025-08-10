@@ -12,7 +12,7 @@ import {
   AlertCircle,
   Loader2,
   Smartphone,
-  Shield
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,13 +26,13 @@ import { useToast } from "@/components/ui/use-toast";
 export default function Login() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -59,7 +59,7 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast({
         title: "Validation Error",
@@ -73,12 +73,13 @@ export default function Login() {
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       // Show success notification
       toast({
         title: "Welcome back! 🎉",
-        description: "You have successfully logged into your Kanxa Safari account.",
+        description:
+          "You have successfully logged into your Kanxa Safari account.",
         action: (
           <div className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -89,18 +90,18 @@ export default function Login() {
 
       // Store auth data if remember me is checked
       if (rememberMe) {
-        localStorage.setItem('kanxa_remember', 'true');
+        localStorage.setItem("kanxa_remember", "true");
       }
 
       // Redirect to dashboard/profile
       setTimeout(() => {
-        navigate('/profile');
+        navigate("/profile");
       }, 1000);
-
     } catch (error) {
       toast({
         title: "Login Failed",
-        description: "Invalid email or password. Please check your credentials and try again.",
+        description:
+          "Invalid email or password. Please check your credentials and try again.",
         variant: "destructive",
       });
     } finally {
@@ -122,10 +123,10 @@ export default function Login() {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -133,7 +134,7 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-kanxa-light-blue via-white to-kanxa-light-orange flex items-center justify-center p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
-      
+
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
@@ -165,12 +166,15 @@ export default function Login() {
               Enter your credentials to continue
             </p>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Email Address
                 </Label>
                 <div className="relative">
@@ -180,8 +184,8 @@ export default function Login() {
                     type="email"
                     placeholder="Enter your email"
                     value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`pl-10 ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    className={`pl-10 ${errors.email ? "border-red-500 focus:border-red-500" : ""}`}
                     disabled={isLoading}
                   />
                 </div>
@@ -195,7 +199,10 @@ export default function Login() {
 
               {/* Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Password
                 </Label>
                 <div className="relative">
@@ -205,8 +212,10 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    className={`pl-10 pr-10 ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
+                    className={`pl-10 pr-10 ${errors.password ? "border-red-500 focus:border-red-500" : ""}`}
                     disabled={isLoading}
                   />
                   <button
@@ -215,7 +224,11 @@ export default function Login() {
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     disabled={isLoading}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 {errors.password && (
@@ -232,10 +245,15 @@ export default function Login() {
                   <Checkbox
                     id="remember"
                     checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      setRememberMe(checked as boolean)
+                    }
                     disabled={isLoading}
                   />
-                  <Label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer">
+                  <Label
+                    htmlFor="remember"
+                    className="text-sm text-gray-600 cursor-pointer"
+                  >
                     Remember me
                   </Label>
                 </div>
@@ -271,7 +289,9 @@ export default function Login() {
             <div className="relative">
               <Separator className="my-6" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="bg-white px-2 text-sm text-gray-500">Or continue with</span>
+                <span className="bg-white px-2 text-sm text-gray-500">
+                  Or continue with
+                </span>
               </div>
             </div>
 
@@ -305,11 +325,19 @@ export default function Login() {
 
             {/* Alternative Auth Options */}
             <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" className="text-sm" disabled={isLoading}>
+              <Button
+                variant="outline"
+                className="text-sm"
+                disabled={isLoading}
+              >
                 <Smartphone className="mr-2 h-3 w-3" />
                 SMS Login
               </Button>
-              <Button variant="outline" className="text-sm" disabled={isLoading}>
+              <Button
+                variant="outline"
+                className="text-sm"
+                disabled={isLoading}
+              >
                 <User className="mr-2 h-3 w-3" />
                 Guest Mode
               </Button>
@@ -328,9 +356,12 @@ export default function Login() {
               Create one now
             </Link>
           </p>
-          
+
           <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
-            <Link to="/privacy" className="hover:text-gray-700 transition-colors">
+            <Link
+              to="/privacy"
+              className="hover:text-gray-700 transition-colors"
+            >
               Privacy Policy
             </Link>
             <span>•</span>
@@ -338,7 +369,10 @@ export default function Login() {
               Terms of Service
             </Link>
             <span>•</span>
-            <Link to="/support" className="hover:text-gray-700 transition-colors">
+            <Link
+              to="/support"
+              className="hover:text-gray-700 transition-colors"
+            >
               Support
             </Link>
           </div>

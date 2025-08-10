@@ -16,7 +16,7 @@ import {
   Loader2,
   Shield,
   Check,
-  X
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,7 +31,7 @@ import { useToast } from "@/components/ui/use-toast";
 export default function Signup() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -45,7 +45,7 @@ export default function Signup() {
     address: "",
     company: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -133,7 +133,7 @@ export default function Signup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       toast({
         title: "Validation Error",
@@ -147,12 +147,13 @@ export default function Signup() {
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       // Show success notification
       toast({
         title: "Account Created Successfully! 🎉",
-        description: "Welcome to Kanxa Safari! Please check your email to verify your account.",
+        description:
+          "Welcome to Kanxa Safari! Please check your email to verify your account.",
         action: (
           <div className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -163,13 +164,13 @@ export default function Signup() {
 
       // Redirect to login with success message
       setTimeout(() => {
-        navigate('/login', { 
-          state: { 
-            message: "Account created successfully! Please sign in with your new credentials." 
-          }
+        navigate("/login", {
+          state: {
+            message:
+              "Account created successfully! Please sign in with your new credentials.",
+          },
         });
       }, 2000);
-
     } catch (error) {
       toast({
         title: "Registration Failed",
@@ -182,10 +183,10 @@ export default function Signup() {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -200,7 +201,7 @@ export default function Signup() {
     <div className="min-h-screen bg-gradient-to-br from-kanxa-light-blue via-white to-kanxa-light-orange flex items-center justify-center p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
-      
+
       <div className="w-full max-w-2xl">
         {/* Header */}
         <div className="text-center mb-8">
@@ -235,13 +236,16 @@ export default function Signup() {
               Fill in your details to get started
             </p>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Name Fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor="firstName"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     First Name
                   </Label>
                   <div className="relative">
@@ -251,8 +255,10 @@ export default function Signup() {
                       type="text"
                       placeholder="Your first name"
                       value={formData.firstName}
-                      onChange={(e) => handleInputChange('firstName', e.target.value)}
-                      className={`pl-10 ${errors.firstName ? 'border-red-500' : ''}`}
+                      onChange={(e) =>
+                        handleInputChange("firstName", e.target.value)
+                      }
+                      className={`pl-10 ${errors.firstName ? "border-red-500" : ""}`}
                       disabled={isLoading}
                     />
                   </div>
@@ -265,7 +271,10 @@ export default function Signup() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor="lastName"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Last Name
                   </Label>
                   <div className="relative">
@@ -275,8 +284,10 @@ export default function Signup() {
                       type="text"
                       placeholder="Your last name"
                       value={formData.lastName}
-                      onChange={(e) => handleInputChange('lastName', e.target.value)}
-                      className={`pl-10 ${errors.lastName ? 'border-red-500' : ''}`}
+                      onChange={(e) =>
+                        handleInputChange("lastName", e.target.value)
+                      }
+                      className={`pl-10 ${errors.lastName ? "border-red-500" : ""}`}
                       disabled={isLoading}
                     />
                   </div>
@@ -291,7 +302,10 @@ export default function Signup() {
 
               {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Email Address
                 </Label>
                 <div className="relative">
@@ -301,8 +315,8 @@ export default function Signup() {
                     type="email"
                     placeholder="your.email@example.com"
                     value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`pl-10 ${errors.email ? 'border-red-500' : ''}`}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
                     disabled={isLoading}
                   />
                 </div>
@@ -317,7 +331,10 @@ export default function Signup() {
               {/* Phone and Address */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor="phone"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Phone Number
                   </Label>
                   <div className="relative">
@@ -327,8 +344,10 @@ export default function Signup() {
                       type="tel"
                       placeholder="+977-XXX-XXXXXX"
                       value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      className={`pl-10 ${errors.phone ? 'border-red-500' : ''}`}
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
+                      className={`pl-10 ${errors.phone ? "border-red-500" : ""}`}
                       disabled={isLoading}
                     />
                   </div>
@@ -341,7 +360,10 @@ export default function Signup() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address" className="text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor="address"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Address
                   </Label>
                   <div className="relative">
@@ -351,8 +373,10 @@ export default function Signup() {
                       type="text"
                       placeholder="Your address"
                       value={formData.address}
-                      onChange={(e) => handleInputChange('address', e.target.value)}
-                      className={`pl-10 ${errors.address ? 'border-red-500' : ''}`}
+                      onChange={(e) =>
+                        handleInputChange("address", e.target.value)
+                      }
+                      className={`pl-10 ${errors.address ? "border-red-500" : ""}`}
                       disabled={isLoading}
                     />
                   </div>
@@ -367,7 +391,10 @@ export default function Signup() {
 
               {/* Company Field (Optional) */}
               <div className="space-y-2">
-                <Label htmlFor="company" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="company"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Company <span className="text-gray-400">(Optional)</span>
                 </Label>
                 <div className="relative">
@@ -377,7 +404,9 @@ export default function Signup() {
                     type="text"
                     placeholder="Your company name"
                     value={formData.company}
-                    onChange={(e) => handleInputChange('company', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("company", e.target.value)
+                    }
                     className="pl-10"
                     disabled={isLoading}
                   />
@@ -386,7 +415,10 @@ export default function Signup() {
 
               {/* Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Password
                 </Label>
                 <div className="relative">
@@ -396,8 +428,10 @@ export default function Signup() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a strong password"
                     value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    className={`pl-10 pr-10 ${errors.password ? 'border-red-500' : ''}`}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
+                    className={`pl-10 pr-10 ${errors.password ? "border-red-500" : ""}`}
                     disabled={isLoading}
                   />
                   <button
@@ -406,40 +440,58 @@ export default function Signup() {
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     disabled={isLoading}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
-                
+
                 {/* Password Strength Indicator */}
                 {formData.password && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600">Password strength:</span>
-                      <span className={`text-xs font-medium ${
-                        passwordStrength <= 25 ? 'text-red-600' :
-                        passwordStrength <= 50 ? 'text-yellow-600' :
-                        passwordStrength <= 75 ? 'text-blue-600' :
-                        'text-green-600'
-                      }`}>
+                      <span className="text-xs text-gray-600">
+                        Password strength:
+                      </span>
+                      <span
+                        className={`text-xs font-medium ${
+                          passwordStrength <= 25
+                            ? "text-red-600"
+                            : passwordStrength <= 50
+                              ? "text-yellow-600"
+                              : passwordStrength <= 75
+                                ? "text-blue-600"
+                                : "text-green-600"
+                        }`}
+                      >
                         {getPasswordStrengthText()}
                       </span>
                     </div>
                     <Progress value={passwordStrength} className="h-2" />
-                    
+
                     {/* Password Requirements */}
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       {passwordRequirements.map((req, index) => (
-                        <div key={index} className={`flex items-center gap-1 ${
-                          req.met ? 'text-green-600' : 'text-gray-400'
-                        }`}>
-                          {req.met ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                        <div
+                          key={index}
+                          className={`flex items-center gap-1 ${
+                            req.met ? "text-green-600" : "text-gray-400"
+                          }`}
+                        >
+                          {req.met ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <X className="h-3 w-3" />
+                          )}
                           {req.text}
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-                
+
                 {errors.password && (
                   <p className="text-sm text-red-600 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
@@ -450,7 +502,10 @@ export default function Signup() {
 
               {/* Confirm Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Confirm Password
                 </Label>
                 <div className="relative">
@@ -460,8 +515,10 @@ export default function Signup() {
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    className={`pl-10 pr-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                    onChange={(e) =>
+                      handleInputChange("confirmPassword", e.target.value)
+                    }
+                    className={`pl-10 pr-10 ${errors.confirmPassword ? "border-red-500" : ""}`}
                     disabled={isLoading}
                   />
                   <button
@@ -470,7 +527,11 @@ export default function Signup() {
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     disabled={isLoading}
                   >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 {errors.confirmPassword && (
@@ -490,19 +551,28 @@ export default function Signup() {
                     onCheckedChange={(checked) => {
                       setAcceptTerms(checked as boolean);
                       if (errors.terms && checked) {
-                        setErrors(prev => ({ ...prev, terms: "" }));
+                        setErrors((prev) => ({ ...prev, terms: "" }));
                       }
                     }}
                     disabled={isLoading}
                     className="mt-1"
                   />
-                  <Label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer leading-relaxed">
+                  <Label
+                    htmlFor="terms"
+                    className="text-sm text-gray-600 cursor-pointer leading-relaxed"
+                  >
                     I agree to the{" "}
-                    <Link to="/terms" className="text-kanxa-blue hover:text-kanxa-navy">
+                    <Link
+                      to="/terms"
+                      className="text-kanxa-blue hover:text-kanxa-navy"
+                    >
                       Terms of Service
                     </Link>{" "}
                     and{" "}
-                    <Link to="/privacy" className="text-kanxa-blue hover:text-kanxa-navy">
+                    <Link
+                      to="/privacy"
+                      className="text-kanxa-blue hover:text-kanxa-navy"
+                    >
                       Privacy Policy
                     </Link>
                   </Label>
@@ -518,12 +588,18 @@ export default function Signup() {
                   <Checkbox
                     id="marketing"
                     checked={acceptMarketing}
-                    onCheckedChange={(checked) => setAcceptMarketing(checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      setAcceptMarketing(checked as boolean)
+                    }
                     disabled={isLoading}
                     className="mt-1"
                   />
-                  <Label htmlFor="marketing" className="text-sm text-gray-600 cursor-pointer leading-relaxed">
-                    I would like to receive promotional emails and updates about Kanxa Safari services
+                  <Label
+                    htmlFor="marketing"
+                    className="text-sm text-gray-600 cursor-pointer leading-relaxed"
+                  >
+                    I would like to receive promotional emails and updates about
+                    Kanxa Safari services
                   </Label>
                 </div>
               </div>
@@ -552,7 +628,9 @@ export default function Signup() {
             <div className="relative">
               <Separator className="my-6" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="bg-white px-2 text-sm text-gray-500">Or sign up with</span>
+                <span className="bg-white px-2 text-sm text-gray-500">
+                  Or sign up with
+                </span>
               </div>
             </div>
 

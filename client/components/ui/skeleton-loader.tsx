@@ -4,7 +4,10 @@ interface SkeletonProps {
   className?: string;
 }
 
-function Skeleton({ className, ...props }: SkeletonProps & React.HTMLAttributes<HTMLDivElement>) {
+function Skeleton({
+  className,
+  ...props
+}: SkeletonProps & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn("animate-pulse rounded-md bg-gray-200", className)}
@@ -150,7 +153,10 @@ export function ActivityListSkeleton() {
   return (
     <div className="space-y-4">
       {[...Array(6)].map((_, i) => (
-        <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+        <div
+          key={i}
+          className="flex items-center justify-between p-4 border rounded-lg"
+        >
           <div className="flex items-center gap-4">
             <Skeleton className="w-10 h-10 rounded-lg" />
             <div className="space-y-2">
@@ -181,22 +187,34 @@ export function StatsCardsSkeleton() {
 }
 
 // Table Skeleton
-export function TableSkeleton({ rows = 5, columns = 4 }: { rows?: number; columns?: number }) {
+export function TableSkeleton({
+  rows = 5,
+  columns = 4,
+}: {
+  rows?: number;
+  columns?: number;
+}) {
   return (
     <div className="border rounded-lg overflow-hidden">
       {/* Header */}
       <div className="bg-gray-50 border-b">
-        <div className="grid gap-4 p-4" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+        <div
+          className="grid gap-4 p-4"
+          style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+        >
           {[...Array(columns)].map((_, i) => (
             <Skeleton key={i} className="h-4 w-full" />
           ))}
         </div>
       </div>
-      
+
       {/* Rows */}
       {[...Array(rows)].map((_, rowIndex) => (
         <div key={rowIndex} className="border-b last:border-b-0">
-          <div className="grid gap-4 p-4" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+          <div
+            className="grid gap-4 p-4"
+            style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+          >
             {[...Array(columns)].map((_, colIndex) => (
               <Skeleton key={colIndex} className="h-4 w-full" />
             ))}
@@ -216,7 +234,7 @@ export function FormSkeleton() {
         <Skeleton className="h-6 w-48" />
         <Skeleton className="h-4 w-96" />
       </div>
-      
+
       {/* Form Fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[...Array(6)].map((_, i) => (
@@ -226,13 +244,13 @@ export function FormSkeleton() {
           </div>
         ))}
       </div>
-      
+
       {/* Full width field */}
       <div className="space-y-2">
         <Skeleton className="h-4 w-16" />
         <Skeleton className="h-24 w-full" />
       </div>
-      
+
       {/* Buttons */}
       <div className="flex space-x-4">
         <Skeleton className="h-10 w-24" />

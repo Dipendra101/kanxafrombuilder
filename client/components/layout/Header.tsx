@@ -191,7 +191,10 @@ export default function Header() {
             <Button variant="ghost" asChild>
               <Link to="/login">Sign In</Link>
             </Button>
-            <Button asChild className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy hover:from-kanxa-navy hover:to-kanxa-blue">
+            <Button
+              asChild
+              className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy hover:from-kanxa-navy hover:to-kanxa-blue"
+            >
               <Link to="/signup">Get Started</Link>
             </Button>
           </div>

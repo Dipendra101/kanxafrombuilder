@@ -10,7 +10,7 @@ import {
   Shield,
   RefreshCw,
   MessageSquare,
-  Clock
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,28 +23,30 @@ import { useToast } from "@/components/ui/use-toast";
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [smsSent, setSmsSent] = useState(false);
   const [activeTab, setActiveTab] = useState("email");
   const [countdown, setCountdown] = useState(0);
-  
+
   const [formData, setFormData] = useState({
     email: "",
-    phone: ""
+    phone: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateEmail = (email: string) => {
     if (!email) return "Email address is required";
-    if (!/\S+@\S+\.\S+/.test(email)) return "Please enter a valid email address";
+    if (!/\S+@\S+\.\S+/.test(email))
+      return "Please enter a valid email address";
     return "";
   };
 
   const validatePhone = (phone: string) => {
     if (!phone) return "Phone number is required";
-    if (!/^[+]?[\d\s-()]+$/.test(phone)) return "Please enter a valid phone number";
+    if (!/^[+]?[\d\s-()]+$/.test(phone))
+      return "Please enter a valid phone number";
     return "";
   };
 
@@ -63,7 +65,7 @@ export default function ForgotPassword() {
 
   const handleEmailReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const emailError = validateEmail(formData.email);
     if (emailError) {
       setErrors({ email: emailError });
@@ -80,11 +82,11 @@ export default function ForgotPassword() {
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       setEmailSent(true);
       startCountdown();
-      
+
       toast({
         title: "Reset Link Sent! 📧",
         description: `We've sent a password reset link to ${formData.email}. Please check your inbox and spam folder.`,
@@ -95,7 +97,6 @@ export default function ForgotPassword() {
           </div>
         ),
       });
-
     } catch (error) {
       toast({
         title: "Failed to Send Email",
@@ -109,7 +110,7 @@ export default function ForgotPassword() {
 
   const handleSmsReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const phoneError = validatePhone(formData.phone);
     if (phoneError) {
       setErrors({ phone: phoneError });
@@ -126,11 +127,11 @@ export default function ForgotPassword() {
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       setSmsSent(true);
       startCountdown();
-      
+
       toast({
         title: "SMS Code Sent! 📱",
         description: `We've sent a verification code to ${formData.phone}. Please check your messages.`,
@@ -141,11 +142,11 @@ export default function ForgotPassword() {
           </div>
         ),
       });
-
     } catch (error) {
       toast({
         title: "Failed to Send SMS",
-        description: "Unable to send verification code. Please try again later.",
+        description:
+          "Unable to send verification code. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -156,17 +157,17 @@ export default function ForgotPassword() {
   const handleResend = () => {
     if (activeTab === "email") {
       setEmailSent(false);
-      handleEmailReset(new Event('submit') as any);
+      handleEmailReset(new Event("submit") as any);
     } else {
       setSmsSent(false);
-      handleSmsReset(new Event('submit') as any);
+      handleSmsReset(new Event("submit") as any);
     }
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -174,7 +175,7 @@ export default function ForgotPassword() {
     <div className="min-h-screen bg-gradient-to-br from-kanxa-light-blue via-white to-kanxa-light-orange flex items-center justify-center p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
-      
+
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
@@ -206,9 +207,13 @@ export default function ForgotPassword() {
               Select how you'd like to reset your password
             </p>
           </CardHeader>
-          
+
           <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="email" className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
@@ -225,7 +230,10 @@ export default function ForgotPassword() {
                 {!emailSent ? (
                   <form onSubmit={handleEmailReset} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                      <Label
+                        htmlFor="email"
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Email Address
                       </Label>
                       <div className="relative">
@@ -235,8 +243,10 @@ export default function ForgotPassword() {
                           type="email"
                           placeholder="Enter your email address"
                           value={formData.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                          className={`pl-10 ${errors.email ? 'border-red-500' : ''}`}
+                          onChange={(e) =>
+                            handleInputChange("email", e.target.value)
+                          }
+                          className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
                           disabled={isLoading}
                         />
                       </div>
@@ -275,14 +285,20 @@ export default function ForgotPassword() {
                       <CheckCircle className="h-8 w-8 text-green-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">Email Sent Successfully!</h3>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        Email Sent Successfully!
+                      </h3>
                       <p className="text-sm text-gray-600 mb-2">
                         We've sent a password reset link to:
                       </p>
-                      <p className="font-medium text-kanxa-blue">{formData.email}</p>
+                      <p className="font-medium text-kanxa-blue">
+                        {formData.email}
+                      </p>
                     </div>
                     <div className="bg-blue-50 p-4 rounded-lg text-left">
-                      <h4 className="font-medium text-blue-900 mb-2">Next Steps:</h4>
+                      <h4 className="font-medium text-blue-900 mb-2">
+                        Next Steps:
+                      </h4>
                       <ul className="text-sm text-blue-800 space-y-1">
                         <li>• Check your email inbox</li>
                         <li>• Look in spam/junk folder if not found</li>
@@ -315,7 +331,10 @@ export default function ForgotPassword() {
                 {!smsSent ? (
                   <form onSubmit={handleSmsReset} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                      <Label
+                        htmlFor="phone"
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Phone Number
                       </Label>
                       <div className="relative">
@@ -325,8 +344,10 @@ export default function ForgotPassword() {
                           type="tel"
                           placeholder="+977-XXX-XXXXXX"
                           value={formData.phone}
-                          onChange={(e) => handleInputChange('phone', e.target.value)}
-                          className={`pl-10 ${errors.phone ? 'border-red-500' : ''}`}
+                          onChange={(e) =>
+                            handleInputChange("phone", e.target.value)
+                          }
+                          className={`pl-10 ${errors.phone ? "border-red-500" : ""}`}
                           disabled={isLoading}
                         />
                       </div>
@@ -365,14 +386,20 @@ export default function ForgotPassword() {
                       <MessageSquare className="h-8 w-8 text-green-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">SMS Code Sent!</h3>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        SMS Code Sent!
+                      </h3>
                       <p className="text-sm text-gray-600 mb-2">
                         We've sent a 6-digit code to:
                       </p>
-                      <p className="font-medium text-kanxa-blue">{formData.phone}</p>
+                      <p className="font-medium text-kanxa-blue">
+                        {formData.phone}
+                      </p>
                     </div>
                     <div className="bg-blue-50 p-4 rounded-lg text-left">
-                      <h4 className="font-medium text-blue-900 mb-2">Next Steps:</h4>
+                      <h4 className="font-medium text-blue-900 mb-2">
+                        Next Steps:
+                      </h4>
                       <ul className="text-sm text-blue-800 space-y-1">
                         <li>• Check your text messages</li>
                         <li>• Enter the 6-digit verification code</li>
@@ -404,9 +431,7 @@ export default function ForgotPassword() {
             {/* Alternative Options */}
             <div className="mt-6 pt-6 border-t border-gray-200">
               <div className="text-center space-y-3">
-                <p className="text-sm text-gray-600">
-                  Still having trouble?
-                </p>
+                <p className="text-sm text-gray-600">Still having trouble?</p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Button variant="outline" size="sm" className="flex-1">
                     <Phone className="mr-2 h-3 w-3" />
@@ -433,13 +458,19 @@ export default function ForgotPassword() {
               Sign in here
             </Link>
           </p>
-          
+
           <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
-            <Link to="/privacy" className="hover:text-gray-700 transition-colors">
+            <Link
+              to="/privacy"
+              className="hover:text-gray-700 transition-colors"
+            >
               Privacy Policy
             </Link>
             <span>•</span>
-            <Link to="/support" className="hover:text-gray-700 transition-colors">
+            <Link
+              to="/support"
+              className="hover:text-gray-700 transition-colors"
+            >
               Support Center
             </Link>
           </div>
