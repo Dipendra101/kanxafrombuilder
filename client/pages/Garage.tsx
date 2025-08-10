@@ -398,19 +398,12 @@ export default function Garage() {
                   });
                 }}
               >
-                <SelectTrigger onClick={(e) => e.stopPropagation()}>
+                <SelectTrigger>
                   <SelectValue placeholder="Select service type" />
                 </SelectTrigger>
-                <SelectContent
-                  onClick={(e) => e.stopPropagation()}
-                  onCloseAutoFocus={(e) => e.preventDefault()}
-                >
+                <SelectContent>
                   {services.map((service) => (
-                    <SelectItem
-                      key={service.id}
-                      value={service.id}
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <SelectItem key={service.id} value={service.id}>
                       {service.name}
                     </SelectItem>
                   ))}
