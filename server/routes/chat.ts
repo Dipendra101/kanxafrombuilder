@@ -170,7 +170,7 @@ router.post("/conversations/:id/messages", verifyToken, async (req, res) => {
     
     res.status(201).json({
       message: "Message sent successfully",
-      message: newMessage,
+      data: newMessage,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

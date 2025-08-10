@@ -6,8 +6,9 @@ import { createServer } from "./server";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: "localhost",
     port: 8080,
+    https: false, 
     fs: {
       allow: ["./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
@@ -28,12 +29,14 @@ export default defineConfig(({ mode }) => ({
 function expressPlugin(): Plugin {
   return {
     name: "express-plugin",
-    apply: "serve", // Only apply during development (serve mode)
+    apply: "serve",
     configureServer(server) {
-      const app = createServer();
-
-      // Add Express app as middleware to Vite dev server
-      server.middlewares.use(app);
+      createServer().then(app => {
+        // Add Express app as middleware to Vite dev server
+        server.middlewares.use(app);
+      }).catch(error => {
+        console.error('Failed to create server:', error);
+      });
     },
   };
 }

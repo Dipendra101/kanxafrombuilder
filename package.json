@@ -21,12 +21,15 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^4.18.2",
-    "zod": "^3.23.8",
-    "bcryptjs": "^2.4.3",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "cors": "^2.8.5"
+    "morgan": "^1.10.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -62,10 +65,12 @@
     "@swc/core": "^1.11.24",
     "@tailwindcss/typography": "^0.5.15",
     "@tanstack/react-query": "^5.56.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
+    "@types/morgan": "^1.9.10",
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

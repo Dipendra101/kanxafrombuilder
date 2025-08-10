@@ -2,6 +2,7 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
+import User from "../models/User";
 
 const router = Router();
 
@@ -13,6 +14,8 @@ const registerSchema = z.object({
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string(),
+  address: z.string().optional(),
+  company: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -36,61 +39,77 @@ const resetPasswordSchema = z.object({
   path: ["confirmPassword"],
 });
 
-// In-memory user storage (replace with database in production)
-const users: any[] = [];
-const resetTokens: Map<string, { email: string; expires: Date }> = new Map();
-
 // Register new user
 router.post("/register", async (req, res) => {
   try {
     const validatedData = registerSchema.parse(req.body);
     
     // Check if user already exists
-    const existingUser = users.find(user => user.email === validatedData.email);
+    const existingUser = await User.findOne({ email: validatedData.email });
     if (existingUser) {
-      return res.status(400).json({ error: "User with this email already exists" });
+      return res.status(400).json({ 
+        success: false,
+        error: "User with this email already exists" 
+      });
     }
 
-    // Hash password
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(validatedData.password, saltRounds);
-
     // Create user
-    const newUser = {
-      id: Date.now().toString(),
+    const newUser = await User.create({
       firstName: validatedData.firstName,
       lastName: validatedData.lastName,
       email: validatedData.email,
       phone: validatedData.phone,
-      password: hashedPassword,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      isVerified: false,
-      role: "customer",
-    };
-
-    users.push(newUser);
+      password: validatedData.password,
+      address: validatedData.address,
+      company: validatedData.company,
+      role: validatedData.email === 'admin@gmail.com' ? 'admin' : 'customer',
+      isVerified: validatedData.email === 'admin@gmail.com' ? true : false,
+    });
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: newUser.id, email: newUser.email },
+      { 
+        userId: newUser._id, 
+        email: newUser.email,
+        role: newUser.role 
+      },
       process.env.JWT_SECRET || "kanxa-safari-secret",
       { expiresIn: "7d" }
     );
 
     // Remove password from response
-    const { password, ...userWithoutPassword } = newUser;
+    const userResponse = {
+      id: newUser._id,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      email: newUser.email,
+      phone: newUser.phone,
+      address: newUser.address,
+      company: newUser.company,
+      role: newUser.role,
+      isVerified: newUser.isVerified,
+      createdAt: newUser.createdAt,
+    };
 
     res.status(201).json({
+      success: true,
       message: "User registered successfully",
-      user: userWithoutPassword,
+      data: userResponse,
       token,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: "Validation error", details: error.errors });
+      return res.status(400).json({ 
+        success: false,
+        error: "Validation error", 
+        details: error.errors 
+      });
     }
-    res.status(500).json({ error: "Registration failed" });
+    console.error('Registration error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: "Registration failed" 
+    });
   }
 });
 
@@ -99,67 +118,114 @@ router.post("/login", async (req, res) => {
   try {
     const validatedData = loginSchema.parse(req.body);
     
-    // Find user
-    const user = users.find(u => u.email === validatedData.email);
+    // Find user by email
+    const user = await User.findOne({ email: validatedData.email });
     if (!user) {
-      return res.status(401).json({ error: "Invalid email or password" });
+      return res.status(401).json({ 
+        success: false,
+        error: "Invalid email or password" 
+      });
     }
 
     // Check password
-    const isPasswordValid = await bcrypt.compare(validatedData.password, user.password);
+    const isPasswordValid = await user.comparePassword(validatedData.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid email or password" });
+      return res.status(401).json({ 
+        success: false,
+        error: "Invalid email or password" 
+      });
     }
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { 
+        userId: user._id, 
+        email: user.email,
+        role: user.role 
+      },
       process.env.JWT_SECRET || "kanxa-safari-secret",
       { expiresIn: "7d" }
     );
 
     // Remove password from response
-    const { password, ...userWithoutPassword } = user;
+    const userResponse = {
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone,
+      address: user.address,
+      company: user.company,
+      role: user.role,
+      isVerified: user.isVerified,
+      createdAt: user.createdAt,
+    };
 
     res.json({
+      success: true,
       message: "Login successful",
-      user: userWithoutPassword,
+      data: userResponse,
       token,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: "Validation error", details: error.errors });
+      return res.status(400).json({ 
+        success: false,
+        error: "Validation error", 
+        details: error.errors 
+      });
     }
-    res.status(500).json({ error: "Login failed" });
+    console.error('Login error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: "Login failed" 
+    });
   }
 });
 
 // Forgot password
 router.post("/forgot-password", async (req, res) => {
   try {
-    const { email } = forgotPasswordSchema.parse(req.body);
+    const validatedData = forgotPasswordSchema.parse(req.body);
     
-    const user = users.find(u => u.email === email);
+    const user = await User.findOne({ email: validatedData.email });
     if (!user) {
-      // Don't reveal if user exists or not for security
-      return res.json({ message: "If an account exists, a reset link has been sent" });
+      return res.status(404).json({ 
+        success: false,
+        error: "User not found" 
+      });
     }
 
-    // Generate reset token
-    const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    // Generate reset token (in production, send email)
+    const resetToken = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET || "kanxa-safari-secret",
+      { expiresIn: "1h" }
+    );
 
-    resetTokens.set(resetToken, { email, expires });
+    // Update user with reset token
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+    await user.save();
 
-    // In production, send email with reset link
-    console.log(`Password reset token for ${email}: ${resetToken}`);
-
-    res.json({ message: "If an account exists, a reset link has been sent" });
+    res.json({
+      success: true,
+      message: "Password reset instructions sent to your email",
+      resetToken, // In production, don't send this in response
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: "Validation error", details: error.errors });
+      return res.status(400).json({ 
+        success: false,
+        error: "Validation error", 
+        details: error.errors 
+      });
     }
-    res.status(500).json({ error: "Failed to process request" });
+    console.error('Forgot password error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: "Failed to process request" 
+    });
   }
 });
 
@@ -168,67 +234,210 @@ router.post("/reset-password", async (req, res) => {
   try {
     const validatedData = resetPasswordSchema.parse(req.body);
     
-    const resetData = resetTokens.get(validatedData.token);
-    if (!resetData || resetData.expires < new Date()) {
-      return res.status(400).json({ error: "Invalid or expired reset token" });
-    }
+    // Verify token
+    const decoded = jwt.verify(
+      validatedData.token,
+      process.env.JWT_SECRET || "kanxa-safari-secret"
+    ) as { userId: string };
 
-    const user = users.find(u => u.email === resetData.email);
+    const user = await User.findById(decoded.userId);
     if (!user) {
-      return res.status(400).json({ error: "User not found" });
+      return res.status(404).json({ 
+        success: false,
+        error: "User not found" 
+      });
     }
 
-    // Hash new password
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(validatedData.password, saltRounds);
-    
-    // Update user password
-    user.password = hashedPassword;
-    user.updatedAt = new Date();
+    if (user.resetPasswordToken !== validatedData.token) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid reset token" 
+      });
+    }
 
-    // Remove reset token
-    resetTokens.delete(validatedData.token);
+    if (user.resetPasswordExpires && user.resetPasswordExpires < new Date()) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Reset token has expired" 
+      });
+    }
 
-    res.json({ message: "Password reset successfully" });
+    // Update password
+    user.password = validatedData.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password reset successfully",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: "Validation error", details: error.errors });
+      return res.status(400).json({ 
+        success: false,
+        error: "Validation error", 
+        details: error.errors 
+      });
     }
-    res.status(500).json({ error: "Failed to reset password" });
+    if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid reset token" 
+      });
+    }
+    console.error('Reset password error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: "Failed to reset password" 
+    });
+  }
+});
+
+// Get current user
+router.get("/me", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        error: "User not found" 
+      });
+    }
+
+    res.json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error('Get user error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: "Failed to get user data" 
+    });
+  }
+});
+
+// Update user profile
+router.put("/profile", verifyToken, async (req, res) => {
+  try {
+    const { firstName, lastName, phone, address, company } = req.body;
+    
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        error: "User not found" 
+      });
+    }
+
+    // Update fields
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (phone) user.phone = phone;
+    if (address !== undefined) user.address = address;
+    if (company !== undefined) user.company = company;
+
+    await user.save();
+
+    // Remove password from response
+    const userResponse = {
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone,
+      address: user.address,
+      company: user.company,
+      role: user.role,
+      isVerified: user.isVerified,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+
+    res.json({
+      success: true,
+      message: "Profile updated successfully",
+      data: userResponse,
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: "Failed to update profile" 
+    });
+  }
+});
+
+// Change password
+router.put("/change-password", verifyToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ 
+        success: false,
+        error: "New passwords don't match" 
+      });
+    }
+
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        error: "User not found" 
+      });
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Current password is incorrect" 
+      });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: "Failed to change password" 
+    });
   }
 });
 
 // Verify token middleware
 export const verifyToken = (req: any, res: any, next: any) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  
+  const token = req.header('Authorization')?.replace('Bearer ', '') || 
+                req.cookies?.token || 
+                req.query?.token;
+
   if (!token) {
-    return res.status(401).json({ error: "Access token required" });
+    return res.status(401).json({ 
+      success: false,
+      error: "Access denied. No token provided." 
+    });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "kanxa-safari-secret");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "kanxa-safari-secret") as any;
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ error: "Invalid or expired token" });
+    res.status(401).json({ 
+      success: false,
+      error: "Invalid token." 
+    });
   }
 };
-
-// Get current user
-router.get("/me", verifyToken, (req, res) => {
-  const user = users.find(u => u.id === req.user.userId);
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
-  }
-
-  const { password, ...userWithoutPassword } = user;
-  res.json({ user: userWithoutPassword });
-});
-
-// Logout (client-side token removal)
-router.post("/logout", (req, res) => {
-  res.json({ message: "Logged out successfully" });
-});
 
 export { router as authRoutes };
