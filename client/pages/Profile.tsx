@@ -194,6 +194,68 @@ export default function Profile() {
               </TabsList>
 
               <TabsContent value="profile" className="space-y-6">
+                {/* Profile Picture Section */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Profile Picture</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-6">
+                      <div className="relative">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden group cursor-pointer border-2 border-gray-200"
+                             onClick={handleProfilePictureClick}>
+                          <img
+                            src={profilePicture || defaultImage}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Camera className="h-5 w-5 text-white" />
+                          </div>
+                        </div>
+                        {profilePicture && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="absolute -top-2 -right-2 rounded-full w-6 h-6 p-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeProfilePicture();
+                            }}
+                          >
+                            ×
+                          </Button>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium mb-2">Upload a new profile picture</h4>
+                        <p className="text-sm text-gray-600 mb-4">
+                          JPG, PNG or GIF. Maximum file size is 5MB. Click on the image or use the button below to upload.
+                        </p>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleProfilePictureClick}
+                          >
+                            <Upload className="mr-2 h-4 w-4" />
+                            {profilePicture ? 'Change Photo' : 'Upload Photo'}
+                          </Button>
+                          {profilePicture && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={removeProfilePicture}
+                            >
+                              Reset to Default
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Profile Information */}
                   <div className="lg:col-span-2">
