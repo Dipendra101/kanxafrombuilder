@@ -218,6 +218,14 @@ export default function Profile() {
                         </div>
                       </div>
                     </div>
+                    {/* Hidden file input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleProfilePictureUpload}
+                      className="hidden"
+                    />
                   </CardContent>
                 </Card>
 
