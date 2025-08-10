@@ -735,7 +735,7 @@ export default function Garage() {
                     ))}
                   </div>
 
-                  <Dialog>
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
                       <Button className="w-full bg-kanxa-green hover:bg-kanxa-green/90">
                         Book This Service
