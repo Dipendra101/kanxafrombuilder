@@ -405,8 +405,8 @@ export default function Garage() {
 
       {/* Quick Actions */}
       <section className="py-12 bg-gray-50">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="container px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="text-center hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="w-16 h-16 bg-kanxa-light-green rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -469,7 +469,7 @@ export default function Garage() {
 
       {/* Services Section */}
       <section className="py-16">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-kanxa-navy mb-4">Our Services</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -477,7 +477,7 @@ export default function Garage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map(service => (
               <Card key={service.id} className="hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="pb-3">
@@ -532,13 +532,13 @@ export default function Garage() {
 
       {/* Technicians Section */}
       <section className="py-16 bg-gray-50">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-kanxa-navy mb-4">Our Expert Technicians</h2>
             <p className="text-lg text-gray-600">Experienced professionals with specialized expertise</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {technicians.map(tech => (
               <Card key={tech.id} className="text-center hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -575,13 +575,13 @@ export default function Garage() {
 
       {/* Workshop Features */}
       <section className="py-16">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-kanxa-navy mb-4">State-of-the-Art Workshop</h2>
             <p className="text-lg text-gray-600">Modern equipment and facilities for all repair needs</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {[
               {
                 icon: <Settings className="h-8 w-8 text-kanxa-blue" />,
@@ -618,13 +618,13 @@ export default function Garage() {
 
       {/* Service Process */}
       <section className="py-16 bg-gray-50">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-kanxa-navy mb-4">Our Service Process</h2>
             <p className="text-lg text-gray-600">Simple steps to get your vehicle serviced</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {[
               {
                 step: "1",
@@ -670,7 +670,7 @@ export default function Garage() {
 
       {/* Contact & Emergency */}
       <section className="py-16 bg-kanxa-navy text-white">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">24/7 Emergency Service Available</h2>
             <p className="text-xl text-white/90 mb-8">
@@ -678,7 +678,7 @@ export default function Garage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             <Card className="bg-white/10 border-white/20">
               <CardContent className="p-6 text-center">
                 <Phone className="h-12 w-12 text-kanxa-orange mx-auto mb-4" />
