@@ -27,6 +27,7 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
+import Chat from "./pages/Chat";
 
 const queryClient = new QueryClient();
 
