@@ -259,8 +259,8 @@ export default function Orders() {
 
       {/* Order Summary */}
       <section className="py-12 bg-gray-50">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="container px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
             <Card className="text-center">
               <CardContent className="p-6">
                 <div className="text-3xl font-bold text-kanxa-orange mb-2">{orders.length}</div>
@@ -297,8 +297,8 @@ export default function Orders() {
 
       {/* Orders List */}
       <section className="py-12">
-        <div className="container">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
+        <div className="container px-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-kanxa-navy">Order History</h2>
             
             <div className="flex gap-4">
@@ -423,14 +423,14 @@ export default function Orders() {
 
       {/* Support Section */}
       <section className="py-16 bg-gray-50">
-        <div className="container">
+        <div className="container px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-2xl font-bold text-kanxa-navy mb-4">Need Help with Your Order?</h2>
             <p className="text-gray-600 mb-8">
               Our customer support team is here to assist you with any questions about your orders
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <Card className="text-center hover:shadow-lg transition-shadow cursor-pointer">
                 <CardContent className="p-6">
                   <Phone className="h-12 w-12 text-kanxa-blue mx-auto mb-4" />
