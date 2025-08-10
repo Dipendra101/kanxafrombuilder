@@ -46,6 +46,7 @@ import Layout from "@/components/layout/Layout";
 
 export default function Garage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentDialogTrigger, setCurrentDialogTrigger] = useState<string | null>(null);
   const [appointmentForm, setAppointmentForm] = useState({
     name: "",
     email: "",
