@@ -18,7 +18,7 @@ import Tours from "./pages/Tours";
 import Materials from "./pages/Materials";
 import Machinery from "./pages/Machinery";
 import Booking from "./pages/Booking";
-import Routes from "./pages/Routes";
+import RoutesPage from "./pages/Routes";
 import Support from "./pages/Support";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
