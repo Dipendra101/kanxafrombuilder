@@ -27,7 +27,9 @@ export default function Header() {
           <div className="h-8 w-8 bg-gradient-to-br from-kanxa-blue to-kanxa-orange rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">KS</span>
           </div>
-          <span className="text-xl font-bold text-kanxa-navy">Kanxa Safari</span>
+          <span className="text-xl font-bold text-kanxa-navy">
+            Kanxa Safari
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -56,24 +58,39 @@ export default function Header() {
                       </NavigationMenuLink>
                     </div>
                     <NavigationMenuLink asChild>
-                      <Link to="/buses" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Bus Services</div>
+                      <Link
+                        to="/buses"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">
+                          Bus Services
+                        </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                           Daily and nightly bus routes
                         </p>
                       </Link>
                     </NavigationMenuLink>
                     <NavigationMenuLink asChild>
-                      <Link to="/cargo" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Cargo Trucks</div>
+                      <Link
+                        to="/cargo"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">
+                          Cargo Trucks
+                        </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                           Freight and logistics services
                         </p>
                       </Link>
                     </NavigationMenuLink>
                     <NavigationMenuLink asChild>
-                      <Link to="/tours" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Custom Tours</div>
+                      <Link
+                        to="/tours"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">
+                          Custom Tours
+                        </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                           Reserved tour services
                         </p>
@@ -105,16 +122,26 @@ export default function Header() {
                       </NavigationMenuLink>
                     </div>
                     <NavigationMenuLink asChild>
-                      <Link to="/materials" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Building Materials</div>
+                      <Link
+                        to="/materials"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">
+                          Building Materials
+                        </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                           Cement, blocks, pipes, and more
                         </p>
                       </Link>
                     </NavigationMenuLink>
                     <NavigationMenuLink asChild>
-                      <Link to="/machinery" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Machinery</div>
+                      <Link
+                        to="/machinery"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                      >
+                        <div className="text-sm font-medium leading-none">
+                          Machinery
+                        </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                           JCBs, mixers, and tractors
                         </p>
@@ -126,7 +153,10 @@ export default function Header() {
 
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link to="/garage" className="text-kanxa-navy hover:text-kanxa-green transition-colors">
+                  <Link
+                    to="/garage"
+                    className="text-kanxa-navy hover:text-kanxa-green transition-colors"
+                  >
                     Garage & Workshop
                   </Link>
                 </NavigationMenuLink>
@@ -134,7 +164,10 @@ export default function Header() {
 
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link to="/about" className="text-kanxa-navy hover:text-kanxa-blue transition-colors">
+                  <Link
+                    to="/about"
+                    className="text-kanxa-navy hover:text-kanxa-blue transition-colors"
+                  >
                     About
                   </Link>
                 </NavigationMenuLink>
@@ -169,15 +202,21 @@ export default function Header() {
                 <div className="space-y-2">
                   <div className="p-2 rounded-md bg-kanxa-light-blue">
                     <p className="text-sm font-medium">Booking Confirmed</p>
-                    <p className="text-xs text-muted-foreground">Your bus seat has been reserved</p>
+                    <p className="text-xs text-muted-foreground">
+                      Your bus seat has been reserved
+                    </p>
                   </div>
                   <div className="p-2 rounded-md bg-kanxa-light-orange">
                     <p className="text-sm font-medium">Payment Received</p>
-                    <p className="text-xs text-muted-foreground">Tour request payment processed</p>
+                    <p className="text-xs text-muted-foreground">
+                      Tour request payment processed
+                    </p>
                   </div>
                   <div className="p-2 rounded-md bg-kanxa-light-green">
                     <p className="text-sm font-medium">Service Complete</p>
-                    <p className="text-xs text-muted-foreground">Tractor maintenance finished</p>
+                    <p className="text-xs text-muted-foreground">
+                      Tractor maintenance finished
+                    </p>
                   </div>
                 </div>
               </div>
@@ -219,13 +258,35 @@ export default function Header() {
                   <div className="h-6 w-6 bg-gradient-to-br from-kanxa-blue to-kanxa-orange rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-xs">KS</span>
                   </div>
-                  <span className="text-lg font-bold text-kanxa-navy">Kanxa Safari</span>
+                  <span className="text-lg font-bold text-kanxa-navy">
+                    Kanxa Safari
+                  </span>
                 </Link>
                 <nav className="grid gap-4">
-                  <Link to="/transportation" className="text-kanxa-navy hover:text-kanxa-blue">Transportation</Link>
-                  <Link to="/construction" className="text-kanxa-navy hover:text-kanxa-orange">Construction</Link>
-                  <Link to="/garage" className="text-kanxa-navy hover:text-kanxa-green">Garage & Workshop</Link>
-                  <Link to="/about" className="text-kanxa-navy hover:text-kanxa-blue">About</Link>
+                  <Link
+                    to="/transportation"
+                    className="text-kanxa-navy hover:text-kanxa-blue"
+                  >
+                    Transportation
+                  </Link>
+                  <Link
+                    to="/construction"
+                    className="text-kanxa-navy hover:text-kanxa-orange"
+                  >
+                    Construction
+                  </Link>
+                  <Link
+                    to="/garage"
+                    className="text-kanxa-navy hover:text-kanxa-green"
+                  >
+                    Garage & Workshop
+                  </Link>
+                  <Link
+                    to="/about"
+                    className="text-kanxa-navy hover:text-kanxa-blue"
+                  >
+                    About
+                  </Link>
                 </nav>
               </div>
             </SheetContent>

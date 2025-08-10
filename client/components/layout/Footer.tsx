@@ -1,5 +1,13 @@
 import { Link } from "react-router-dom";
-import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Facebook,
+  Twitter,
+  Instagram,
+  Youtube,
+} from "lucide-react";
 
 export default function Footer() {
   return (
@@ -15,8 +23,9 @@ export default function Footer() {
               <span className="text-xl font-bold">Kanxa Safari</span>
             </div>
             <p className="text-white/80 text-sm leading-relaxed">
-              Your trusted partner for transportation, construction materials, and machinery services. 
-              Delivering excellence across Nepal with premium technology-driven solutions.
+              Your trusted partner for transportation, construction materials,
+              and machinery services. Delivering excellence across Nepal with
+              premium technology-driven solutions.
             </p>
             <div className="flex space-x-4">
               <Facebook className="h-5 w-5 text-white/60 hover:text-kanxa-blue cursor-pointer transition-colors" />
@@ -30,11 +39,46 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Transportation</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/buses" className="text-white/80 hover:text-kanxa-blue transition-colors">Bus Services</Link></li>
-              <li><Link to="/cargo" className="text-white/80 hover:text-kanxa-blue transition-colors">Cargo Trucks</Link></li>
-              <li><Link to="/tours" className="text-white/80 hover:text-kanxa-blue transition-colors">Custom Tours</Link></li>
-              <li><Link to="/booking" className="text-white/80 hover:text-kanxa-blue transition-colors">Book Online</Link></li>
-              <li><Link to="/routes" className="text-white/80 hover:text-kanxa-blue transition-colors">Route Information</Link></li>
+              <li>
+                <Link
+                  to="/buses"
+                  className="text-white/80 hover:text-kanxa-blue transition-colors"
+                >
+                  Bus Services
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/cargo"
+                  className="text-white/80 hover:text-kanxa-blue transition-colors"
+                >
+                  Cargo Trucks
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/tours"
+                  className="text-white/80 hover:text-kanxa-blue transition-colors"
+                >
+                  Custom Tours
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/booking"
+                  className="text-white/80 hover:text-kanxa-blue transition-colors"
+                >
+                  Book Online
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/routes"
+                  className="text-white/80 hover:text-kanxa-blue transition-colors"
+                >
+                  Route Information
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -42,11 +86,46 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Services</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/materials" className="text-white/80 hover:text-kanxa-orange transition-colors">Building Materials</Link></li>
-              <li><Link to="/machinery" className="text-white/80 hover:text-kanxa-orange transition-colors">Construction Machinery</Link></li>
-              <li><Link to="/garage" className="text-white/80 hover:text-kanxa-green transition-colors">Garage Services</Link></li>
-              <li><Link to="/repairs" className="text-white/80 hover:text-kanxa-green transition-colors">Tractor Repairs</Link></li>
-              <li><Link to="/parts" className="text-white/80 hover:text-kanxa-green transition-colors">Spare Parts</Link></li>
+              <li>
+                <Link
+                  to="/materials"
+                  className="text-white/80 hover:text-kanxa-orange transition-colors"
+                >
+                  Building Materials
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/machinery"
+                  className="text-white/80 hover:text-kanxa-orange transition-colors"
+                >
+                  Construction Machinery
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/garage"
+                  className="text-white/80 hover:text-kanxa-green transition-colors"
+                >
+                  Garage Services
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/repairs"
+                  className="text-white/80 hover:text-kanxa-green transition-colors"
+                >
+                  Tractor Repairs
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/parts"
+                  className="text-white/80 hover:text-kanxa-green transition-colors"
+                >
+                  Spare Parts
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -70,7 +149,7 @@ export default function Footer() {
                 <p className="text-white/80">info@kanxasafari.com</p>
               </div>
             </div>
-            
+
             <div className="pt-4">
               <h4 className="font-medium mb-2">Operating Hours</h4>
               <div className="text-sm text-white/80 space-y-1">
@@ -88,9 +167,24 @@ export default function Footer() {
             © 2024 Kanxa Safari. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center sm:justify-end space-x-6">
-            <Link to="/privacy" className="text-white/60 hover:text-white text-sm transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="text-white/60 hover:text-white text-sm transition-colors">Terms of Service</Link>
-            <Link to="/support" className="text-white/60 hover:text-white text-sm transition-colors">Support</Link>
+            <Link
+              to="/privacy"
+              className="text-white/60 hover:text-white text-sm transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              to="/terms"
+              className="text-white/60 hover:text-white text-sm transition-colors"
+            >
+              Terms of Service
+            </Link>
+            <Link
+              to="/support"
+              className="text-white/60 hover:text-white text-sm transition-colors"
+            >
+              Support
+            </Link>
           </div>
         </div>
       </div>

@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { 
-  Building, 
-  Settings, 
-  ShoppingCart, 
+import {
+  Building,
+  Settings,
+  ShoppingCart,
   Calculator,
   Truck,
   Shield,
@@ -15,7 +15,7 @@ import {
   Clock,
   Award,
   Phone,
-  Mail
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,7 +34,7 @@ export default function Construction() {
       image: "🧱",
       inStock: true,
       rating: 4.8,
-      category: "cement"
+      category: "cement",
     },
     {
       id: "rebar-12mm",
@@ -44,7 +44,7 @@ export default function Construction() {
       image: "🔗",
       inStock: true,
       rating: 4.9,
-      category: "steel"
+      category: "steel",
     },
     {
       id: "concrete-blocks",
@@ -54,7 +54,7 @@ export default function Construction() {
       image: "🟤",
       inStock: true,
       rating: 4.5,
-      category: "blocks"
+      category: "blocks",
     },
     {
       id: "pvc-pipe-4inch",
@@ -64,8 +64,8 @@ export default function Construction() {
       image: "🚰",
       inStock: true,
       rating: 4.7,
-      category: "pipes"
-    }
+      category: "pipes",
+    },
   ];
 
   const featuredMachinery = [
@@ -76,7 +76,7 @@ export default function Construction() {
       image: "🚜",
       availability: "Available",
       location: "Lamjung Depot",
-      rating: 4.8
+      rating: 4.8,
     },
     {
       id: "concrete-mixer-500l",
@@ -85,7 +85,7 @@ export default function Construction() {
       image: "🥽",
       availability: "Available",
       location: "Pokhara Branch",
-      rating: 4.6
+      rating: 4.6,
     },
     {
       id: "tractor-mt-285",
@@ -94,7 +94,7 @@ export default function Construction() {
       image: "🚛",
       availability: "Available",
       location: "Chitwan Branch",
-      rating: 4.5
+      rating: 4.5,
     },
     {
       id: "generator-125kva",
@@ -103,8 +103,8 @@ export default function Construction() {
       image: "🔌",
       availability: "Available",
       location: "Lamjung Depot",
-      rating: 4.7
-    }
+      rating: 4.7,
+    },
   ];
 
   const projectTypes = [
@@ -113,36 +113,36 @@ export default function Construction() {
       description: "Complete materials and equipment for home building",
       icon: "🏠",
       materials: ["Cement", "Blocks", "Steel", "Pipes"],
-      machinery: ["Mixers", "Tractors", "Generators"]
+      machinery: ["Mixers", "Tractors", "Generators"],
     },
     {
       name: "Commercial Buildings",
       description: "Heavy-duty materials and machinery for large projects",
       icon: "🏢",
       materials: ["High-grade Cement", "Steel Beams", "Glass", "Hardware"],
-      machinery: ["JCBs", "Cranes", "Concrete Pumps"]
+      machinery: ["JCBs", "Cranes", "Concrete Pumps"],
     },
     {
       name: "Road Construction",
       description: "Specialized equipment and materials for road work",
       icon: "🛣️",
       materials: ["Asphalt", "Aggregates", "Cement", "Road Markers"],
-      machinery: ["Road Rollers", "Pavers", "Excavators"]
+      machinery: ["Road Rollers", "Pavers", "Excavators"],
     },
     {
       name: "Infrastructure Projects",
       description: "Large-scale construction materials and heavy machinery",
       icon: "🌉",
       materials: ["Concrete", "Steel", "Cables", "Reinforcement"],
-      machinery: ["Heavy Cranes", "Pile Drivers", "Concrete Mixers"]
-    }
+      machinery: ["Heavy Cranes", "Pile Drivers", "Concrete Mixers"],
+    },
   ];
 
   const statistics = [
     { number: "10,000+", label: "Projects Completed", icon: "🏗️" },
     { number: "500+", label: "Active Clients", icon: "👥" },
     { number: "50+", label: "Equipment Fleet", icon: "🚜" },
-    { number: "24/7", label: "Support Available", icon: "🕒" }
+    { number: "24/7", label: "Support Available", icon: "🕒" },
   ];
 
   return (
@@ -155,16 +155,26 @@ export default function Construction() {
               Construction Solutions Hub
             </h1>
             <p className="text-xl text-white/90 mb-8">
-              Everything you need for your construction projects - premium materials and professional-grade machinery
+              Everything you need for your construction projects - premium
+              materials and professional-grade machinery
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-white text-kanxa-orange hover:bg-white/90">
+              <Button
+                asChild
+                size="lg"
+                className="bg-white text-kanxa-orange hover:bg-white/90"
+              >
                 <Link to="/materials">
                   <ShoppingCart className="mr-2 h-5 w-5" />
                   Browse Materials
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-kanxa-orange">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-kanxa-orange"
+              >
                 <Link to="/machinery">
                   <Settings className="mr-2 h-5 w-5" />
                   Rent Equipment
@@ -184,9 +194,17 @@ export default function Construction() {
                 <div className="w-16 h-16 bg-kanxa-light-orange rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Building className="h-8 w-8 text-kanxa-orange" />
                 </div>
-                <h3 className="font-semibold text-kanxa-navy mb-2">Building Materials</h3>
-                <p className="text-sm text-gray-600 mb-4">Cement, blocks, steel, pipes, and more</p>
-                <Button asChild size="sm" className="bg-kanxa-orange hover:bg-kanxa-orange/90">
+                <h3 className="font-semibold text-kanxa-navy mb-2">
+                  Building Materials
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Cement, blocks, steel, pipes, and more
+                </p>
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-kanxa-orange hover:bg-kanxa-orange/90"
+                >
                   <Link to="/materials">Shop Now</Link>
                 </Button>
               </CardContent>
@@ -197,8 +215,12 @@ export default function Construction() {
                 <div className="w-16 h-16 bg-kanxa-light-blue rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Settings className="h-8 w-8 text-kanxa-blue" />
                 </div>
-                <h3 className="font-semibold text-kanxa-navy mb-2">Machinery Rental</h3>
-                <p className="text-sm text-gray-600 mb-4">JCBs, mixers, tractors, and generators</p>
+                <h3 className="font-semibold text-kanxa-navy mb-2">
+                  Machinery Rental
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  JCBs, mixers, tractors, and generators
+                </p>
                 <Button asChild size="sm" variant="outline">
                   <Link to="/machinery">Rent Equipment</Link>
                 </Button>
@@ -210,8 +232,12 @@ export default function Construction() {
                 <div className="w-16 h-16 bg-kanxa-light-green rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Calculator className="h-8 w-8 text-kanxa-green" />
                 </div>
-                <h3 className="font-semibold text-kanxa-navy mb-2">Project Calculator</h3>
-                <p className="text-sm text-gray-600 mb-4">Estimate costs for your project</p>
+                <h3 className="font-semibold text-kanxa-navy mb-2">
+                  Project Calculator
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Estimate costs for your project
+                </p>
                 <Button size="sm" variant="outline">
                   Calculate Now
                 </Button>
@@ -223,8 +249,12 @@ export default function Construction() {
                 <div className="w-16 h-16 bg-kanxa-light-blue rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-kanxa-blue" />
                 </div>
-                <h3 className="font-semibold text-kanxa-navy mb-2">Expert Consultation</h3>
-                <p className="text-sm text-gray-600 mb-4">Free technical advice and planning</p>
+                <h3 className="font-semibold text-kanxa-navy mb-2">
+                  Expert Consultation
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Free technical advice and planning
+                </p>
                 <Button size="sm" variant="outline">
                   Get Advice
                 </Button>
@@ -239,8 +269,12 @@ export default function Construction() {
         <div className="container">
           <Tabs defaultValue="materials" className="w-full">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-kanxa-navy mb-4">Featured Products</h2>
-              <p className="text-lg text-gray-600 mb-6">Popular items from our inventory</p>
+              <h2 className="text-3xl font-bold text-kanxa-navy mb-4">
+                Featured Products
+              </h2>
+              <p className="text-lg text-gray-600 mb-6">
+                Popular items from our inventory
+              </p>
               <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
                 <TabsTrigger value="materials">Materials</TabsTrigger>
                 <TabsTrigger value="machinery">Machinery</TabsTrigger>
@@ -249,12 +283,18 @@ export default function Construction() {
 
             <TabsContent value="materials">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {featuredMaterials.map(material => (
-                  <Card key={material.id} className="hover:shadow-lg transition-shadow">
+                {featuredMaterials.map((material) => (
+                  <Card
+                    key={material.id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="text-4xl mb-2">{material.image}</div>
-                        <Badge variant="secondary" className="bg-green-100 text-green-800">
+                        <Badge
+                          variant="secondary"
+                          className="bg-green-100 text-green-800"
+                        >
                           In Stock
                         </Badge>
                       </div>
@@ -262,11 +302,13 @@ export default function Construction() {
                         {material.name}
                       </CardTitle>
                     </CardHeader>
-                    
+
                     <CardContent className="space-y-4">
                       <div className="flex items-center gap-2">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-medium">{material.rating}</span>
+                        <span className="text-sm font-medium">
+                          {material.rating}
+                        </span>
                       </div>
 
                       <div className="space-y-2">
@@ -275,11 +317,16 @@ export default function Construction() {
                             <p className="text-2xl font-bold text-kanxa-orange">
                               NPR {material.price.toLocaleString()}
                             </p>
-                            <p className="text-xs text-gray-500">{material.unit}</p>
+                            <p className="text-xs text-gray-500">
+                              {material.unit}
+                            </p>
                           </div>
                         </div>
 
-                        <Button asChild className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
+                        <Button
+                          asChild
+                          className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90"
+                        >
                           <Link to="/materials">
                             <ShoppingCart className="mr-2 h-4 w-4" />
                             View Details
@@ -290,7 +337,7 @@ export default function Construction() {
                   </Card>
                 ))}
               </div>
-              
+
               <div className="text-center mt-8">
                 <Button asChild size="lg" variant="outline">
                   <Link to="/materials">
@@ -302,12 +349,18 @@ export default function Construction() {
 
             <TabsContent value="machinery">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {featuredMachinery.map(machine => (
-                  <Card key={machine.id} className="hover:shadow-lg transition-shadow">
+                {featuredMachinery.map((machine) => (
+                  <Card
+                    key={machine.id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="text-4xl mb-2">{machine.image}</div>
-                        <Badge variant="secondary" className="bg-green-100 text-green-800">
+                        <Badge
+                          variant="secondary"
+                          className="bg-green-100 text-green-800"
+                        >
                           Available
                         </Badge>
                       </div>
@@ -315,12 +368,16 @@ export default function Construction() {
                         {machine.name}
                       </CardTitle>
                     </CardHeader>
-                    
+
                     <CardContent className="space-y-4">
                       <div className="flex items-center gap-2">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-medium">{machine.rating}</span>
-                        <span className="text-xs text-gray-500 ml-auto">{machine.location}</span>
+                        <span className="text-sm font-medium">
+                          {machine.rating}
+                        </span>
+                        <span className="text-xs text-gray-500 ml-auto">
+                          {machine.location}
+                        </span>
                       </div>
 
                       <div className="space-y-2">
@@ -333,7 +390,10 @@ export default function Construction() {
                           </div>
                         </div>
 
-                        <Button asChild className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90">
+                        <Button
+                          asChild
+                          className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90"
+                        >
                           <Link to="/machinery">
                             <Settings className="mr-2 h-4 w-4" />
                             Rent Now
@@ -344,7 +404,7 @@ export default function Construction() {
                   </Card>
                 ))}
               </div>
-              
+
               <div className="text-center mt-8">
                 <Button asChild size="lg" variant="outline">
                   <Link to="/machinery">
@@ -361,8 +421,12 @@ export default function Construction() {
       <section className="py-16 bg-gray-50">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-kanxa-navy mb-4">Project-Based Solutions</h2>
-            <p className="text-lg text-gray-600">Tailored packages for different construction projects</p>
+            <h2 className="text-3xl font-bold text-kanxa-navy mb-4">
+              Project-Based Solutions
+            </h2>
+            <p className="text-lg text-gray-600">
+              Tailored packages for different construction projects
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -372,31 +436,43 @@ export default function Construction() {
                   <div className="flex items-center gap-4">
                     <div className="text-5xl">{project.icon}</div>
                     <div>
-                      <CardTitle className="text-kanxa-navy">{project.name}</CardTitle>
+                      <CardTitle className="text-kanxa-navy">
+                        {project.name}
+                      </CardTitle>
                       <p className="text-gray-600">{project.description}</p>
                     </div>
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <h4 className="font-semibold text-sm text-kanxa-orange mb-2">Materials Needed:</h4>
+                      <h4 className="font-semibold text-sm text-kanxa-orange mb-2">
+                        Materials Needed:
+                      </h4>
                       <ul className="space-y-1">
-                        {project.materials.map(material => (
-                          <li key={material} className="text-sm text-gray-600 flex items-center gap-2">
+                        {project.materials.map((material) => (
+                          <li
+                            key={material}
+                            className="text-sm text-gray-600 flex items-center gap-2"
+                          >
                             <CheckCircle className="h-3 w-3 text-kanxa-green" />
                             {material}
                           </li>
                         ))}
                       </ul>
                     </div>
-                    
+
                     <div>
-                      <h4 className="font-semibold text-sm text-kanxa-blue mb-2">Equipment Needed:</h4>
+                      <h4 className="font-semibold text-sm text-kanxa-blue mb-2">
+                        Equipment Needed:
+                      </h4>
                       <ul className="space-y-1">
-                        {project.machinery.map(machine => (
-                          <li key={machine} className="text-sm text-gray-600 flex items-center gap-2">
+                        {project.machinery.map((machine) => (
+                          <li
+                            key={machine}
+                            className="text-sm text-gray-600 flex items-center gap-2"
+                          >
                             <CheckCircle className="h-3 w-3 text-kanxa-green" />
                             {machine}
                           </li>
@@ -419,15 +495,21 @@ export default function Construction() {
       <section className="py-16">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-kanxa-navy mb-4">Our Track Record</h2>
-            <p className="text-lg text-gray-600">Trusted by construction professionals across Nepal</p>
+            <h2 className="text-3xl font-bold text-kanxa-navy mb-4">
+              Our Track Record
+            </h2>
+            <p className="text-lg text-gray-600">
+              Trusted by construction professionals across Nepal
+            </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {statistics.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-4xl mb-2">{stat.icon}</div>
-                <div className="text-3xl font-bold text-kanxa-blue mb-2">{stat.number}</div>
+                <div className="text-3xl font-bold text-kanxa-blue mb-2">
+                  {stat.number}
+                </div>
                 <div className="text-gray-600">{stat.label}</div>
               </div>
             ))}
@@ -439,7 +521,9 @@ export default function Construction() {
       <section className="py-16 bg-gray-50">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-kanxa-navy mb-4">Why Choose Kanxa Safari Construction?</h2>
+            <h2 className="text-3xl font-bold text-kanxa-navy mb-4">
+              Why Choose Kanxa Safari Construction?
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -447,29 +531,35 @@ export default function Construction() {
               {
                 icon: <Shield className="h-8 w-8 text-kanxa-blue" />,
                 title: "Quality Guarantee",
-                description: "All materials certified and equipment fully insured"
+                description:
+                  "All materials certified and equipment fully insured",
               },
               {
                 icon: <Truck className="h-8 w-8 text-kanxa-orange" />,
                 title: "Reliable Delivery",
-                description: "On-time delivery and pickup with professional service"
+                description:
+                  "On-time delivery and pickup with professional service",
               },
               {
                 icon: <Clock className="h-8 w-8 text-kanxa-green" />,
                 title: "Flexible Scheduling",
-                description: "Equipment rental and delivery as per your timeline"
+                description:
+                  "Equipment rental and delivery as per your timeline",
               },
               {
                 icon: <Award className="h-8 w-8 text-kanxa-blue" />,
                 title: "Expert Support",
-                description: "Technical consultation and project planning assistance"
-              }
+                description:
+                  "Technical consultation and project planning assistance",
+              },
             ].map((service, index) => (
               <div key={index} className="text-center">
                 <div className="w-16 h-16 bg-white rounded-xl shadow-sm flex items-center justify-center mx-auto mb-4">
                   {service.icon}
                 </div>
-                <h3 className="font-semibold text-kanxa-navy mb-2">{service.title}</h3>
+                <h3 className="font-semibold text-kanxa-navy mb-2">
+                  {service.title}
+                </h3>
                 <p className="text-gray-600 text-sm">{service.description}</p>
               </div>
             ))}
@@ -480,11 +570,13 @@ export default function Construction() {
       {/* CTA Section */}
       <section className="py-16 bg-kanxa-navy text-white">
         <div className="container text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Start Your Project?</h2>
+          <h2 className="text-3xl font-bold mb-4">
+            Ready to Start Your Project?
+          </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
             Get everything you need for your construction project in one place
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 max-w-2xl mx-auto">
             <div className="flex items-center justify-center gap-4">
               <div className="w-12 h-12 bg-kanxa-orange rounded-lg flex items-center justify-center">
@@ -495,7 +587,7 @@ export default function Construction() {
                 <p className="text-white/90">+977-XXX-XXXXXX</p>
               </div>
             </div>
-            
+
             <div className="flex items-center justify-center gap-4">
               <div className="w-12 h-12 bg-kanxa-orange rounded-lg flex items-center justify-center">
                 <Mail className="h-6 w-6" />
@@ -508,13 +600,22 @@ export default function Construction() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-kanxa-orange hover:bg-kanxa-orange/90">
+            <Button
+              asChild
+              size="lg"
+              className="bg-kanxa-orange hover:bg-kanxa-orange/90"
+            >
               <Link to="/materials">
                 <Package className="mr-2 h-5 w-5" />
                 Browse Materials
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-kanxa-navy">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-kanxa-navy"
+            >
               <Link to="/machinery">
                 <Wrench className="mr-2 h-5 w-5" />
                 Rent Equipment
