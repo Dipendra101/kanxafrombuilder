@@ -322,7 +322,9 @@ export default function Machinery() {
                         <span className="text-sm text-gray-600 capitalize">
                           {key}:
                         </span>
-                        <span className="text-sm font-medium">{String(value)}</span>
+                        <span className="text-sm font-medium">
+                          {String(value)}
+                        </span>
                       </div>
                     ),
                   )}
