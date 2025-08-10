@@ -676,7 +676,7 @@ export default function Garage() {
                 <p className="text-sm text-gray-600 mb-4">
                   Schedule your vehicle service
                 </p>
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <Dialog>
                   <DialogTrigger asChild>
                     <Button
                       size="sm"
