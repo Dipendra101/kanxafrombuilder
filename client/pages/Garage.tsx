@@ -436,19 +436,12 @@ export default function Garage() {
                     });
                   }}
                 >
-                  <SelectTrigger onClick={(e) => e.stopPropagation()}>
+                  <SelectTrigger>
                     <SelectValue placeholder="Select time slot" />
                   </SelectTrigger>
-                  <SelectContent
-                    onClick={(e) => e.stopPropagation()}
-                    onCloseAutoFocus={(e) => e.preventDefault()}
-                  >
+                  <SelectContent>
                     {timeSlots.map((slot) => (
-                      <SelectItem
-                        key={slot}
-                        value={slot}
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                      <SelectItem key={slot} value={slot}>
                         {slot}
                       </SelectItem>
                     ))}
