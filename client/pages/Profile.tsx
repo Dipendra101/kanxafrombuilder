@@ -126,20 +126,20 @@ export default function Profile() {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy text-white py-16">
-        <div className="container px-4">
+      <section className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy text-white py-8 sm:py-12 lg:py-16">
+        <div className="container px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden border-2 border-white/30">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden border-2 border-white/30">
               <img
                 src={profilePicture || defaultImage}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-2 sm:mb-4">
               My Profile
             </h1>
-            <p className="text-xl text-white/90">
+            <p className="text-base sm:text-lg lg:text-xl text-white/90 px-4 sm:px-0">
               Manage your account settings and preferences
             </p>
           </div>
@@ -147,27 +147,27 @@ export default function Profile() {
       </section>
 
       {/* Profile Content */}
-      <section className="py-12">
-        <div className="container px-4">
+      <section className="py-6 sm:py-8 lg:py-12">
+        <div className="container px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
-                <TabsTrigger value="profile">Profile</TabsTrigger>
-                <TabsTrigger value="activity">Activity</TabsTrigger>
-                <TabsTrigger value="loyalty">Loyalty</TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1">
+                <TabsTrigger value="profile" className="text-xs sm:text-sm py-2 sm:py-2.5">Profile</TabsTrigger>
+                <TabsTrigger value="activity" className="text-xs sm:text-sm py-2 sm:py-2.5">Activity</TabsTrigger>
+                <TabsTrigger value="loyalty" className="text-xs sm:text-sm py-2 sm:py-2.5">Loyalty</TabsTrigger>
+                <TabsTrigger value="settings" className="text-xs sm:text-sm py-2 sm:py-2.5">Settings</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="profile" className="space-y-6">
+              <TabsContent value="profile" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
                 {/* Profile Picture Section */}
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Profile Picture</CardTitle>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg sm:text-xl">Profile Picture</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center gap-6">
-                      <div className="relative">
-                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden group cursor-pointer border-2 border-gray-200"
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                      <div className="relative mx-auto sm:mx-0">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden group cursor-pointer border-2 border-gray-200"
                              onClick={handleProfilePictureClick}>
                           <img
                             src={profilePicture || defaultImage}
@@ -175,14 +175,14 @@ export default function Profile() {
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <Camera className="h-5 w-5 text-white" />
+                            <Camera className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                           </div>
                         </div>
                         {profilePicture && (
                           <Button
                             size="sm"
                             variant="destructive"
-                            className="absolute -top-2 -right-2 rounded-full w-6 h-6 p-0"
+                            className="absolute -top-2 -right-2 rounded-full w-6 h-6 p-0 text-xs"
                             onClick={(e) => {
                               e.stopPropagation();
                               removeProfilePicture();
@@ -192,18 +192,19 @@ export default function Profile() {
                           </Button>
                         )}
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium mb-2">Upload a new profile picture</h4>
-                        <p className="text-sm text-gray-600 mb-4">
+                      <div className="flex-1 text-center sm:text-left">
+                        <h4 className="font-medium mb-2 text-sm sm:text-base">Upload a new profile picture</h4>
+                        <p className="text-xs sm:text-sm text-gray-600 mb-4">
                           JPG, PNG or GIF. Maximum file size is 5MB. Click on the image or use the button below to upload.
                         </p>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={handleProfilePictureClick}
+                            className="text-xs sm:text-sm"
                           >
-                            <Upload className="mr-2 h-4 w-4" />
+                            <Upload className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                             {profilePicture ? 'Change Photo' : 'Upload Photo'}
                           </Button>
                           {profilePicture && (
@@ -211,6 +212,7 @@ export default function Profile() {
                               variant="outline"
                               size="sm"
                               onClick={removeProfilePicture}
+                              className="text-xs sm:text-sm"
                             >
                               Reset to Default
                             </Button>
@@ -229,80 +231,87 @@ export default function Profile() {
                   </CardContent>
                 </Card>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
                   {/* Profile Information */}
-                  <div className="lg:col-span-2">
+                  <div className="xl:col-span-2">
                     <Card>
-                      <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle>Personal Information</CardTitle>
+                      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 pb-4">
+                        <CardTitle className="text-lg sm:text-xl">Personal Information</CardTitle>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+                          className="text-xs sm:text-sm w-full sm:w-auto"
                         >
-                          {isEditing ? <Save className="mr-2 h-4 w-4" /> : <Edit className="mr-2 h-4 w-4" />}
+                          {isEditing ? <Save className="mr-2 h-3 w-3 sm:h-4 sm:w-4" /> : <Edit className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />}
                           {isEditing ? "Save" : "Edit"}
                         </Button>
                       </CardHeader>
                       <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="name">Full Name</Label>
+                            <Label htmlFor="name" className="text-sm">Full Name</Label>
                             <Input
                               id="name"
                               value={profile.name}
                               onChange={(e) => setProfile({...profile, name: e.target.value})}
                               disabled={!isEditing}
+                              className="text-sm"
                             />
                           </div>
                           <div>
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email" className="text-sm">Email</Label>
                             <Input
                               id="email"
                               type="email"
                               value={profile.email}
                               onChange={(e) => setProfile({...profile, email: e.target.value})}
                               disabled={!isEditing}
+                              className="text-sm"
                             />
                           </div>
                           <div>
-                            <Label htmlFor="phone">Phone Number</Label>
+                            <Label htmlFor="phone" className="text-sm">Phone Number</Label>
                             <Input
                               id="phone"
                               value={profile.phone}
                               onChange={(e) => setProfile({...profile, phone: e.target.value})}
                               disabled={!isEditing}
+                              className="text-sm"
                             />
                           </div>
                           <div>
-                            <Label htmlFor="company">Company</Label>
+                            <Label htmlFor="company" className="text-sm">Company</Label>
                             <Input
                               id="company"
                               value={profile.company}
                               onChange={(e) => setProfile({...profile, company: e.target.value})}
                               disabled={!isEditing}
+                              className="text-sm"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <Label htmlFor="address">Address</Label>
+                          <Label htmlFor="address" className="text-sm">Address</Label>
                           <Input
                             id="address"
                             value={profile.address}
                             onChange={(e) => setProfile({...profile, address: e.target.value})}
                             disabled={!isEditing}
+                            className="text-sm"
                           />
                         </div>
 
                         <div>
-                          <Label htmlFor="bio">Bio</Label>
+                          <Label htmlFor="bio" className="text-sm">Bio</Label>
                           <Textarea
                             id="bio"
                             value={profile.bio}
                             onChange={(e) => setProfile({...profile, bio: e.target.value})}
                             disabled={!isEditing}
                             rows={3}
+                            className="text-sm resize-none"
                           />
                         </div>
                       </CardContent>
@@ -310,31 +319,31 @@ export default function Profile() {
                   </div>
 
                   {/* Profile Summary */}
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     <Card>
-                      <CardHeader>
-                        <CardTitle>Account Summary</CardTitle>
+                      <CardHeader className="pb-4">
+                        <CardTitle className="text-lg sm:text-xl">Account Summary</CardTitle>
                       </CardHeader>
-                      <CardContent className="space-y-4">
+                      <CardContent className="space-y-3 sm:space-y-4">
                         <div className="flex items-center gap-3">
-                          <Calendar className="h-5 w-5 text-kanxa-blue" />
-                          <div>
-                            <p className="text-sm text-gray-600">Member Since</p>
-                            <p className="font-medium">{profile.dateJoined}</p>
+                          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-kanxa-blue flex-shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-xs sm:text-sm text-gray-600">Member Since</p>
+                            <p className="font-medium text-sm sm:text-base truncate">{profile.dateJoined}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <MapPin className="h-5 w-5 text-kanxa-orange" />
-                          <div>
-                            <p className="text-sm text-gray-600">Location</p>
-                            <p className="font-medium">{profile.address}</p>
+                          <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-kanxa-orange flex-shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-xs sm:text-sm text-gray-600">Location</p>
+                            <p className="font-medium text-sm sm:text-base truncate">{profile.address}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Mail className="h-5 w-5 text-kanxa-green" />
-                          <div>
-                            <p className="text-sm text-gray-600">Email Verified</p>
-                            <Badge variant="secondary" className="bg-green-100 text-green-800">
+                          <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-kanxa-green flex-shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-xs sm:text-sm text-gray-600">Email Verified</p>
+                            <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
                               Verified
                             </Badge>
                           </div>
@@ -343,20 +352,20 @@ export default function Profile() {
                     </Card>
 
                     <Card>
-                      <CardHeader>
-                        <CardTitle>Quick Actions</CardTitle>
+                      <CardHeader className="pb-4">
+                        <CardTitle className="text-lg sm:text-xl">Quick Actions</CardTitle>
                       </CardHeader>
-                      <CardContent className="space-y-3">
-                        <Button className="w-full justify-start" variant="outline">
-                          <CreditCard className="mr-2 h-4 w-4" />
+                      <CardContent className="space-y-2 sm:space-y-3">
+                        <Button className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5" variant="outline">
+                          <CreditCard className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           Payment Methods
                         </Button>
-                        <Button className="w-full justify-start" variant="outline">
-                          <Shield className="mr-2 h-4 w-4" />
+                        <Button className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5" variant="outline">
+                          <Shield className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           Security Settings
                         </Button>
-                        <Button className="w-full justify-start" variant="outline">
-                          <Bell className="mr-2 h-4 w-4" />
+                        <Button className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5" variant="outline">
+                          <Bell className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           Notifications
                         </Button>
                       </CardContent>
@@ -365,35 +374,35 @@ export default function Profile() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="activity" className="space-y-6">
+              <TabsContent value="activity" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Recent Activity</CardTitle>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg sm:text-xl">Recent Activity</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {recentActivity.map((activity) => (
-                        <div key={activity.id} className="flex items-center justify-between p-4 border rounded-lg">
-                          <div className="flex items-center gap-4">
-                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        <div key={activity.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg gap-3 sm:gap-4">
+                          <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                               activity.type === 'booking' ? 'bg-kanxa-light-blue' :
                               activity.type === 'order' ? 'bg-kanxa-light-orange' :
                               'bg-kanxa-light-green'
                             }`}>
-                              {activity.type === 'booking' && <Calendar className="h-5 w-5 text-kanxa-blue" />}
-                              {activity.type === 'order' && <CreditCard className="h-5 w-5 text-kanxa-orange" />}
-                              {activity.type === 'service' && <Settings className="h-5 w-5 text-kanxa-green" />}
+                              {activity.type === 'booking' && <Calendar className="h-3 w-3 sm:h-5 sm:w-5 text-kanxa-blue" />}
+                              {activity.type === 'order' && <CreditCard className="h-3 w-3 sm:h-5 sm:w-5 text-kanxa-orange" />}
+                              {activity.type === 'service' && <Settings className="h-3 w-3 sm:h-5 sm:w-5 text-kanxa-green" />}
                             </div>
-                            <div>
-                              <p className="font-medium">{activity.description}</p>
-                              <p className="text-sm text-gray-600">{activity.date}</p>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-sm sm:text-base line-clamp-2">{activity.description}</p>
+                              <p className="text-xs sm:text-sm text-gray-600">{activity.date}</p>
                             </div>
                           </div>
-                          <Badge className={
+                          <Badge className={`text-xs flex-shrink-0 ${
                             activity.status === 'completed' ? 'bg-green-100 text-green-800' :
                             activity.status === 'delivered' ? 'bg-blue-100 text-blue-800' :
                             'bg-yellow-100 text-yellow-800'
-                          }>
+                          }`}>
                             {activity.status}
                           </Badge>
                         </div>
@@ -403,51 +412,51 @@ export default function Profile() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="loyalty" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <TabsContent value="loyalty" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                   <Card className="text-center">
-                    <CardContent className="p-6">
-                      <div className="text-3xl font-bold text-kanxa-blue mb-2">{loyaltyStats.totalBookings}</div>
-                      <div className="text-sm text-gray-600">Total Bookings</div>
+                    <CardContent className="p-3 sm:p-4 lg:p-6">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-kanxa-blue mb-1 sm:mb-2">{loyaltyStats.totalBookings}</div>
+                      <div className="text-xs sm:text-sm text-gray-600">Total Bookings</div>
                     </CardContent>
                   </Card>
                   <Card className="text-center">
-                    <CardContent className="p-6">
-                      <div className="text-3xl font-bold text-kanxa-orange mb-2">{loyaltyStats.totalOrders}</div>
-                      <div className="text-sm text-gray-600">Total Orders</div>
+                    <CardContent className="p-3 sm:p-4 lg:p-6">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-kanxa-orange mb-1 sm:mb-2">{loyaltyStats.totalOrders}</div>
+                      <div className="text-xs sm:text-sm text-gray-600">Total Orders</div>
                     </CardContent>
                   </Card>
                   <Card className="text-center">
-                    <CardContent className="p-6">
-                      <div className="text-3xl font-bold text-kanxa-green mb-2">NPR {loyaltyStats.totalSpent.toLocaleString()}</div>
-                      <div className="text-sm text-gray-600">Total Spent</div>
+                    <CardContent className="p-3 sm:p-4 lg:p-6">
+                      <div className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-kanxa-green mb-1 sm:mb-2">NPR {loyaltyStats.totalSpent.toLocaleString()}</div>
+                      <div className="text-xs sm:text-sm text-gray-600">Total Spent</div>
                     </CardContent>
                   </Card>
                   <Card className="text-center">
-                    <CardContent className="p-6">
-                      <div className="text-3xl font-bold text-kanxa-navy mb-2">{loyaltyStats.loyaltyPoints}</div>
-                      <div className="text-sm text-gray-600">Loyalty Points</div>
+                    <CardContent className="p-3 sm:p-4 lg:p-6">
+                      <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-kanxa-navy mb-1 sm:mb-2">{loyaltyStats.loyaltyPoints}</div>
+                      <div className="text-xs sm:text-sm text-gray-600">Loyalty Points</div>
                     </CardContent>
                   </Card>
                 </div>
 
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      Membership Status
-                      <Badge className="bg-yellow-100 text-yellow-800">{loyaltyStats.membershipLevel}</Badge>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-lg sm:text-xl">
+                      <span>Membership Status</span>
+                      <Badge className="bg-yellow-100 text-yellow-800 text-xs">{loyaltyStats.membershipLevel}</Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       <div className="flex justify-between items-center">
-                        <span>Progress to Platinum</span>
-                        <span>75%</span>
+                        <span className="text-sm sm:text-base">Progress to Platinum</span>
+                        <span className="text-sm sm:text-base font-medium">75%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div className="bg-kanxa-blue h-2 rounded-full w-3/4"></div>
                       </div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-xs sm:text-sm text-gray-600">
                         Spend NPR 55,000 more to reach Platinum status and unlock exclusive benefits!
                       </p>
                     </div>
@@ -455,78 +464,82 @@ export default function Profile() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="settings" className="space-y-6">
+              <TabsContent value="settings" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Notification Preferences</CardTitle>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg sm:text-xl">Notification Preferences</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Booking Updates</p>
-                        <p className="text-sm text-gray-600">Receive notifications about your bookings</p>
+                    <div className="flex items-start sm:items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm sm:text-base">Booking Updates</p>
+                        <p className="text-xs sm:text-sm text-gray-600">Receive notifications about your bookings</p>
                       </div>
                       <Switch
                         checked={notifications.bookingUpdates}
                         onCheckedChange={(checked) => setNotifications({...notifications, bookingUpdates: checked})}
+                        className="flex-shrink-0"
                       />
                     </div>
                     <Separator />
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Promotional Offers</p>
-                        <p className="text-sm text-gray-600">Get notified about special deals and discounts</p>
+                    <div className="flex items-start sm:items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm sm:text-base">Promotional Offers</p>
+                        <p className="text-xs sm:text-sm text-gray-600">Get notified about special deals and discounts</p>
                       </div>
                       <Switch
                         checked={notifications.promotions}
                         onCheckedChange={(checked) => setNotifications({...notifications, promotions: checked})}
+                        className="flex-shrink-0"
                       />
                     </div>
                     <Separator />
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Service Reminders</p>
-                        <p className="text-sm text-gray-600">Reminders for scheduled services and maintenance</p>
+                    <div className="flex items-start sm:items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm sm:text-base">Service Reminders</p>
+                        <p className="text-xs sm:text-sm text-gray-600">Reminders for scheduled services and maintenance</p>
                       </div>
                       <Switch
                         checked={notifications.serviceReminders}
                         onCheckedChange={(checked) => setNotifications({...notifications, serviceReminders: checked})}
+                        className="flex-shrink-0"
                       />
                     </div>
                     <Separator />
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Newsletter</p>
-                        <p className="text-sm text-gray-600">Monthly newsletter with updates and tips</p>
+                    <div className="flex items-start sm:items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm sm:text-base">Newsletter</p>
+                        <p className="text-xs sm:text-sm text-gray-600">Monthly newsletter with updates and tips</p>
                       </div>
                       <Switch
                         checked={notifications.newsletter}
                         onCheckedChange={(checked) => setNotifications({...notifications, newsletter: checked})}
+                        className="flex-shrink-0"
                       />
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Account Actions</CardTitle>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg sm:text-xl">Account Actions</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Shield className="mr-2 h-4 w-4" />
+                  <CardContent className="space-y-3 sm:space-y-4">
+                    <Button variant="outline" className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5">
+                      <Shield className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Change Password
                     </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <CreditCard className="mr-2 h-4 w-4" />
+                    <Button variant="outline" className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5">
+                      <CreditCard className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Manage Payment Methods
                     </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Mail className="mr-2 h-4 w-4" />
+                    <Button variant="outline" className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5">
+                      <Mail className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Update Email Address
                     </Button>
                     <Separator />
-                    <Button variant="destructive" className="w-full justify-start">
-                      <LogOut className="mr-2 h-4 w-4" />
+                    <Button variant="destructive" className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5">
+                      <LogOut className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Sign Out
                     </Button>
                   </CardContent>
