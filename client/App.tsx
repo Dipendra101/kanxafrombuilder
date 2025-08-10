@@ -23,6 +23,7 @@ import Support from "./pages/Support";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Orders from "./pages/Orders";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
