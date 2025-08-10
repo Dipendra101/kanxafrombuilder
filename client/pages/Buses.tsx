@@ -387,7 +387,7 @@ export default function Buses() {
 
       {/* Results Section */}
       <section className="py-12">
-        <div className="container">
+        <div className="container px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold text-kanxa-navy">
               Available Buses ({filteredBuses.length})
@@ -412,7 +412,7 @@ export default function Buses() {
             {filteredBuses.map(bus => (
               <Card key={bus.id} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start lg:items-center">
                     {/* Bus Info */}
                     <div className="lg:col-span-3">
                       <div className="flex items-center gap-3 mb-2">
@@ -438,18 +438,16 @@ export default function Buses() {
                           <MapPin className="h-4 w-4 text-kanxa-blue" />
                           <span>{bus.route}</span>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-center">
-                            <p className="text-lg font-bold text-kanxa-navy">{bus.departure}</p>
+                        <div className="flex items-center gap-2 sm:gap-4">
+                          <div className="text-center flex-1">
+                            <p className="text-base sm:text-lg font-bold text-kanxa-navy">{bus.departure}</p>
                             <p className="text-xs text-gray-500">Departure</p>
                           </div>
-                          <div className="flex-1 border-t border-dashed border-gray-300 relative">
-                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white px-2">
-                              <Clock className="h-4 w-4 text-gray-400" />
-                            </div>
+                          <div className="flex-shrink-0 mx-2">
+                            <Clock className="h-4 w-4 text-gray-400" />
                           </div>
-                          <div className="text-center">
-                            <p className="text-lg font-bold text-kanxa-navy">{bus.arrival}</p>
+                          <div className="text-center flex-1">
+                            <p className="text-base sm:text-lg font-bold text-kanxa-navy">{bus.arrival}</p>
                             <p className="text-xs text-gray-500">Arrival</p>
                           </div>
                         </div>
