@@ -472,8 +472,8 @@ export default function Machinery() {
 
       {/* Search & Categories */}
       <section className="py-8 bg-white shadow-sm">
-        <div className="container">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
+        <div className="container px-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-6">
             <div className="flex-1 max-w-md">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -484,7 +484,7 @@ export default function Machinery() {
               </div>
             </div>
             
-            <div className="flex gap-4 items-center">
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
               <Select defaultValue="all">
                 <SelectTrigger className="w-40">
                   <SelectValue />
@@ -512,7 +512,7 @@ export default function Machinery() {
 
           {/* Category Tabs */}
           <Tabs defaultValue="all">
-            <TabsList className="grid grid-cols-3 lg:grid-cols-7 w-full">
+            <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 w-full overflow-x-auto">
               <TabsTrigger value="all">All</TabsTrigger>
               {machineryCategories.map(category => (
                 <TabsTrigger key={category.id} value={category.id} className="text-xs">
@@ -527,14 +527,14 @@ export default function Machinery() {
 
       {/* Machinery Grid */}
       <section className="py-12">
-        <div className="container">
+        <div className="container px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold text-kanxa-navy">
               Available Machinery ({filteredMachinery.length})
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {filteredMachinery.map(machine => (
               <Card key={machine.id} className="hover:shadow-lg transition-all duration-300 group">
                 <CardHeader className="pb-3">
@@ -647,13 +647,13 @@ export default function Machinery() {
 
       {/* Services Section */}
       <section className="py-16 bg-gray-50">
-        <div className="container">
+        <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-kanxa-navy mb-4">Our Rental Services</h2>
             <p className="text-lg text-gray-600">Complete machinery rental solutions</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {[
               {
                 icon: <Truck className="h-8 w-8 text-kanxa-orange" />,
