@@ -4,8 +4,8 @@ import { MapPin, Phone, Mail, Facebook, Twitter, Instagram, Youtube } from "luci
 export default function Footer() {
   return (
     <footer className="bg-kanxa-navy text-white">
-      <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="container py-12 px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
@@ -83,11 +83,11 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/20 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-white/20 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-white/60 text-sm">
             © 2024 Kanxa Safari. All rights reserved.
           </p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
+          <div className="flex flex-wrap justify-center sm:justify-end space-x-6">
             <Link to="/privacy" className="text-white/60 hover:text-white text-sm transition-colors">Privacy Policy</Link>
             <Link to="/terms" className="text-white/60 hover:text-white text-sm transition-colors">Terms of Service</Link>
             <Link to="/support" className="text-white/60 hover:text-white text-sm transition-colors">Support</Link>
