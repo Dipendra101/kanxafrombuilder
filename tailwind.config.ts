@@ -57,6 +57,16 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        kanxa: {
+          blue: "hsl(var(--kanxa-blue))",
+          orange: "hsl(var(--kanxa-orange))",
+          green: "hsl(var(--kanxa-green))",
+          navy: "hsl(var(--kanxa-navy))",
+          gray: "hsl(var(--kanxa-gray))",
+          "light-blue": "hsl(var(--kanxa-light-blue))",
+          "light-orange": "hsl(var(--kanxa-light-orange))",
+          "light-green": "hsl(var(--kanxa-light-green))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
