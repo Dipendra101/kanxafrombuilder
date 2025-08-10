@@ -407,16 +407,23 @@ export default function Garage() {
               <Label htmlFor="serviceType">Service Type *</Label>
               <Select
                 value={appointmentForm.serviceType}
-                onValueChange={(value) =>
-                  setAppointmentForm({ ...appointmentForm, serviceType: value })
-                }
+                onValueChange={(value) => {
+                  setAppointmentForm({ ...appointmentForm, serviceType: value });
+                }}
               >
-                <SelectTrigger>
+                <SelectTrigger onClick={(e) => e.stopPropagation()}>
                   <SelectValue placeholder="Select service type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent
+                  onClick={(e) => e.stopPropagation()}
+                  onCloseAutoFocus={(e) => e.preventDefault()}
+                >
                   {services.map((service) => (
-                    <SelectItem key={service.id} value={service.id}>
+                    <SelectItem
+                      key={service.id}
+                      value={service.id}
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       {service.name}
                     </SelectItem>
                   ))}
