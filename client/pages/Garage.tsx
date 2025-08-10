@@ -513,11 +513,40 @@ export default function Garage() {
           <Button
             className="flex-1 bg-kanxa-green hover:bg-kanxa-green/90"
             size="lg"
+            onClick={() => {
+              // Handle form submission
+              console.log('Appointment Form:', appointmentForm);
+              // Reset form
+              setAppointmentForm({
+                name: "",
+                email: "",
+                phone: "",
+                vehicleType: "",
+                vehicleMake: "",
+                vehicleModel: "",
+                vehicleYear: "",
+                registrationNumber: "",
+                serviceType: "",
+                preferredDate: "",
+                preferredTime: "",
+                issueDescription: "",
+                urgencyLevel: "normal",
+                pickupNeeded: false,
+              });
+              // Close dialog
+              setIsDialogOpen(false);
+              // Show success message (you can add toast notification here)
+              alert('Appointment booked successfully!');
+            }}
           >
             Book Appointment
           </Button>
-          <Button variant="outline" size="lg">
-            Call for Emergency
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setIsDialogOpen(false)}
+          >
+            Cancel
           </Button>
         </div>
       </div>
