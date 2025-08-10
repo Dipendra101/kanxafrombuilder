@@ -1,0 +1,318 @@
+import { useState } from "react";
+import {
+  Bell,
+  BellOff,
+  MessageCircle,
+  Phone,
+  Video,
+  FileText,
+  Settings,
+  Check,
+  CheckCheck,
+  X,
+  Volume2,
+  VolumeX,
+  Moon,
+  Clock
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel
+} from "@/components/ui/dropdown-menu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useChatNotifications, ChatNotification } from "@/services/chatNotifications";
+
+export default function ChatNotifications() {
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markChatAsRead,
+    clearAll,
+    settings,
+    updateSettings,
+    toggleDoNotDisturb,
+    testNotification
+  } = useChatNotifications();
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const formatTime = (date: Date) => {
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+
+    if (diffInMinutes < 1) return 'now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h`;
+    return `${Math.floor(diffInMinutes / 1440)}d`;
+  };
+
+  const getNotificationIcon = (type: ChatNotification['type']) => {
+    switch (type) {
+      case 'call':
+        return <Phone className="w-4 h-4 text-green-600" />;
+      case 'video':
+        return <Video className="w-4 h-4 text-blue-600" />;
+      case 'file':
+        return <FileText className="w-4 h-4 text-purple-600" />;
+      default:
+        return <MessageCircle className="w-4 h-4 text-kanxa-blue" />;
+    }
+  };
+
+  const NotificationItem = ({ notification }: { notification: ChatNotification }) => (
+    <div
+      className={`flex items-start space-x-3 p-3 rounded-lg cursor-pointer transition-colors ${
+        notification.isRead ? 'hover:bg-gray-50' : 'bg-blue-50 hover:bg-blue-100'
+      }`}
+      onClick={() => {
+        markAsRead(notification.id);
+        // Navigate to chat
+        window.location.href = `/chat#${notification.chatId}`;
+        setIsOpen(false);
+      }}
+    >
+      <div className="flex-shrink-0">
+        <Avatar className="w-8 h-8">
+          <AvatarImage src={notification.senderAvatar} />
+          <AvatarFallback className="text-xs">
+            {notification.senderName.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="absolute -mt-1 -ml-1">
+          {getNotificationIcon(notification.type)}
+        </div>
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
+          <p className={`text-sm font-medium truncate ${
+            notification.isRead ? 'text-gray-700' : 'text-gray-900'
+          }`}>
+            {notification.senderName}
+          </p>
+          <div className="flex items-center space-x-1">
+            <span className="text-xs text-gray-500">
+              {formatTime(notification.timestamp)}
+            </span>
+            {!notification.isRead && (
+              <div className="w-2 h-2 bg-kanxa-blue rounded-full" />
+            )}
+          </div>
+        </div>
+        
+        <p className={`text-sm mt-1 truncate ${
+          notification.isRead ? 'text-gray-500' : 'text-gray-700'
+        }`}>
+          {notification.message}
+        </p>
+      </div>
+    </div>
+  );
+
+  return (
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="relative">
+          {settings.doNotDisturb ? (
+            <BellOff className="h-4 w-4" />
+          ) : (
+            <Bell className="h-4 w-4" />
+          )}
+          {unreadCount > 0 && (
+            <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs bg-kanxa-orange hover:bg-kanxa-orange">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </Badge>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      
+      <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-hidden p-0">
+        <Tabs defaultValue="notifications" className="w-full">
+          <div className="px-4 py-3 border-b">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Notifications</h3>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleDoNotDisturb}
+                  className="p-1"
+                >
+                  {settings.doNotDisturb ? (
+                    <Moon className="w-4 h-4 text-purple-600" />
+                  ) : (
+                    <Bell className="w-4 h-4" />
+                  )}
+                </Button>
+                {unreadCount > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearAll}
+                    className="text-xs"
+                  >
+                    Clear all
+                  </Button>
+                )}
+              </div>
+            </div>
+            
+            <TabsList className="grid w-full grid-cols-2 mt-2">
+              <TabsTrigger value="notifications" className="text-xs">
+                Messages
+                {unreadCount > 0 && (
+                  <Badge className="ml-1 h-4 w-4 p-0 text-xs bg-kanxa-blue">
+                    {unreadCount}
+                  </Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs">Settings</TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="notifications" className="max-h-80 overflow-y-auto p-0">
+            {notifications.length > 0 ? (
+              <div className="space-y-1 p-2">
+                {notifications.slice(0, 10).map((notification) => (
+                  <NotificationItem key={notification.id} notification={notification} />
+                ))}
+                
+                {notifications.length > 10 && (
+                  <div className="text-center p-2">
+                    <Button variant="ghost" size="sm" className="text-xs">
+                      View all notifications
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Bell className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">No notifications</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={testNotification}
+                  className="mt-2 text-xs"
+                >
+                  Test notification
+                </Button>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="settings" className="p-4 space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Bell className="w-4 h-4" />
+                  <span className="text-sm">Notifications</span>
+                </div>
+                <Switch
+                  checked={settings.enabled}
+                  onCheckedChange={(checked) => updateSettings({ enabled: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  {settings.sound ? (
+                    <Volume2 className="w-4 h-4" />
+                  ) : (
+                    <VolumeX className="w-4 h-4" />
+                  )}
+                  <span className="text-sm">Sound</span>
+                </div>
+                <Switch
+                  checked={settings.sound}
+                  onCheckedChange={(checked) => updateSettings({ sound: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="text-sm">Preview</span>
+                </div>
+                <Switch
+                  checked={settings.messagePreview}
+                  onCheckedChange={(checked) => updateSettings({ messagePreview: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Phone className="w-4 h-4" />
+                  <span className="text-sm">Calls</span>
+                </div>
+                <Switch
+                  checked={settings.callNotifications}
+                  onCheckedChange={(checked) => updateSettings({ callNotifications: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Moon className="w-4 h-4" />
+                  <span className="text-sm">Do Not Disturb</span>
+                </div>
+                <Switch
+                  checked={settings.doNotDisturb}
+                  onCheckedChange={toggleDoNotDisturb}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-4 h-4" />
+                  <span className="text-sm">Quiet Hours</span>
+                </div>
+                <Switch
+                  checked={settings.quietHours.enabled}
+                  onCheckedChange={(checked) => 
+                    updateSettings({ 
+                      quietHours: { ...settings.quietHours, enabled: checked }
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={testNotification}
+                className="w-full text-xs"
+              >
+                Test Notification
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full text-xs"
+                onClick={() => window.location.href = '/chat'}
+              >
+                Open Chat Center
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
