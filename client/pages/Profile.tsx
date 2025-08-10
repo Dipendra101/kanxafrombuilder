@@ -29,6 +29,12 @@ import Layout from "@/components/layout/Layout";
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Default image provided
+  const defaultImage = "https://cdn.builder.io/api/v1/image/assets%2Fe0e990aaf8214381b9783ad82133cc2a%2F9a1d931899894abdbc3faf8b1210308e?format=webp&width=800";
+
   const [profile, setProfile] = useState({
     name: "John Doe",
     email: "john.doe@example.com",
