@@ -449,19 +449,26 @@ export default function Garage() {
                 <Label htmlFor="preferredTime">Preferred Time *</Label>
                 <Select
                   value={appointmentForm.preferredTime}
-                  onValueChange={(value) =>
+                  onValueChange={(value) => {
                     setAppointmentForm({
                       ...appointmentForm,
                       preferredTime: value,
-                    })
-                  }
+                    });
+                  }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger onClick={(e) => e.stopPropagation()}>
                     <SelectValue placeholder="Select time slot" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent
+                    onClick={(e) => e.stopPropagation()}
+                    onCloseAutoFocus={(e) => e.preventDefault()}
+                  >
                     {timeSlots.map((slot) => (
-                      <SelectItem key={slot} value={slot}>
+                      <SelectItem
+                        key={slot}
+                        value={slot}
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {slot}
                       </SelectItem>
                     ))}
