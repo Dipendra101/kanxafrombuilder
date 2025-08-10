@@ -1,0 +1,237 @@
+import { Link } from "react-router-dom";
+import { Bell, Menu, User, Search, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+export default function Header() {
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex items-center space-x-2">
+          <div className="h-8 w-8 bg-gradient-to-br from-kanxa-blue to-kanxa-orange rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">KS</span>
+          </div>
+          <span className="text-xl font-bold text-kanxa-navy">Kanxa Safari</span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center space-x-6">
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="text-kanxa-navy hover:text-kanxa-blue">
+                  Transportation
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid gap-3 p-6 w-[400px]">
+                    <div className="row-span-3">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/transportation"
+                          className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-kanxa-light-blue to-kanxa-blue p-6 no-underline outline-none focus:shadow-md"
+                        >
+                          <div className="mb-2 mt-4 text-lg font-medium text-white">
+                            Transportation
+                          </div>
+                          <p className="text-sm leading-tight text-white/90">
+                            Book buses, cargo trucks, and custom tours
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </div>
+                    <NavigationMenuLink asChild>
+                      <Link to="/buses" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Bus Services</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Daily and nightly bus routes
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                    <NavigationMenuLink asChild>
+                      <Link to="/cargo" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Cargo Trucks</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Freight and logistics services
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                    <NavigationMenuLink asChild>
+                      <Link to="/tours" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Custom Tours</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Reserved tour services
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="text-kanxa-navy hover:text-kanxa-orange">
+                  Construction
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid gap-3 p-6 w-[400px]">
+                    <div className="row-span-3">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/construction"
+                          className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-kanxa-light-orange to-kanxa-orange p-6 no-underline outline-none focus:shadow-md"
+                        >
+                          <div className="mb-2 mt-4 text-lg font-medium text-white">
+                            Construction
+                          </div>
+                          <p className="text-sm leading-tight text-white/90">
+                            Building materials and machinery
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </div>
+                    <NavigationMenuLink asChild>
+                      <Link to="/materials" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Building Materials</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          Cement, blocks, pipes, and more
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                    <NavigationMenuLink asChild>
+                      <Link to="/machinery" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                        <div className="text-sm font-medium leading-none">Machinery</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          JCBs, mixers, and tractors
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link to="/garage" className="text-kanxa-navy hover:text-kanxa-green transition-colors">
+                    Garage & Workshop
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link to="/about" className="text-kanxa-navy hover:text-kanxa-blue transition-colors">
+                    About
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
+
+        {/* Right side actions */}
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" size="icon" className="hidden md:flex">
+            <Search className="h-4 w-4" />
+          </Button>
+
+          <Button variant="ghost" size="icon" className="hidden md:flex">
+            <Phone className="h-4 w-4" />
+          </Button>
+
+          {/* Notifications */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-4 w-4" />
+                <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs bg-kanxa-orange">
+                  3
+                </Badge>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-80">
+              <div className="p-2">
+                <h3 className="font-semibold text-sm mb-2">Notifications</h3>
+                <div className="space-y-2">
+                  <div className="p-2 rounded-md bg-kanxa-light-blue">
+                    <p className="text-sm font-medium">Booking Confirmed</p>
+                    <p className="text-xs text-muted-foreground">Your bus seat has been reserved</p>
+                  </div>
+                  <div className="p-2 rounded-md bg-kanxa-light-orange">
+                    <p className="text-sm font-medium">Payment Received</p>
+                    <p className="text-xs text-muted-foreground">Tour request payment processed</p>
+                  </div>
+                  <div className="p-2 rounded-md bg-kanxa-light-green">
+                    <p className="text-sm font-medium">Service Complete</p>
+                    <p className="text-xs text-muted-foreground">Tractor maintenance finished</p>
+                  </div>
+                </div>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* User menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <User className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link to="/profile">Profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/bookings">My Bookings</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/orders">My Orders</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Sign out</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Mobile menu */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <div className="grid gap-6 p-6">
+                <Link to="/" className="flex items-center space-x-2">
+                  <div className="h-6 w-6 bg-gradient-to-br from-kanxa-blue to-kanxa-orange rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-xs">KS</span>
+                  </div>
+                  <span className="text-lg font-bold text-kanxa-navy">Kanxa Safari</span>
+                </Link>
+                <nav className="grid gap-4">
+                  <Link to="/transportation" className="text-kanxa-navy hover:text-kanxa-blue">Transportation</Link>
+                  <Link to="/construction" className="text-kanxa-navy hover:text-kanxa-orange">Construction</Link>
+                  <Link to="/garage" className="text-kanxa-navy hover:text-kanxa-green">Garage & Workshop</Link>
+                  <Link to="/about" className="text-kanxa-navy hover:text-kanxa-blue">About</Link>
+                </nav>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+    </header>
+  );
+}
