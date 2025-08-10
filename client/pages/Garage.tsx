@@ -235,7 +235,16 @@ export default function Garage() {
   ];
 
   const AppointmentDialog = () => (
-    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+    <DialogContent
+      className="max-w-4xl max-h-[90vh] overflow-y-auto"
+      onPointerDownOutside={(e) => {
+        // Prevent dialog from closing when clicking on select dropdowns
+        const target = e.target as Element;
+        if (target.closest('[role="listbox"]') || target.closest('[data-radix-select-content]')) {
+          e.preventDefault();
+        }
+      }}
+    >
       <DialogHeader>
         <DialogTitle className="text-2xl font-bold text-kanxa-navy">
           Book Service Appointment
