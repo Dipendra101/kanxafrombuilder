@@ -165,8 +165,8 @@ export default function Support() {
 
       {/* Quick Actions */}
       <section className="py-12 bg-gray-50">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="container px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {contactMethods.map((method, index) => (
               <Card key={index} className="text-center hover:shadow-lg transition-shadow cursor-pointer">
                 <CardContent className="p-6">
@@ -189,7 +189,7 @@ export default function Support() {
 
       {/* Main Support Content */}
       <section className="py-16">
-        <div className="container">
+        <div className="container px-4">
           <Tabs defaultValue="faq" className="w-full">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-kanxa-navy mb-4">How can we help you?</h2>
