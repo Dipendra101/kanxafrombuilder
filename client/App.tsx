@@ -24,6 +24,9 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const queryClient = new QueryClient();
 
