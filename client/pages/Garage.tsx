@@ -479,20 +479,38 @@ export default function Garage() {
                 <Label htmlFor="urgencyLevel">Urgency Level</Label>
                 <Select
                   value={appointmentForm.urgencyLevel}
-                  onValueChange={(value) =>
+                  onValueChange={(value) => {
                     setAppointmentForm({
                       ...appointmentForm,
                       urgencyLevel: value,
-                    })
-                  }
+                    });
+                  }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger onClick={(e) => e.stopPropagation()}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                    <SelectItem value="emergency">Emergency</SelectItem>
+                  <SelectContent
+                    onClick={(e) => e.stopPropagation()}
+                    onCloseAutoFocus={(e) => e.preventDefault()}
+                  >
+                    <SelectItem
+                      value="normal"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Normal
+                    </SelectItem>
+                    <SelectItem
+                      value="urgent"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Urgent
+                    </SelectItem>
+                    <SelectItem
+                      value="emergency"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Emergency
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
