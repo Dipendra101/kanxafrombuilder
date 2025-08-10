@@ -49,40 +49,6 @@ export default function Profile() {
     // Here you would typically save to backend
   };
 
-  const handleProfilePictureUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
-        return;
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfilePicture(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleProfilePictureClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const removeProfilePicture = () => {
-    setProfilePicture(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   const recentActivity = [
     {
       id: 1,
