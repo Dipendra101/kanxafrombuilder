@@ -324,10 +324,10 @@ export default function Buses() {
 
       {/* Search & Filter Section */}
       <section className="py-8 bg-white shadow-sm">
-        <div className="container">
+        <div className="container px-4">
           <Card>
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <CardContent className="p-4 md:p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div>
                   <Label htmlFor="from">From</Label>
                   <Select value={fromLocation} onValueChange={setFromLocation}>
@@ -370,12 +370,12 @@ export default function Buses() {
                   </Select>
                 </div>
                 
-                <div className="md:col-span-2 flex items-end gap-2">
+                <div className="sm:col-span-2 lg:col-span-2 flex flex-col sm:flex-row items-stretch sm:items-end gap-2">
                   <Button className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90">
                     <Search className="mr-2 h-4 w-4" />
                     Search Buses
                   </Button>
-                  <Button variant="outline" size="icon">
+                  <Button variant="outline" size="icon" className="sm:w-auto">
                     <Filter className="h-4 w-4" />
                   </Button>
                 </div>
