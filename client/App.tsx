@@ -22,6 +22,7 @@ import RoutesPage from "./pages/Routes";
 import Support from "./pages/Support";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import Orders from "./pages/Orders";
 
 const queryClient = new QueryClient();
 
