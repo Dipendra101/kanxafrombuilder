@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { 
-  User, 
-  Mail, 
-  Phone, 
+import { useState, useRef } from "react";
+import {
+  User,
+  Mail,
+  Phone,
   MapPin,
   Calendar,
   Edit,
@@ -12,7 +12,8 @@ import {
   Shield,
   CreditCard,
   Settings,
-  LogOut
+  LogOut,
+  Upload
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
