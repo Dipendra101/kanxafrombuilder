@@ -96,6 +96,16 @@ export default function ChatNotifications() {
         return <Video className="w-4 h-4 text-blue-600" />;
       case "file":
         return <FileText className="w-4 h-4 text-purple-600" />;
+      case "booking":
+        return <Calendar className="w-4 h-4 text-kanxa-blue" />;
+      case "payment":
+        return <CreditCard className="w-4 h-4 text-green-600" />;
+      case "service":
+        return <Wrench className="w-4 h-4 text-kanxa-green" />;
+      case "delivery":
+        return <Truck className="w-4 h-4 text-kanxa-orange" />;
+      case "system":
+        return <AlertCircle className="w-4 h-4 text-red-500" />;
       default:
         return <MessageCircle className="w-4 h-4 text-kanxa-blue" />;
     }
@@ -212,16 +222,12 @@ export default function ChatNotifications() {
               </div>
             </div>
 
-<<<<<<< HEAD
-            <TabsList className="grid w-full grid-cols-3 mt-2">
-=======
             <div className="text-xs text-gray-500 mb-2">
               All your notifications from bookings, orders, chat messages, and system updates
             </div>
 
             {/* Tabs for different notification types */}
-            <TabsList className="grid w-full grid-cols-2 mt-2">
->>>>>>> 343091b349504a5357d4b92efb9f0d2e47f7f533
+            <TabsList className="grid w-full grid-cols-3 mt-2">
               <TabsTrigger value="notifications" className="text-xs">
                 All
                 {unreadCount > 0 && (
