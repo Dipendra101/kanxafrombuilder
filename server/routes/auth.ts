@@ -1,42 +1,48 @@
 import { Router, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import User, { IUser } from "../models/User";
+import connectDB from "../config/database";
 
 const router = Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'kanxasafari_jwt_secret_key_super_secure_2024';
 
-// JWT Secret (in production, use environment variable)
-const JWT_SECRET = process.env.JWT_SECRET || 'kanxasafari_jwt_secret_key';
+// Connect to database
+connectDB();
 
-// Mock user data (replace with real database)
-const users: any[] = [
-  {
-    id: 'user_test',
-    name: 'Test User',
-    email: 'test@kanxasafari.com',
-    phone: '9841234567',
-    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password: "password"
-    role: 'user',
-    createdAt: new Date('2024-01-01')
-  }
-];
+// Utility functions
+const generateToken = (user: IUser) => {
+  return jwt.sign(
+    { 
+      userId: user._id,
+      email: user.email,
+      role: user.role 
+    },
+    JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+};
 
-// Generate JWT token
-const generateToken = (userId: string) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
+const generateRefreshToken = (user: IUser) => {
+  return jwt.sign(
+    { userId: user._id, type: 'refresh' },
+    JWT_SECRET,
+    { expiresIn: '30d' }
+  );
 };
 
 // @route   POST /api/auth/register
 // @desc    Register a new user
 // @access  Public
-const register: RequestHandler = async (req, res) => {
+export const register: RequestHandler = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, role = 'user' } = req.body;
 
-    // Validation
+    // Comprehensive validation
     if (!name || !email || !phone || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields'
+        message: 'Please provide all required fields: name, email, phone, password'
       });
     }
 
@@ -47,52 +53,86 @@ const register: RequestHandler = async (req, res) => {
       });
     }
 
-    // Check if user already exists
-    const existingUser = users.find(u => u.email === email || u.phone === phone);
-
-    if (existingUser) {
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
       return res.status(400).json({
         success: false,
-        message: 'User already exists with this email or phone number'
+        message: 'Please provide a valid email address'
       });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    if (!/^[0-9]{10}$/.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid 10-digit phone number'
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ 
+      $or: [{ email }, { phone }] 
+    });
+
+    if (existingUser) {
+      const field = existingUser.email === email ? 'email' : 'phone';
+      return res.status(409).json({
+        success: false,
+        message: `User already exists with this ${field}`
+      });
+    }
 
     // Create new user
-    const user = {
-      id: `user_${Date.now()}`,
-      name,
-      email,
-      phone,
-      password: hashedPassword,
-      role: 'user',
-      createdAt: new Date()
-    };
+    const user = new User({
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      phone: phone.trim(),
+      password,
+      role: role === 'admin' ? 'admin' : 'user', // Only allow admin if explicitly set
+      verification: {
+        emailToken: crypto.randomBytes(32).toString('hex'),
+        phoneToken: Math.floor(100000 + Math.random() * 900000).toString(),
+      },
+      loginHistory: [{
+        ip: req.ip,
+        userAgent: req.get('User-Agent') || 'Unknown',
+        timestamp: new Date(),
+      }],
+      lastLogin: new Date(),
+    });
 
-    users.push(user);
+    await user.save();
 
-    // Generate token
-    const token = generateToken(user.id);
+    // Generate tokens
+    const accessToken = generateToken(user);
+    const refreshToken = generateRefreshToken(user);
 
-    // Remove password from response
-    const { password: _, ...userResponse } = user;
+    // Remove sensitive information
+    const userResponse = user.toJSON();
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       user: userResponse,
-      token
+      tokens: {
+        accessToken,
+        refreshToken,
+      }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Registration error:', error);
+    
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(409).json({
+        success: false,
+        message: `User already exists with this ${field}`
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Registration failed',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 };
@@ -100,9 +140,9 @@ const register: RequestHandler = async (req, res) => {
 // @route   POST /api/auth/login
 // @desc    Login user
 // @access  Public
-const login: RequestHandler = async (req, res) => {
+export const login: RequestHandler = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe = false } = req.body;
 
     // Validation
     if (!email || !password) {
@@ -112,45 +152,84 @@ const login: RequestHandler = async (req, res) => {
       });
     }
 
-    // Find user
-    const user = users.find(u => u.email === email);
+    // Find user and include password for comparison
+    const user = await User.findOne({ email: email.toLowerCase() })
+      .select('+password')
+      .exec();
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Check if user is active
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been deactivated. Please contact support.'
       });
     }
 
     // Check password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.comparePassword(password);
 
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Invalid email or password'
       });
     }
 
-    // Generate token
-    const token = generateToken(user.id);
+    // Update login history and last login
+    user.loginHistory.push({
+      ip: req.ip,
+      userAgent: req.get('User-Agent') || 'Unknown',
+      timestamp: new Date(),
+    } as any);
+    
+    // Keep only last 10 login records
+    if (user.loginHistory.length > 10) {
+      user.loginHistory = user.loginHistory.slice(-10);
+    }
+    
+    user.lastLogin = new Date();
+    user.lastActivity = new Date();
+    await user.save();
+
+    // Generate tokens
+    const accessTokenExpiry = rememberMe ? '30d' : '7d';
+    const accessToken = jwt.sign(
+      { 
+        userId: user._id,
+        email: user.email,
+        role: user.role 
+      },
+      JWT_SECRET,
+      { expiresIn: accessTokenExpiry }
+    );
+    const refreshToken = generateRefreshToken(user);
 
     // Remove password from response
-    const { password: _, ...userResponse } = user;
+    const userResponse = user.toJSON();
 
     res.json({
       success: true,
       message: 'Login successful',
       user: userResponse,
-      token
+      tokens: {
+        accessToken,
+        refreshToken,
+      }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error);
     res.status(500).json({
       success: false,
       message: 'Login failed',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 };
@@ -158,7 +237,7 @@ const login: RequestHandler = async (req, res) => {
 // @route   POST /api/auth/verify-token
 // @desc    Verify JWT token
 // @access  Public
-const verifyToken: RequestHandler = async (req, res) => {
+export const verifyToken: RequestHandler = async (req, res) => {
   try {
     const { token } = req.body;
 
@@ -169,8 +248,8 @@ const verifyToken: RequestHandler = async (req, res) => {
       });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-    const user = users.find(u => u.id === decoded.userId);
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const user = await User.findById(decoded.userId);
 
     if (!user) {
       return res.status(401).json({
@@ -179,19 +258,269 @@ const verifyToken: RequestHandler = async (req, res) => {
       });
     }
 
-    // Remove password from response
-    const { password: _, ...userResponse } = user;
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: 'Account deactivated'
+      });
+    }
+
+    // Update last activity
+    user.lastActivity = new Date();
+    await user.save();
 
     res.json({
       success: true,
-      user: userResponse
+      user: user.toJSON(),
+      tokenValid: true
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Token verification error:', error);
+    
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        success: false,
+        message: 'Token expired',
+        tokenExpired: true
+      });
+    }
+    
     res.status(401).json({
       success: false,
       message: 'Invalid token'
+    });
+  }
+};
+
+// @route   POST /api/auth/refresh-token
+// @desc    Refresh access token
+// @access  Public
+export const refreshToken: RequestHandler = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: 'Refresh token required'
+      });
+    }
+
+    const decoded = jwt.verify(refreshToken, JWT_SECRET) as any;
+    
+    if (decoded.type !== 'refresh') {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid refresh token'
+      });
+    }
+
+    const user = await User.findById(decoded.userId);
+
+    if (!user || !user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid refresh token'
+      });
+    }
+
+    // Generate new access token
+    const newAccessToken = generateToken(user);
+
+    res.json({
+      success: true,
+      accessToken: newAccessToken
+    });
+
+  } catch (error: any) {
+    console.error('Refresh token error:', error);
+    res.status(401).json({
+      success: false,
+      message: 'Invalid refresh token'
+    });
+  }
+};
+
+// @route   POST /api/auth/logout
+// @desc    Logout user (invalidate tokens)
+// @access  Private
+export const logout: RequestHandler = async (req, res) => {
+  try {
+    // In a production app, you'd maintain a blacklist of invalidated tokens
+    // For now, we'll just return success
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error: any) {
+    console.error('Logout error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Logout failed'
+    });
+  }
+};
+
+// @route   POST /api/auth/forgot-password
+// @desc    Request password reset
+// @access  Public
+export const forgotPassword: RequestHandler = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email address is required'
+      });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      // Don't reveal if email exists for security
+      return res.json({
+        success: true,
+        message: 'If an account with that email exists, password reset instructions have been sent'
+      });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    user.verification.resetPasswordToken = resetToken;
+    user.verification.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    await user.save();
+
+    // In a real app, send email here
+    console.log(`Password reset token for ${email}: ${resetToken}`);
+
+    res.json({
+      success: true,
+      message: 'Password reset instructions sent to your email',
+      // Include token in response for testing (remove in production)
+      ...(process.env.NODE_ENV === 'development' && { resetToken })
+    });
+
+  } catch (error: any) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to process password reset request'
+    });
+  }
+};
+
+// @route   POST /api/auth/reset-password
+// @desc    Reset password with token
+// @access  Public
+export const resetPassword: RequestHandler = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token and new password are required'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long'
+      });
+    }
+
+    const user = await User.findOne({
+      'verification.resetPasswordToken': token,
+      'verification.resetPasswordExpires': { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired reset token'
+      });
+    }
+
+    // Update password
+    user.password = newPassword;
+    user.verification.resetPasswordToken = undefined;
+    user.verification.resetPasswordExpires = undefined;
+    
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password reset successfully'
+    });
+
+  } catch (error: any) {
+    console.error('Reset password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to reset password'
+    });
+  }
+};
+
+// @route   POST /api/auth/change-password
+// @desc    Change password for authenticated user
+// @access  Private
+export const changePassword: RequestHandler = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = (req as any).user.userId;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password and new password are required'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 6 characters long'
+      });
+    }
+
+    const user = await User.findById(userId).select('+password');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
+
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully'
+    });
+
+  } catch (error: any) {
+    console.error('Change password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to change password'
     });
   }
 };
@@ -200,5 +529,10 @@ const verifyToken: RequestHandler = async (req, res) => {
 router.post('/register', register);
 router.post('/login', login);
 router.post('/verify-token', verifyToken);
+router.post('/refresh-token', refreshToken);
+router.post('/logout', logout);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
+router.post('/change-password', changePassword);
 
 export default router;
