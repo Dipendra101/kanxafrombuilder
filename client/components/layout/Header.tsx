@@ -209,6 +209,11 @@ export default function Header() {
           <div className="hidden md:flex items-center space-x-2">
             {isAuthenticated ? (
               <>
+                {user?.role === 'admin' && (
+                  <Button variant="ghost" asChild>
+                    <Link to="/admin">Admin Panel</Link>
+                  </Button>
+                )}
                 <span className="text-sm text-kanxa-gray">
                   Welcome, {user?.name?.split(' ')[0]}!
                 </span>
