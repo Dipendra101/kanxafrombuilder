@@ -134,12 +134,12 @@ const cargoServices = [
 
 export default function Transportation() {
   const [selectedTab, setSelectedTab] = useState("buses");
-  const [selectedRoute, setSelectedRoute] = useState("");
+  const [selectedRoute, setSelectedRoute] = useState("all");
   const [selectedDate, setSelectedDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredBuses = busRoutes.filter((bus) => {
-    if (selectedRoute && !`${bus.from} → ${bus.to}`.includes(selectedRoute)) {
+    if (selectedRoute && selectedRoute !== "all" && !`${bus.from} → ${bus.to}`.includes(selectedRoute)) {
       return false;
     }
     if (searchQuery && !bus.from.toLowerCase().includes(searchQuery.toLowerCase()) && 
@@ -213,7 +213,7 @@ export default function Transportation() {
                             <SelectValue placeholder="Choose route" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">All Routes</SelectItem>
+                            <SelectItem value="all">All Routes</SelectItem>
                             <SelectItem value="Lamjung → Kathmandu">Lamjung → Kathmandu</SelectItem>
                             <SelectItem value="Lamjung → Pokhara">Lamjung → Pokhara</SelectItem>
                             <SelectItem value="Kathmandu → Lamjung">Kathmandu → Lamjung</SelectItem>
