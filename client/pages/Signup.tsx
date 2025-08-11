@@ -148,37 +148,35 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+    // Use real backend registration
+    await register({
+      name: `${formData.firstName} ${formData.lastName}`,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password,
+    });
 
-      // Show success notification
-      toast({
-        title: "Account Created Successfully! 🎉",
-        description:
-          "Welcome to Kanxa Safari! Please check your email to verify your account.",
-        action: (
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-green-600" />
-            <span className="text-green-600 font-medium">Success</span>
-          </div>
-        ),
-      });
+    // Show success notification
+    toast({
+      title: "Account Created Successfully! 🎉",
+      description:
+        "Welcome to Kanxa Safari! You have been automatically logged in.",
+      action: (
+        <div className="flex items-center gap-2">
+          <CheckCircle className="h-4 w-4 text-green-600" />
+          <span className="text-green-600 font-medium">Success</span>
+        </div>
+      ),
+    });
 
-      // Redirect to login with success message
-      setTimeout(() => {
-        navigate("/login", {
-          state: {
-            message:
-              "Account created successfully! Please sign in with your new credentials.",
-          },
-        });
-      }, 2000);
-    } catch (error) {
-      toast({
-        title: "Registration Failed",
-        description: "Unable to create your account. Please try again later.",
-        variant: "destructive",
-      });
+    // Redirect to home page since user is automatically logged in
+    navigate("/");
+    } catch (error: any) {
+    toast({
+      title: "Registration Failed",
+      description: error.message || "Unable to create your account. Please try again later.",
+      variant: "destructive",
+    });
     } finally {
       setIsLoading(false);
     }
