@@ -14,6 +14,12 @@ import {
   VolumeX,
   Moon,
   Clock,
+  Calendar,
+  CreditCard,
+  Package,
+  Wrench,
+  Truck,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -186,14 +192,17 @@ export default function ChatNotifications() {
               </div>
             </div>
 
-            <TabsList className="grid w-full grid-cols-2 mt-2">
+            <TabsList className="grid w-full grid-cols-3 mt-2">
               <TabsTrigger value="notifications" className="text-xs">
-                Messages
+                All
                 {unreadCount > 0 && (
                   <Badge className="ml-1 h-4 w-4 p-0 text-xs bg-kanxa-blue">
                     {unreadCount}
                   </Badge>
                 )}
+              </TabsTrigger>
+              <TabsTrigger value="system" className="text-xs">
+                System
               </TabsTrigger>
               <TabsTrigger value="settings" className="text-xs">
                 Settings
