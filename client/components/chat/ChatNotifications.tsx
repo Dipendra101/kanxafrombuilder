@@ -247,6 +247,59 @@ export default function ChatNotifications() {
             )}
           </TabsContent>
 
+          <TabsContent
+            value="system"
+            className="max-h-80 overflow-y-auto p-0"
+          >
+            <div className="space-y-1 p-2">
+              {/* Sample system notifications */}
+              <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-blue hover:bg-blue-100 cursor-pointer">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-kanxa-blue rounded-full flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-gray-900">Booking Confirmed</p>
+                    <span className="text-xs text-gray-500">2h</span>
+                  </div>
+                  <p className="text-sm text-gray-700 mt-1">Your bus seat to Kathmandu has been reserved</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-green hover:bg-green-100 cursor-pointer">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-kanxa-green rounded-full flex items-center justify-center">
+                    <CreditCard className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-gray-900">Payment Received</p>
+                    <span className="text-xs text-gray-500">1d</span>
+                  </div>
+                  <p className="text-sm text-gray-700 mt-1">Tour request payment processed successfully</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-orange hover:bg-orange-100 cursor-pointer">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-kanxa-orange rounded-full flex items-center justify-center">
+                    <Wrench className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-gray-900">Service Complete</p>
+                    <span className="text-xs text-gray-500">2d</span>
+                  </div>
+                  <p className="text-sm text-gray-700 mt-1">Your tractor maintenance has been completed</p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
           <TabsContent value="settings" className="p-4 space-y-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
