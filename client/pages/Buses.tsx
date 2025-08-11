@@ -29,16 +29,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import Layout from "@/components/layout/Layout";
+import { SeatSelectionDialog } from "@/components/bus/SeatSelectionDialog";
 
 export default function Buses() {
   const [selectedDate, setSelectedDate] = useState("today");
@@ -156,194 +153,6 @@ export default function Buses() {
       return false;
     return true;
   });
-
-  const SeatSelectionDialog = ({ bus }: { bus: any }) => {
-    const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
-
-    const seatRows = Array.from({ length: 11 }, (_, i) => i + 1);
-    const seatsPerRow = 4;
-    const occupiedSeats = [2, 5, 8, 12, 15, 23, 28, 31, 37, 42]; // Sample occupied seats
-
-    const toggleSeat = (seatNumber: number) => {
-      if (occupiedSeats.includes(seatNumber)) return;
-
-      if (selectedSeats.includes(seatNumber)) {
-        setSelectedSeats(selectedSeats.filter((s) => s !== seatNumber));
-      } else {
-        setSelectedSeats([...selectedSeats, seatNumber]);
-      }
-    };
-
-    return (
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-kanxa-navy">
-            Select Your Seats - {bus.name}
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Seat Map */}
-          <div className="lg:col-span-2">
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <div className="text-center mb-4">
-                <div className="inline-block bg-kanxa-navy text-white px-4 py-2 rounded-t-lg">
-                  Driver
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                {seatRows.map((row) => (
-                  <div key={row} className="flex justify-center gap-2">
-                    {/* Left side seats */}
-                    <div className="flex gap-1">
-                      {[1, 2].map((seatIndex) => {
-                        const seatNumber = (row - 1) * seatsPerRow + seatIndex;
-                        const isOccupied = occupiedSeats.includes(seatNumber);
-                        const isSelected = selectedSeats.includes(seatNumber);
-
-                        return (
-                          <button
-                            key={seatNumber}
-                            onClick={() => toggleSeat(seatNumber)}
-                            disabled={isOccupied}
-                            className={`w-8 h-8 rounded text-xs font-medium transition-all ${
-                              isOccupied
-                                ? "bg-red-200 text-red-600 cursor-not-allowed"
-                                : isSelected
-                                  ? "bg-kanxa-blue text-white"
-                                  : "bg-white border-2 border-gray-300 hover:border-kanxa-blue"
-                            }`}
-                          >
-                            {seatNumber}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Aisle */}
-                    <div className="w-6"></div>
-
-                    {/* Right side seats */}
-                    <div className="flex gap-1">
-                      {[3, 4].map((seatIndex) => {
-                        const seatNumber = (row - 1) * seatsPerRow + seatIndex;
-                        const isOccupied = occupiedSeats.includes(seatNumber);
-                        const isSelected = selectedSeats.includes(seatNumber);
-
-                        return (
-                          <button
-                            key={seatNumber}
-                            onClick={() => toggleSeat(seatNumber)}
-                            disabled={isOccupied}
-                            className={`w-8 h-8 rounded text-xs font-medium transition-all ${
-                              isOccupied
-                                ? "bg-red-200 text-red-600 cursor-not-allowed"
-                                : isSelected
-                                  ? "bg-kanxa-blue text-white"
-                                  : "bg-white border-2 border-gray-300 hover:border-kanxa-blue"
-                            }`}
-                          >
-                            {seatNumber}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Legend */}
-              <div className="flex justify-center gap-6 mt-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-white border-2 border-gray-300 rounded"></div>
-                  <span>Available</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-kanxa-blue rounded"></div>
-                  <span>Selected</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-red-200 rounded"></div>
-                  <span>Occupied</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Booking Summary */}
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Booking Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="font-medium text-kanxa-navy">{bus.name}</p>
-                  <p className="text-sm text-gray-600">{bus.route}</p>
-                  <p className="text-sm text-gray-600">
-                    {bus.departure} - {bus.arrival}
-                  </p>
-                </div>
-
-                <Separator />
-
-                <div>
-                  <p className="font-medium">Selected Seats:</p>
-                  {selectedSeats.length > 0 ? (
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {selectedSeats.map((seat) => (
-                        <Badge key={seat} variant="secondary">
-                          {seat}
-                        </Badge>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-500">No seats selected</p>
-                  )}
-                </div>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Seat(s) ({selectedSeats.length})</span>
-                    <span>
-                      NPR {(bus.price * selectedSeats.length).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Service Fee</span>
-                    <span>NPR 50</span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between font-bold text-lg">
-                    <span>Total</span>
-                    <span className="text-kanxa-blue">
-                      NPR{" "}
-                      {(bus.price * selectedSeats.length + 50).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-
-                <Button
-                  className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90"
-                  disabled={selectedSeats.length === 0}
-                >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Proceed to Payment
-                </Button>
-
-                <div className="text-xs text-gray-500 text-center">
-                  Secure payment via Khalti & eSewa
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </DialogContent>
-    );
-  };
 
   return (
     <Layout>
@@ -556,7 +365,7 @@ export default function Buses() {
                           NPR {bus.price.toLocaleString()}
                         </p>
                         <p className="text-xs text-gray-500">per person</p>
-                        <Dialog>
+                        <Dialog onOpenChange={(open) => !open && setSelectedBus(null)}>
                           <DialogTrigger asChild>
                             <Button
                               className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90"
@@ -565,7 +374,7 @@ export default function Buses() {
                               Select Seats
                             </Button>
                           </DialogTrigger>
-                          {selectedBus && (
+                          {selectedBus && bus.id === selectedBus.id && (
                             <SeatSelectionDialog bus={selectedBus} />
                           )}
                         </Dialog>

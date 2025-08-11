@@ -38,6 +38,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Layout from "@/components/layout/Layout";
+import { SeatSelectionDialog } from "@/components/bus/SeatSelectionDialog";
 
 const busRoutes = [
   {
@@ -137,6 +138,7 @@ export default function Transportation() {
   const [selectedRoute, setSelectedRoute] = useState("all");
   const [selectedDate, setSelectedDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedBus, setSelectedBus] = useState<any>(null);
 
   const filteredBuses = busRoutes.filter((bus) => {
     if (selectedRoute && selectedRoute !== "all" && !`${bus.from} → ${bus.to}`.includes(selectedRoute)) {
@@ -297,48 +299,18 @@ export default function Transportation() {
                             <div className="text-2xl font-bold text-kanxa-navy">
                               NPR {bus.price.toLocaleString()}
                             </div>
-                            <Dialog>
+                            <Dialog onOpenChange={(open) => !open && setSelectedBus(null)}>
                               <DialogTrigger asChild>
-                                <Button className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
+                                <Button
+                                  className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90"
+                                  onClick={() => setSelectedBus(bus)}
+                                >
                                   Book Seats
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="max-w-md">
-                                <DialogHeader>
-                                  <DialogTitle>Book Your Seats</DialogTitle>
-                                  <DialogDescription>
-                                    {bus.from} → {bus.to} | {bus.departureTime}
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="space-y-4">
-                                  <div>
-                                    <Label htmlFor="passengers">Number of Passengers</Label>
-                                    <Select>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select passengers" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {[1, 2, 3, 4, 5].map((num) => (
-                                          <SelectItem key={num} value={num.toString()}>
-                                            {num} Passenger{num > 1 ? 's' : ''}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  <div>
-                                    <Label htmlFor="phone">Contact Number</Label>
-                                    <Input id="phone" placeholder="Your phone number" />
-                                  </div>
-                                  <div className="flex items-center gap-2 p-3 bg-kanxa-light-blue rounded-lg">
-                                    <CheckCircle className="w-5 h-5 text-kanxa-blue" />
-                                    <span className="text-sm">Free cancellation up to 2 hours before departure</span>
-                                  </div>
-                                  <Button className="w-full bg-kanxa-green hover:bg-kanxa-green/90">
-                                    Proceed to Payment
-                                  </Button>
-                                </div>
-                              </DialogContent>
+                              {selectedBus && bus.id === selectedBus.id && (
+                                <SeatSelectionDialog bus={selectedBus} />
+                              )}
                             </Dialog>
                           </div>
                         </div>
