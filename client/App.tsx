@@ -70,6 +70,10 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/chat" element={<Chat />} />
 
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
           {/* Information & Support Routes */}
           <Route path="/routes" element={<RoutesPage />} />
           <Route path="/support" element={<Support />} />
