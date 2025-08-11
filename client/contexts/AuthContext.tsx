@@ -68,10 +68,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setToken(storedToken);
             setUser(response.user);
           } else {
-            // Token is invalid, clear storage
-            localStorage.removeItem('kanxa_token');
-            localStorage.removeItem('kanxa_user');
-          }
+          // Token is invalid, clear storage
+          console.log('Token verification failed, clearing storage');
+          localStorage.removeItem('kanxa_token');
+          localStorage.removeItem('kanxa_user');
+        }
         }
       } catch (error) {
         console.error('Failed to initialize auth:', error);
