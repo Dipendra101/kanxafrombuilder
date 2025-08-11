@@ -29,6 +29,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Chat from "./pages/Chat";
 import AdminDashboard from "./pages/AdminDashboard";
+import EnhancedBooking from "./pages/EnhancedBooking";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,7 @@ const App = () => (
           {/* User Account Routes */}
           <Route path="/booking" element={<Booking />} />
           <Route path="/bookings" element={<Booking />} />
+          <Route path="/book" element={<EnhancedBooking />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/chat" element={<Chat />} />

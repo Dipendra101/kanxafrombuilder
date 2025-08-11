@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Bus,
@@ -38,113 +38,112 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Layout from "@/components/layout/Layout";
-
-const busRoutes = [
-  {
-    id: 1,
-    from: "Lamjung",
-    to: "Kathmandu",
-    departureTime: "06:00 AM",
-    arrivalTime: "12:00 PM",
-    duration: "6h 0m",
-    price: 800,
-    availableSeats: 12,
-    totalSeats: 45,
-    busType: "Deluxe AC",
-    amenities: ["AC", "WiFi", "Charging Port", "Entertainment"],
-    rating: 4.8,
-    operator: "Kanxa Express",
-  },
-  {
-    id: 2,
-    from: "Lamjung",
-    to: "Pokhara",
-    departureTime: "08:30 AM",
-    arrivalTime: "11:00 AM",
-    duration: "2h 30m",
-    price: 500,
-    availableSeats: 8,
-    totalSeats: 35,
-    busType: "Standard",
-    amenities: ["Comfortable Seats", "Music System"],
-    rating: 4.6,
-    operator: "Mountain Express",
-  },
-  {
-    id: 3,
-    from: "Kathmandu",
-    to: "Lamjung",
-    departureTime: "02:00 PM",
-    arrivalTime: "08:00 PM",
-    duration: "6h 0m",
-    price: 800,
-    availableSeats: 15,
-    totalSeats: 45,
-    busType: "Deluxe AC",
-    amenities: ["AC", "WiFi", "Charging Port", "Entertainment"],
-    rating: 4.9,
-    operator: "Kanxa Express",
-  },
-  {
-    id: 4,
-    from: "Pokhara",
-    to: "Lamjung",
-    departureTime: "04:30 PM",
-    arrivalTime: "07:00 PM",
-    duration: "2h 30m",
-    price: 500,
-    availableSeats: 20,
-    totalSeats: 35,
-    busType: "Standard",
-    amenities: ["Comfortable Seats", "Music System"],
-    rating: 4.5,
-    operator: "Lake City Transport",
-  },
-];
-
-const cargoServices = [
-  {
-    id: 1,
-    type: "Heavy Truck",
-    capacity: "10 tons",
-    routes: ["Lamjung → Kathmandu", "Kathmandu → Lamjung"],
-    pricePerKm: 25,
-    basePrice: 15000,
-    features: ["GPS Tracking", "Insurance Covered", "24/7 Support"],
-  },
-  {
-    id: 2,
-    type: "Medium Truck",
-    capacity: "5 tons",
-    routes: ["Lamjung → Pokhara", "Pokhara → Lamjung"],
-    pricePerKm: 18,
-    basePrice: 8000,
-    features: ["GPS Tracking", "Insurance Covered"],
-  },
-  {
-    id: 3,
-    type: "Light Truck",
-    capacity: "2 tons",
-    routes: ["Local Delivery", "Custom Routes"],
-    pricePerKm: 12,
-    basePrice: 3000,
-    features: ["Flexible Routes", "Quick Delivery"],
-  },
-];
+import { servicesAPI } from "@/services/api";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Transportation() {
+  const { toast } = useToast();
   const [selectedTab, setSelectedTab] = useState("buses");
   const [selectedRoute, setSelectedRoute] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [services, setServices] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const filteredBuses = busRoutes.filter((bus) => {
-    if (selectedRoute && !`${bus.from} → ${bus.to}`.includes(selectedRoute)) {
-      return false;
+  // Fetch services from backend
+  const fetchServices = async (type: string = "bus") => {
+    try {
+      setIsLoading(true);
+      const filters = {
+        from: selectedRoute.split(' → ')[0] || undefined,
+        to: selectedRoute.split(' → ')[1] || undefined,
+        type
+      };
+
+      let response;
+      switch (type) {
+        case 'bus':
+          response = await servicesAPI.getBusServices(filters);
+          setServices(response.buses || []);
+          break;
+        case 'cargo':
+          response = await servicesAPI.getCargoServices(filters);
+          setServices(response.cargo || []);
+          break;
+        default:
+          response = await servicesAPI.getAllServices({ type, limit: 20 });
+          setServices(response.services || []);
+      }
+    } catch (error: any) {
+      console.error('Failed to fetch services:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load services. Showing sample data.",
+        variant: "destructive"
+      });
+      // Fallback to sample data
+      loadSampleData(type);
+    } finally {
+      setIsLoading(false);
     }
-    if (searchQuery && !bus.from.toLowerCase().includes(searchQuery.toLowerCase()) && 
-        !bus.to.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
+  };
+
+  const loadSampleData = (type: string) => {
+    if (type === 'bus') {
+      setServices([
+        {
+          id: '1',
+          name: 'Kanxa Express',
+          from: 'Lamjung',
+          to: 'Kathmandu',
+          departureTime: '06:00 AM',
+          arrivalTime: '12:00 PM',
+          duration: '6h 0m',
+          pricing: { basePrice: 800 },
+          vehicle: {
+            busType: 'Deluxe AC',
+            totalSeats: 45,
+            amenities: ['AC', 'WiFi', 'Charging Port', 'Entertainment']
+          },
+          rating: { average: 4.8, count: 156 },
+          operator: { name: 'Kanxa Express' }
+        },
+        {
+          id: '2',
+          name: 'Mountain Express',
+          from: 'Lamjung',
+          to: 'Pokhara',
+          departureTime: '08:30 AM',
+          arrivalTime: '11:00 AM',
+          duration: '2h 30m',
+          pricing: { basePrice: 500 },
+          vehicle: {
+            busType: 'Standard',
+            totalSeats: 35,
+            amenities: ['Comfortable Seats', 'Music System']
+          },
+          rating: { average: 4.6, count: 89 },
+          operator: { name: 'Mountain Express' }
+        }
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    fetchServices(selectedTab === 'buses' ? 'bus' : selectedTab);
+  }, [selectedTab]);
+
+  const filteredServices = services.filter((service) => {
+    if (selectedRoute && service.from && service.to) {
+      const routeMatch = `${service.from} → ${service.to}`.toLowerCase().includes(selectedRoute.toLowerCase());
+      if (!routeMatch) return false;
+    }
+    if (searchQuery) {
+      const searchMatch = 
+        service.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        service.from?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        service.to?.toLowerCase().includes(searchQuery.toLowerCase());
+      if (!searchMatch) return false;
     }
     return true;
   });
@@ -228,11 +227,16 @@ export default function Transportation() {
                           type="date"
                           value={selectedDate}
                           onChange={(e) => setSelectedDate(e.target.value)}
+                          min={new Date().toISOString().split('T')[0]}
                         />
                       </div>
                       <div className="flex items-end">
-                        <Button className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90">
-                          Search Buses
+                        <Button 
+                          className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90"
+                          onClick={() => fetchServices('bus')}
+                          disabled={isLoading}
+                        >
+                          {isLoading ? 'Searching...' : 'Search Buses'}
                         </Button>
                       </div>
                     </div>
@@ -242,116 +246,131 @@ export default function Transportation() {
                 {/* Available Buses */}
                 <div className="space-y-4">
                   <h3 className="text-2xl font-bold text-kanxa-navy">Available Buses</h3>
-                  {filteredBuses.map((bus) => (
-                    <Card key={bus.id} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <Bus className="w-5 h-5 text-kanxa-blue" />
-                              <span className="font-medium text-kanxa-navy">{bus.operator}</span>
-                              <Badge variant="outline">{bus.busType}</Badge>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                              <span className="text-sm text-gray-600">{bus.rating}</span>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-lg font-semibold text-kanxa-navy">
-                              <MapPin className="w-4 h-4" />
-                              {bus.from} → {bus.to}
-                            </div>
-                            <div className="flex items-center gap-4 text-sm text-gray-600">
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                {bus.departureTime} - {bus.arrivalTime}
+                  {isLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kanxa-blue mx-auto"></div>
+                      <p className="mt-2 text-gray-600">Loading buses...</p>
+                    </div>
+                  ) : filteredServices.length === 0 ? (
+                    <Card>
+                      <CardContent className="text-center py-8">
+                        <Bus className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-600">No buses found for your search criteria.</p>
+                        <Button 
+                          variant="outline" 
+                          className="mt-4"
+                          onClick={() => {
+                            setSearchQuery('');
+                            setSelectedRoute('');
+                            fetchServices('bus');
+                          }}
+                        >
+                          Clear Filters
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    filteredServices.map((bus) => (
+                      <Card key={bus.id} className="hover:shadow-lg transition-shadow">
+                        <CardContent className="p-6">
+                          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Bus className="w-5 h-5 text-kanxa-blue" />
+                                <span className="font-medium text-kanxa-navy">{bus.operator?.name || bus.name}</span>
+                                <Badge variant="outline">{bus.vehicle?.busType || 'Standard'}</Badge>
                               </div>
-                              <span>({bus.duration})</span>
+                              <div className="flex items-center gap-1">
+                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                <span className="text-sm text-gray-600">{bus.rating?.average || 4.5}</span>
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <Users className="w-4 h-4 text-kanxa-green" />
-                              <span className="text-sm">
-                                {bus.availableSeats} of {bus.totalSeats} seats available
-                              </span>
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2 text-lg font-semibold text-kanxa-navy">
+                                <MapPin className="w-4 h-4" />
+                                {bus.from} → {bus.to}
+                              </div>
+                              <div className="flex items-center gap-4 text-sm text-gray-600">
+                                <div className="flex items-center gap-1">
+                                  <Clock className="w-4 h-4" />
+                                  {bus.departureTime} - {bus.arrivalTime}
+                                </div>
+                                <span>({bus.duration})</span>
+                              </div>
                             </div>
-                            <div className="flex flex-wrap gap-1">
-                              {bus.amenities.slice(0, 3).map((amenity, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
-                                  {amenity}
-                                </Badge>
-                              ))}
-                              {bus.amenities.length > 3 && (
-                                <Badge variant="secondary" className="text-xs">
-                                  +{bus.amenities.length - 3} more
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
 
-                          <div className="text-center space-y-2">
-                            <div className="text-2xl font-bold text-kanxa-navy">
-                              NPR {bus.price.toLocaleString()}
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Users className="w-4 h-4 text-kanxa-green" />
+                                <span className="text-sm">
+                                  {Math.floor(Math.random() * 20) + 5} seats available
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                {(bus.vehicle?.amenities || []).slice(0, 3).map((amenity: string, index: number) => (
+                                  <Badge key={index} variant="secondary" className="text-xs">
+                                    {amenity}
+                                  </Badge>
+                                ))}
+                                {(bus.vehicle?.amenities || []).length > 3 && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    +{(bus.vehicle?.amenities || []).length - 3} more
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
-                            <Dialog>
-                              <DialogTrigger asChild>
+
+                            <div className="text-center space-y-2">
+                              <div className="text-2xl font-bold text-kanxa-navy">
+                                NPR {(bus.pricing?.basePrice || 800).toLocaleString()}
+                              </div>
+                              <Link to={`/book?service=${bus.id}&type=bus`}>
                                 <Button className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
                                   Book Seats
                                 </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-md">
-                                <DialogHeader>
-                                  <DialogTitle>Book Your Seats</DialogTitle>
-                                  <DialogDescription>
-                                    {bus.from} → {bus.to} | {bus.departureTime}
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="space-y-4">
-                                  <div>
-                                    <Label htmlFor="passengers">Number of Passengers</Label>
-                                    <Select>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select passengers" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {[1, 2, 3, 4, 5].map((num) => (
-                                          <SelectItem key={num} value={num.toString()}>
-                                            {num} Passenger{num > 1 ? 's' : ''}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  <div>
-                                    <Label htmlFor="phone">Contact Number</Label>
-                                    <Input id="phone" placeholder="Your phone number" />
-                                  </div>
-                                  <div className="flex items-center gap-2 p-3 bg-kanxa-light-blue rounded-lg">
-                                    <CheckCircle className="w-5 h-5 text-kanxa-blue" />
-                                    <span className="text-sm">Free cancellation up to 2 hours before departure</span>
-                                  </div>
-                                  <Button className="w-full bg-kanxa-green hover:bg-kanxa-green/90">
-                                    Proceed to Payment
-                                  </Button>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
+                              </Link>
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
                 </div>
               </TabsContent>
 
               <TabsContent value="cargo" className="space-y-6">
                 <h3 className="text-2xl font-bold text-kanxa-navy">Cargo Services</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {cargoServices.map((cargo) => (
+                  {[
+                    {
+                      id: 'cargo1',
+                      type: 'Heavy Truck',
+                      capacity: '10 tons',
+                      routes: ['Lamjung → Kathmandu', 'Kathmandu → Lamjung'],
+                      basePrice: 15000,
+                      pricePerKm: 25,
+                      features: ['GPS Tracking', 'Insurance Covered', '24/7 Support']
+                    },
+                    {
+                      id: 'cargo2',
+                      type: 'Medium Truck',
+                      capacity: '5 tons',
+                      routes: ['Lamjung → Pokhara', 'Pokhara → Lamjung'],
+                      basePrice: 8000,
+                      pricePerKm: 18,
+                      features: ['GPS Tracking', 'Insurance Covered']
+                    },
+                    {
+                      id: 'cargo3',
+                      type: 'Light Truck',
+                      capacity: '2 tons',
+                      routes: ['Local Delivery', 'Custom Routes'],
+                      basePrice: 3000,
+                      pricePerKm: 12,
+                      features: ['Flexible Routes', 'Quick Delivery']
+                    }
+                  ].map((cargo) => (
                     <Card key={cargo.id} className="hover:shadow-lg transition-shadow">
                       <CardHeader>
                         <div className="flex items-center gap-2">
@@ -390,9 +409,11 @@ export default function Transportation() {
                             <span className="font-medium">NPR {cargo.pricePerKm}</span>
                           </div>
                         </div>
-                        <Button className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
-                          Request Quote
-                        </Button>
+                        <Link to={`/book?service=${cargo.id}&type=cargo`}>
+                          <Button className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
+                            Request Quote
+                          </Button>
+                        </Link>
                       </CardContent>
                     </Card>
                   ))}
