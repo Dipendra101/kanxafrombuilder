@@ -249,7 +249,7 @@ export default function Header() {
                 <Link to="/orders">My Orders</Link>
               </DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Sign out</DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>Sign out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
