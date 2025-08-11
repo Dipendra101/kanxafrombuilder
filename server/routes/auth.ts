@@ -191,4 +191,5 @@ router.post('/register', register);
 router.post('/login', login);
 router.post('/verify-token', verifyToken);
 
+export { register, login, verifyToken };
 export default router;
