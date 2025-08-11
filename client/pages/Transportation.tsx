@@ -1,12 +1,498 @@
-import { Bus } from "lucide-react";
-import PlaceholderPage from "./PlaceholderPage";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  Bus,
+  Truck,
+  MapPin,
+  Calendar,
+  Clock,
+  Users,
+  Star,
+  Filter,
+  Search,
+  ArrowRight,
+  Route,
+  CreditCard,
+  CheckCircle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Layout from "@/components/layout/Layout";
+
+const busRoutes = [
+  {
+    id: 1,
+    from: "Lamjung",
+    to: "Kathmandu",
+    departureTime: "06:00 AM",
+    arrivalTime: "12:00 PM",
+    duration: "6h 0m",
+    price: 800,
+    availableSeats: 12,
+    totalSeats: 45,
+    busType: "Deluxe AC",
+    amenities: ["AC", "WiFi", "Charging Port", "Entertainment"],
+    rating: 4.8,
+    operator: "Kanxa Express",
+  },
+  {
+    id: 2,
+    from: "Lamjung",
+    to: "Pokhara",
+    departureTime: "08:30 AM",
+    arrivalTime: "11:00 AM",
+    duration: "2h 30m",
+    price: 500,
+    availableSeats: 8,
+    totalSeats: 35,
+    busType: "Standard",
+    amenities: ["Comfortable Seats", "Music System"],
+    rating: 4.6,
+    operator: "Mountain Express",
+  },
+  {
+    id: 3,
+    from: "Kathmandu",
+    to: "Lamjung",
+    departureTime: "02:00 PM",
+    arrivalTime: "08:00 PM",
+    duration: "6h 0m",
+    price: 800,
+    availableSeats: 15,
+    totalSeats: 45,
+    busType: "Deluxe AC",
+    amenities: ["AC", "WiFi", "Charging Port", "Entertainment"],
+    rating: 4.9,
+    operator: "Kanxa Express",
+  },
+  {
+    id: 4,
+    from: "Pokhara",
+    to: "Lamjung",
+    departureTime: "04:30 PM",
+    arrivalTime: "07:00 PM",
+    duration: "2h 30m",
+    price: 500,
+    availableSeats: 20,
+    totalSeats: 35,
+    busType: "Standard",
+    amenities: ["Comfortable Seats", "Music System"],
+    rating: 4.5,
+    operator: "Lake City Transport",
+  },
+];
+
+const cargoServices = [
+  {
+    id: 1,
+    type: "Heavy Truck",
+    capacity: "10 tons",
+    routes: ["Lamjung → Kathmandu", "Kathmandu → Lamjung"],
+    pricePerKm: 25,
+    basePrice: 15000,
+    features: ["GPS Tracking", "Insurance Covered", "24/7 Support"],
+  },
+  {
+    id: 2,
+    type: "Medium Truck",
+    capacity: "5 tons",
+    routes: ["Lamjung → Pokhara", "Pokhara → Lamjung"],
+    pricePerKm: 18,
+    basePrice: 8000,
+    features: ["GPS Tracking", "Insurance Covered"],
+  },
+  {
+    id: 3,
+    type: "Light Truck",
+    capacity: "2 tons",
+    routes: ["Local Delivery", "Custom Routes"],
+    pricePerKm: 12,
+    basePrice: 3000,
+    features: ["Flexible Routes", "Quick Delivery"],
+  },
+];
 
 export default function Transportation() {
+  const [selectedTab, setSelectedTab] = useState("buses");
+  const [selectedRoute, setSelectedRoute] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredBuses = busRoutes.filter((bus) => {
+    if (selectedRoute && !`${bus.from} → ${bus.to}`.includes(selectedRoute)) {
+      return false;
+    }
+    if (searchQuery && !bus.from.toLowerCase().includes(searchQuery.toLowerCase()) && 
+        !bus.to.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    return true;
+  });
+
   return (
-    <PlaceholderPage
-      title="Transportation Services"
-      description="Book buses, cargo trucks, and custom tours with real-time availability and secure payments."
-      icon={<Bus className="h-12 w-12 text-kanxa-blue" />}
-    />
+    <Layout>
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-kanxa-navy to-kanxa-blue text-white py-16">
+        <div className="container px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl lg:text-5xl font-bold mb-6">
+              Transportation Services
+            </h1>
+            <p className="text-xl text-white/90 mb-8">
+              Reliable, comfortable, and affordable transportation solutions 
+              connecting Lamjung to major cities across Nepal
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Booking Section */}
+      <section className="py-12 bg-white">
+        <div className="container px-4">
+          <div className="max-w-6xl mx-auto">
+            <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-8">
+                <TabsTrigger value="buses" className="flex items-center gap-2">
+                  <Bus className="w-4 h-4" />
+                  Bus Services
+                </TabsTrigger>
+                <TabsTrigger value="cargo" className="flex items-center gap-2">
+                  <Truck className="w-4 h-4" />
+                  Cargo Services
+                </TabsTrigger>
+                <TabsTrigger value="tours" className="flex items-center gap-2">
+                  <Route className="w-4 h-4" />
+                  Custom Tours
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="buses" className="space-y-6">
+                {/* Search and Filter */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Search className="w-5 h-5" />
+                      Find Your Bus
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <Label htmlFor="search">Search Route</Label>
+                        <Input
+                          id="search"
+                          placeholder="From / To city"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="route">Select Route</Label>
+                        <Select value={selectedRoute} onValueChange={setSelectedRoute}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose route" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="">All Routes</SelectItem>
+                            <SelectItem value="Lamjung → Kathmandu">Lamjung → Kathmandu</SelectItem>
+                            <SelectItem value="Lamjung → Pokhara">Lamjung → Pokhara</SelectItem>
+                            <SelectItem value="Kathmandu → Lamjung">Kathmandu → Lamjung</SelectItem>
+                            <SelectItem value="Pokhara → Lamjung">Pokhara → Lamjung</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="date">Travel Date</Label>
+                        <Input
+                          id="date"
+                          type="date"
+                          value={selectedDate}
+                          onChange={(e) => setSelectedDate(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex items-end">
+                        <Button className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90">
+                          Search Buses
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Available Buses */}
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-bold text-kanxa-navy">Available Buses</h3>
+                  {filteredBuses.map((bus) => (
+                    <Card key={bus.id} className="hover:shadow-lg transition-shadow">
+                      <CardContent className="p-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Bus className="w-5 h-5 text-kanxa-blue" />
+                              <span className="font-medium text-kanxa-navy">{bus.operator}</span>
+                              <Badge variant="outline">{bus.busType}</Badge>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                              <span className="text-sm text-gray-600">{bus.rating}</span>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-lg font-semibold text-kanxa-navy">
+                              <MapPin className="w-4 h-4" />
+                              {bus.from} → {bus.to}
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-4 h-4" />
+                                {bus.departureTime} - {bus.arrivalTime}
+                              </div>
+                              <span>({bus.duration})</span>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Users className="w-4 h-4 text-kanxa-green" />
+                              <span className="text-sm">
+                                {bus.availableSeats} of {bus.totalSeats} seats available
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {bus.amenities.slice(0, 3).map((amenity, index) => (
+                                <Badge key={index} variant="secondary" className="text-xs">
+                                  {amenity}
+                                </Badge>
+                              ))}
+                              {bus.amenities.length > 3 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  +{bus.amenities.length - 3} more
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="text-center space-y-2">
+                            <div className="text-2xl font-bold text-kanxa-navy">
+                              NPR {bus.price.toLocaleString()}
+                            </div>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
+                                  Book Seats
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-md">
+                                <DialogHeader>
+                                  <DialogTitle>Book Your Seats</DialogTitle>
+                                  <DialogDescription>
+                                    {bus.from} → {bus.to} | {bus.departureTime}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                  <div>
+                                    <Label htmlFor="passengers">Number of Passengers</Label>
+                                    <Select>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select passengers" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {[1, 2, 3, 4, 5].map((num) => (
+                                          <SelectItem key={num} value={num.toString()}>
+                                            {num} Passenger{num > 1 ? 's' : ''}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="phone">Contact Number</Label>
+                                    <Input id="phone" placeholder="Your phone number" />
+                                  </div>
+                                  <div className="flex items-center gap-2 p-3 bg-kanxa-light-blue rounded-lg">
+                                    <CheckCircle className="w-5 h-5 text-kanxa-blue" />
+                                    <span className="text-sm">Free cancellation up to 2 hours before departure</span>
+                                  </div>
+                                  <Button className="w-full bg-kanxa-green hover:bg-kanxa-green/90">
+                                    Proceed to Payment
+                                  </Button>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="cargo" className="space-y-6">
+                <h3 className="text-2xl font-bold text-kanxa-navy">Cargo Services</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {cargoServices.map((cargo) => (
+                    <Card key={cargo.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <div className="flex items-center gap-2">
+                          <Truck className="w-6 h-6 text-kanxa-orange" />
+                          <CardTitle className="text-kanxa-navy">{cargo.type}</CardTitle>
+                        </div>
+                        <Badge className="w-fit bg-kanxa-orange/10 text-kanxa-orange">
+                          {cargo.capacity}
+                        </Badge>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <h4 className="font-medium text-kanxa-navy mb-2">Available Routes:</h4>
+                          <ul className="text-sm text-gray-600 space-y-1">
+                            {cargo.routes.map((route, index) => (
+                              <li key={index}>• {route}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-kanxa-navy mb-2">Features:</h4>
+                          <ul className="text-sm text-gray-600 space-y-1">
+                            {cargo.features.map((feature, index) => (
+                              <li key={index}>• {feature}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <Separator />
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-sm text-gray-600">Base Price:</span>
+                            <span className="font-medium">NPR {cargo.basePrice.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-gray-600">Per KM:</span>
+                            <span className="font-medium">NPR {cargo.pricePerKm}</span>
+                          </div>
+                        </div>
+                        <Button className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
+                          Request Quote
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="tours" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Route className="w-6 h-6 text-kanxa-green" />
+                      Custom Tour Services
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <p className="text-gray-600">
+                      Plan your perfect tour with our custom transportation services. 
+                      We provide flexible routing, comfortable vehicles, and experienced drivers.
+                    </p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-kanxa-navy">Tour Options:</h4>
+                        <ul className="space-y-2 text-sm text-gray-600">
+                          <li>• Day trips to popular destinations</li>
+                          <li>• Multi-day tour packages</li>
+                          <li>• Corporate transportation</li>
+                          <li>• Event and wedding transport</li>
+                          <li>• Airport transfers</li>
+                          <li>• Custom route planning</li>
+                        </ul>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-kanxa-navy">Included Services:</h4>
+                        <ul className="space-y-2 text-sm text-gray-600">
+                          <li>• Professional drivers</li>
+                          <li>• Fuel and maintenance</li>
+                          <li>• Insurance coverage</li>
+                          <li>• 24/7 customer support</li>
+                          <li>• Flexible scheduling</li>
+                          <li>• GPS tracking</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="bg-kanxa-light-green p-4 rounded-lg">
+                      <h4 className="font-medium text-kanxa-navy mb-2">Get Custom Quote</h4>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Contact us with your requirements for a personalized quote
+                      </p>
+                      <div className="flex gap-2">
+                        <Button className="bg-kanxa-green hover:bg-kanxa-green/90">
+                          Call: 9856056782
+                        </Button>
+                        <Button variant="outline" asChild>
+                          <Link to="/chat">Chat with Us</Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="container px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-kanxa-navy mb-4">
+              Why Choose Our Transportation?
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-kanxa-blue rounded-lg flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-kanxa-navy mb-2">Reliable Service</h3>
+              <p className="text-gray-600">On-time departures and arrivals with real-time tracking</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-kanxa-orange rounded-lg flex items-center justify-center mx-auto mb-4">
+                <CreditCard className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-kanxa-navy mb-2">Secure Payments</h3>
+              <p className="text-gray-600">Multiple payment options with full security</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-kanxa-green rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-kanxa-navy mb-2">24/7 Support</h3>
+              <p className="text-gray-600">Round-the-clock customer assistance</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </Layout>
   );
 }
