@@ -74,8 +74,8 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Use real backend authentication
+      await login(formData.email, formData.password);
 
       // Show success notification
       toast({
@@ -90,15 +90,13 @@ export default function Login() {
         ),
       });
 
-      // Store auth data if remember me is checked
+      // Store remember me preference
       if (rememberMe) {
         localStorage.setItem("kanxa_remember", "true");
       }
 
-      // Redirect to dashboard/profile
-      setTimeout(() => {
-        navigate("/profile");
-      }, 1000);
+      // Redirect to home page
+      navigate("/");
     } catch (error) {
       toast({
         title: "Login Failed",
