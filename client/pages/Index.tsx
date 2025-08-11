@@ -45,18 +45,24 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
+                asChild
                 className="bg-kanxa-orange hover:bg-kanxa-orange/90 text-white"
               >
-                <Calendar className="mr-2 h-5 w-5" />
-                Book Transportation
+                <Link to="/transportation">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Book Transportation
+                </Link>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
+                asChild
                 className="border-white text-white hover:bg-white hover:text-kanxa-navy"
               >
-                <Building className="mr-2 h-5 w-5" />
-                Browse Materials
+                <Link to="/construction">
+                  <Building className="mr-2 h-5 w-5" />
+                  Browse Materials
+                </Link>
               </Button>
             </div>
           </div>
@@ -216,9 +222,10 @@ export default function Index() {
                         </p>
                         <Button
                           size="sm"
+                          asChild
                           className="mt-1 bg-kanxa-blue hover:bg-kanxa-blue/90"
                         >
-                          Book Now
+                          <Link to="/buses">Book Now</Link>
                         </Button>
                       </div>
                     </div>
@@ -272,8 +279,8 @@ export default function Index() {
                         <p className="font-medium text-kanxa-navy">
                           {cargo.price}
                         </p>
-                        <Button size="sm" variant="outline" className="mt-1">
-                          Request Quote
+                        <Button size="sm" variant="outline" asChild className="mt-1">
+                          <Link to="/cargo">Request Quote</Link>
                         </Button>
                       </div>
                     </div>
@@ -339,8 +346,8 @@ export default function Index() {
                   <p className="font-semibold text-kanxa-orange mb-4">
                     {item.price}
                   </p>
-                  <Button size="sm" variant="outline" className="w-full">
-                    Get Quote
+                  <Button size="sm" variant="outline" asChild className="w-full">
+                    <Link to="/materials">Get Quote</Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -482,16 +489,18 @@ export default function Index() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
+              asChild
               className="bg-kanxa-orange hover:bg-kanxa-orange/90"
             >
-              Start Booking Now
+              <Link to="/transportation">Start Booking Now</Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
+              asChild
               className="border-white text-white hover:bg-white hover:text-kanxa-navy"
             >
-              Contact Support
+              <Link to="/support">Contact Support</Link>
             </Button>
           </div>
         </div>
