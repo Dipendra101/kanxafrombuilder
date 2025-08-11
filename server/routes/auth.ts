@@ -18,7 +18,7 @@ const generateToken = (userId: string) => {
 // @route   POST /api/auth/register
 // @desc    Register a new user
 // @access  Public
-export const register: RequestHandler = async (req, res) => {
+const register: RequestHandler = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
 
@@ -90,7 +90,7 @@ export const register: RequestHandler = async (req, res) => {
 // @route   POST /api/auth/login
 // @desc    Login user
 // @access  Public
-export const login: RequestHandler = async (req, res) => {
+const login: RequestHandler = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -148,7 +148,7 @@ export const login: RequestHandler = async (req, res) => {
 // @route   POST /api/auth/verify-token
 // @desc    Verify JWT token
 // @access  Public
-export const verifyToken: RequestHandler = async (req, res) => {
+const verifyToken: RequestHandler = async (req, res) => {
   try {
     const { token } = req.body;
 
@@ -191,5 +191,4 @@ router.post('/register', register);
 router.post('/login', login);
 router.post('/verify-token', verifyToken);
 
-export { register, login, verifyToken };
 export default router;
