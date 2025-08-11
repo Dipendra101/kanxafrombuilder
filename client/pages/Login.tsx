@@ -97,11 +97,10 @@ export default function Login() {
 
       // Redirect to home page
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Login Failed",
-        description:
-          "Invalid email or password. Please check your credentials and try again.",
+        description: error.message || "Invalid email or password. Please check your credentials and try again.",
         variant: "destructive",
       });
     } finally {
