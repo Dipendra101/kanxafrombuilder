@@ -6,14 +6,14 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import mongoose from "mongoose";
 import connectDB from "./config/database";
-// import { handleDemo } from "./routes/demo";
-// import { authRoutes } from "./routes/auth";
-// import { transportationRoutes } from "./routes/transportation";
-// import { constructionRoutes } from "./routes/construction";
-// import { userRoutes } from "./routes/user";
-// import { bookingRoutes } from "./routes/booking";
-// import { paymentRoutes } from "./routes/payment";
-// import { chatRoutes } from "./routes/chat";
+import { handleDemo } from "./routes/demo";
+import { authRoutes } from "./routes/auth";
+import { transportationRoutes } from "./routes/transportation";
+import { constructionRoutes } from "./routes/construction";
+import { userRoutes } from "./routes/user";
+import { bookingRoutes } from "./routes/booking";
+import { paymentRoutes } from "./routes/payment";
+import { chatRoutes } from "./routes/chat";
 
 // Import models for initialization
 import User from "./models/User";
@@ -59,13 +59,13 @@ export async function createServer() {
   });
 
   // API Routes
-  // app.use("/api/auth", authRoutes);
-  // app.use("/api/transportation", transportationRoutes);
-  // app.use("/api/construction", constructionRoutes);
-  // app.use("/api/user", userRoutes);
-  // app.use("/api/booking", bookingRoutes);
-  // app.use("/api/payment", paymentRoutes);
-  // app.use("/api/chat", chatRoutes);
+  app.use("/api/auth", authRoutes);
+  app.use("/api/transportation", transportationRoutes);
+  app.use("/api/construction", constructionRoutes);
+  app.use("/api/user", userRoutes);
+  app.use("/api/booking", bookingRoutes);
+  app.use("/api/payment", paymentRoutes);
+  app.use("/api/chat", chatRoutes);
   app.get("/api/demo", (req, res) => {
     res.json({ message: "Hello from Express server" });
   });

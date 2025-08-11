@@ -1,182 +1,178 @@
-# Kanxa Safari - Complete Platform
+# Kanxa Safari - Complete Business Management System
 
-A comprehensive transportation, construction, and garage services platform built with React, TypeScript, and Node.js.
+A comprehensive web application for managing transportation, construction, and garage services. Built with React, TypeScript, Node.js, Express, and MongoDB.
 
 ## 🚀 Features
 
-### User Side
-- **Transportation Services**
-  - Bus booking system
-  - Cargo transportation
-  - Tour packages
-  - Live route tracking
-  - Seat selection
+### 🔐 Authentication & User Management
+- **User Registration & Login**: Secure authentication with JWT tokens
+- **Admin Panel**: Separate admin interface with role-based access
+- **Profile Management**: User profile editing and management
+- **Password Reset**: Forgot password functionality
 
-- **Construction Services**
-  - Material ordering (cement, steel, blocks, etc.)
-  - Machinery rental
-  - Inventory management
-  - Supplier management
+### 🚌 Transportation Services
+- **Bus Services**: Route management and booking system
+- **Cargo Services**: Freight and logistics management
+- **Tour Packages**: Custom tour booking system
+- **Real-time Tracking**: Service status updates
 
-- **Garage Services**
-  - Vehicle maintenance
-  - Repair services
-  - Service scheduling
-  - Parts inventory
+### 🏗️ Construction Services
+- **Building Materials**: Inventory management for construction materials
+- **Machinery Rental**: JCB, mixers, tractors, and equipment rental
+- **Order Management**: Complete order lifecycle management
+- **Supplier Management**: Vendor and supplier tracking
 
-- **User Management**
-  - User registration and authentication
-  - Profile management
-  - Booking history
-  - Payment management
+### 🔧 Garage & Workshop
+- **Service Booking**: Vehicle maintenance and repair scheduling
+- **Service History**: Complete service records
+- **Parts Inventory**: Spare parts management
+- **Technician Management**: Staff and skill tracking
 
-- **Communication**
-  - Real-time chat support
-  - Notification system
-  - Email updates
+### 💳 Payment & Billing
+- **Multiple Payment Methods**: Khalti, eSewa, cash, bank transfer
+- **Invoice Generation**: Automated billing system
+- **Payment Tracking**: Real-time payment status
+- **Financial Reports**: Revenue and transaction analytics
 
-### Admin Side
-- **Dashboard**
-  - Real-time statistics
-  - Revenue analytics
-  - System monitoring
-  - Quick actions
-
-- **User Management**
-  - User accounts management
-  - Verification system
-  - Activity tracking
-  - User analytics
-
-- **Service Management**
-  - Transportation route management
-  - Construction inventory
-  - Garage service management
-  - Order processing
-
-- **Analytics & Reports**
-  - Business analytics
-  - Revenue reports
-  - User behavior analysis
-  - Performance metrics
-
-- **System Settings**
-  - Configuration management
-  - Security settings
-  - Payment gateway setup
-  - Backup management
+### 📊 Admin Dashboard
+- **Analytics Dashboard**: Real-time business metrics
+- **User Management**: Customer and staff management
+- **Order Management**: Complete order oversight
+- **System Settings**: Configuration and preferences
 
 ## 🛠️ Technology Stack
 
 ### Frontend
 - **React 18** with TypeScript
-- **Vite** for build tooling
+- **Vite** for fast development and building
 - **Tailwind CSS** for styling
-- **Radix UI** for components
+- **Radix UI** for accessible components
 - **React Router** for navigation
-- **React Query** for data fetching
-- **React Hook Form** for forms
-- **Lucide React** for icons
+- **React Query** for state management
+- **Axios** for API communication
 
 ### Backend
-- **Node.js** with Express
-- **TypeScript** for type safety
-- **Zod** for validation
+- **Node.js** with TypeScript
+- **Express.js** for API framework
+- **MongoDB** with Mongoose ODM
 - **JWT** for authentication
 - **bcryptjs** for password hashing
-- **CORS** for cross-origin requests
+- **Zod** for validation
+- **Helmet** for security
 
-### Payment Integration
-- **Khalti** payment gateway
-- **eSewa** payment gateway
-- **Cash** and **Credit** options
+### Development Tools
+- **TypeScript** for type safety
+- **ESLint** and **Prettier** for code quality
+- **Vitest** for testing
+- **Concurrently** for running multiple processes
+
+## 📦 Installation & Setup
+
+### Prerequisites
+- Node.js 18+ 
+- MongoDB 6+
+- npm or yarn
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd kanxa-safari
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Environment Setup
+Create a `.env` file in the root directory:
+
+```env
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+
+# Database Configuration
+MONGODB_URI=mongodb://localhost:27017/kanxa_safari_db
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-here
+
+# API Configuration
+API_BASE_URL=http://localhost:3001/api
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:5173
+```
+
+### 4. Start MongoDB
+Make sure MongoDB is running on your system:
+```bash
+# On macOS with Homebrew
+brew services start mongodb-community
+
+# On Ubuntu/Debian
+sudo systemctl start mongod
+
+# On Windows
+net start MongoDB
+```
+
+### 5. Run the Application
+
+#### Development Mode (Frontend + Backend)
+```bash
+npm run dev:full
+```
+
+#### Frontend Only
+```bash
+npm run dev
+```
+
+#### Backend Only
+```bash
+npm run dev:server
+```
+
+### 6. Access the Application
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:3001/api
+- **Health Check**: http://localhost:3001/api/ping
+
+## 👤 Default Credentials
+
+### Admin Access
+- **Username**: admin
+- **Password**: admin
+- **URL**: http://localhost:5173/admin/login
+
+### Demo User
+- **Email**: admin@gmail.com
+- **Password**: admin123456
+- **URL**: http://localhost:5173/login
 
 ## 📁 Project Structure
 
 ```
-kanxafrombuilder/
+kanxa-safari/
 ├── client/                 # Frontend React application
 │   ├── components/         # Reusable UI components
-│   ├── pages/             # Page components
-│   │   ├── admin/         # Admin pages
-│   │   └── ...            # User pages
+│   ├── contexts/          # React contexts (Auth, etc.)
 │   ├── hooks/             # Custom React hooks
+│   ├── pages/             # Page components
 │   ├── services/          # API services
 │   └── lib/               # Utility functions
 ├── server/                # Backend Node.js application
-│   ├── routes/            # API route handlers
+│   ├── config/            # Configuration files
+│   ├── models/            # MongoDB models
+│   ├── routes/            # API routes
 │   └── index.ts           # Server entry point
 ├── shared/                # Shared types and utilities
-└── netlify/               # Netlify deployment configuration
+└── public/                # Static assets
 ```
 
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd kanxafrombuilder
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   Create a `.env` file in the root directory:
-   ```env
-   # Server Configuration
-   PORT=3001
-   NODE_ENV=development
-   
-   # JWT Configuration
-   JWT_SECRET=your-super-secret-jwt-key
-   
-   # Payment Gateway Keys
-   KHALTI_PUBLIC_KEY=your-khalti-public-key
-   ESEWA_MERCHANT_CODE=your-esewa-merchant-code
-   
-   # Base URL
-   BASE_URL=http://localhost:3000
-   ```
-
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:3001
-   - Admin Panel: http://localhost:3000/admin/login
-
-## 🔐 Authentication
-
-### User Authentication
-- JWT-based authentication
-- Password hashing with bcrypt
-- Session management
-- Password reset functionality
-
-### Admin Authentication
-- Secure admin login
-- Role-based access control
-- Session management
-
-### Demo Credentials
-- **User**: Any email/password combination (demo mode)
-- **Admin**: 
-  - Username: `admin`
-  - Password: `admin`
-
-## 📱 API Endpoints
+## 🔧 API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - User registration
@@ -184,139 +180,68 @@ kanxafrombuilder/
 - `POST /api/auth/forgot-password` - Password reset request
 - `POST /api/auth/reset-password` - Password reset
 - `GET /api/auth/me` - Get current user
+- `PUT /api/auth/profile` - Update profile
+- `PUT /api/auth/change-password` - Change password
 
 ### Transportation
-- `GET /api/transportation/routes` - Get all routes
-- `POST /api/transportation/book` - Book transportation
-- `GET /api/transportation/bookings` - Get user bookings
-- `POST /api/transportation/bookings/:id/cancel` - Cancel booking
+- `GET /api/transportation/buses` - Get bus services
+- `POST /api/transportation/buses` - Create bus service
+- `GET /api/transportation/cargo` - Get cargo services
+- `POST /api/transportation/cargo` - Create cargo service
+- `GET /api/transportation/tours` - Get tour packages
+- `POST /api/transportation/tours` - Create tour package
 
 ### Construction
 - `GET /api/construction/materials` - Get materials
+- `POST /api/construction/materials` - Create material
 - `GET /api/construction/machinery` - Get machinery
-- `POST /api/construction/order` - Place order
-- `POST /api/construction/machinery/rent` - Rent machinery
+- `POST /api/construction/machinery` - Create machinery
 
-### User Management
-- `GET /api/user/profile` - Get user profile
-- `PUT /api/user/profile` - Update profile
-- `POST /api/user/change-password` - Change password
-- `GET /api/user/activity` - Get user activity
-
-### Bookings
-- `GET /api/booking` - Get user bookings
+### Bookings & Orders
+- `GET /api/booking` - Get bookings
 - `POST /api/booking` - Create booking
 - `PUT /api/booking/:id` - Update booking
-- `POST /api/booking/:id/cancel` - Cancel booking
+- `DELETE /api/booking/:id` - Delete booking
 
 ### Payments
-- `POST /api/payment/initiate` - Initiate payment
-- `POST /api/payment/verify` - Verify payment
-- `GET /api/payment/history` - Payment history
-- `POST /api/payment/:id/refund` - Process refund
-
-### Chat
-- `GET /api/chat/conversations` - Get conversations
-- `POST /api/chat/conversations` - Create conversation
-- `GET /api/chat/conversations/:id/messages` - Get messages
-- `POST /api/chat/conversations/:id/messages` - Send message
-
-## 🎨 UI Components
-
-The application uses a comprehensive set of UI components built with Radix UI and Tailwind CSS:
-
-- **Layout Components**: Header, Footer, Sidebar, Navigation
-- **Form Components**: Input, Select, Checkbox, Radio, DatePicker
-- **Data Display**: Table, Card, Badge, Progress, Avatar
-- **Feedback**: Toast, Alert, Dialog, Modal
-- **Navigation**: Breadcrumb, Pagination, Tabs
-- **Interactive**: Button, Dropdown, Menu, Tooltip
-
-## 🔧 Development
-
-### Available Scripts
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run test` - Run tests
-- `npm run typecheck` - Type checking
-
-### Code Style
-- Prettier for code formatting
-- ESLint for code linting
-- TypeScript for type safety
+- `GET /api/payment` - Get payments
+- `POST /api/payment` - Create payment
+- `PUT /api/payment/:id/process` - Process payment
 
 ## 🚀 Deployment
 
-### Netlify Deployment
-The application is configured for Netlify deployment with:
-- Serverless functions for API endpoints
-- Static site generation for the frontend
-- Environment variable management
-
-### Environment Variables for Production
-```env
-NODE_ENV=production
-JWT_SECRET=your-production-jwt-secret
-KHALTI_PUBLIC_KEY=your-production-khalti-key
-ESEWA_MERCHANT_CODE=your-production-esewa-code
-BASE_URL=https://your-domain.com
+### Frontend Deployment (Vercel/Netlify)
+```bash
+npm run build:client
 ```
 
-## 📊 Features Overview
+### Backend Deployment
+```bash
+npm run build:server
+npm start
+```
 
-### Transportation Module
-- ✅ Route management
-- ✅ Booking system
-- ✅ Seat selection
-- ✅ Payment integration
-- ✅ Live tracking
-- ✅ Cargo services
+## 🧪 Testing
 
-### Construction Module
-- ✅ Material catalog
-- ✅ Inventory management
-- ✅ Order processing
-- ✅ Machinery rental
-- ✅ Supplier management
+```bash
+# Run tests
+npm test
 
-### Garage Module
-- ✅ Service booking
-- ✅ Repair tracking
-- ✅ Parts inventory
-- ✅ Technician management
+# Run tests in watch mode
+npm run test:watch
+```
 
-### User Management
-- ✅ Registration/Login
-- ✅ Profile management
-- ✅ Booking history
-- ✅ Payment history
-- ✅ Preferences
-
-### Admin Panel
-- ✅ Dashboard analytics
-- ✅ User management
-- ✅ Service management
-- ✅ Order processing
-- ✅ System settings
-
-### Communication
-- ✅ Real-time chat
-- ✅ Notifications
-- ✅ Email updates
-- ✅ Support system
-
-## 🤝 Contributing
+## 📝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
@@ -325,17 +250,13 @@ For support and questions:
 - Contact the development team
 - Check the documentation
 
-## 🔮 Future Enhancements
+## 🔄 Updates & Maintenance
 
-- [ ] Mobile app development
-- [ ] Advanced analytics dashboard
-- [ ] Multi-language support
-- [ ] Advanced payment methods
-- [ ] Real-time notifications
-- [ ] AI-powered recommendations
-- [ ] Advanced reporting
-- [ ] Integration with external services
+- Regular security updates
+- Performance optimizations
+- Feature enhancements
+- Bug fixes and improvements
 
 ---
 
-**Kanxa Safari** - Your complete transportation, construction, and garage services platform.
+**Built with ❤️ for Kanxa Safari**

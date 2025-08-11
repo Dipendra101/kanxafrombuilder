@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Calendar,
   Clock,
@@ -43,6 +44,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Layout from "@/components/layout/Layout";
 
 export default function Booking() {
+  const navigate = useNavigate();
   const [bookingFilter, setBookingFilter] = useState("all");
 
   const bookings = [
@@ -640,7 +642,22 @@ export default function Booking() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="text-center hover:shadow-lg transition-shadow cursor-pointer">
+            <Card 
+              className="text-center hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => navigate('/payment', { 
+                state: { 
+                  paymentData: {
+                    amount: 1500,
+                    orderId: `BUS-${Date.now()}`,
+                    customerName: 'Demo Customer',
+                    customerEmail: 'demo@example.com',
+                    customerPhone: '9800000000',
+                    serviceName: 'Bus Ticket - Kathmandu to Pokhara',
+                    serviceType: 'transportation'
+                  }
+                }
+              })}
+            >
               <CardContent className="p-6">
                 <Bus className="h-12 w-12 text-kanxa-blue mx-auto mb-4" />
                 <h3 className="font-semibold text-kanxa-navy mb-2">
@@ -650,7 +667,22 @@ export default function Booking() {
               </CardContent>
             </Card>
 
-            <Card className="text-center hover:shadow-lg transition-shadow cursor-pointer">
+            <Card 
+              className="text-center hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => navigate('/payment', { 
+                state: { 
+                  paymentData: {
+                    amount: 5000,
+                    orderId: `CARGO-${Date.now()}`,
+                    customerName: 'Demo Customer',
+                    customerEmail: 'demo@example.com',
+                    customerPhone: '9800000000',
+                    serviceName: 'Cargo Transport - Kathmandu to Pokhara',
+                    serviceType: 'cargo'
+                  }
+                }
+              })}
+            >
               <CardContent className="p-6">
                 <Truck className="h-12 w-12 text-kanxa-orange mx-auto mb-4" />
                 <h3 className="font-semibold text-kanxa-navy mb-2">
@@ -660,7 +692,22 @@ export default function Booking() {
               </CardContent>
             </Card>
 
-            <Card className="text-center hover:shadow-lg transition-shadow cursor-pointer">
+            <Card 
+              className="text-center hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => navigate('/payment', { 
+                state: { 
+                  paymentData: {
+                    amount: 8000,
+                    orderId: `MACH-${Date.now()}`,
+                    customerName: 'Demo Customer',
+                    customerEmail: 'demo@example.com',
+                    customerPhone: '9800000000',
+                    serviceName: 'Machinery Rental - JCB Excavator',
+                    serviceType: 'construction'
+                  }
+                }
+              })}
+            >
               <CardContent className="p-6">
                 <Settings className="h-12 w-12 text-kanxa-orange mx-auto mb-4" />
                 <h3 className="font-semibold text-kanxa-navy mb-2">
@@ -670,7 +717,22 @@ export default function Booking() {
               </CardContent>
             </Card>
 
-            <Card className="text-center hover:shadow-lg transition-shadow cursor-pointer">
+            <Card 
+              className="text-center hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => navigate('/payment', { 
+                state: { 
+                  paymentData: {
+                    amount: 12000,
+                    orderId: `TOUR-${Date.now()}`,
+                    customerName: 'Demo Customer',
+                    customerEmail: 'demo@example.com',
+                    customerPhone: '9800000000',
+                    serviceName: 'Tour Package - Pokhara Adventure',
+                    serviceType: 'tour'
+                  }
+                }
+              })}
+            >
               <CardContent className="p-6">
                 <MapPin className="h-12 w-12 text-kanxa-green mx-auto mb-4" />
                 <h3 className="font-semibold text-kanxa-navy mb-2">

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Eye,
   EyeOff,
@@ -31,6 +32,7 @@ import { useToast } from "@/components/ui/use-toast";
 export default function Signup() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { register } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -146,14 +148,23 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Call the register function from AuthContext
+      await register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        company: formData.company,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      });
 
       // Show success notification
       toast({
         title: "Account Created Successfully! 🎉",
         description:
-          "Welcome to Kanxa Safari! Please check your email to verify your account.",
+          "Welcome to Kanxa Safari! Your account has been created successfully.",
         action: (
           <div className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -162,19 +173,15 @@ export default function Signup() {
         ),
       });
 
-      // Redirect to login with success message
+      // Redirect to login page after successful registration
       setTimeout(() => {
-        navigate("/login", {
-          state: {
-            message:
-              "Account created successfully! Please sign in with your new credentials.",
-          },
-        });
+        navigate("/login");
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Registration error:', error);
       toast({
         title: "Registration Failed",
-        description: "Unable to create your account. Please try again later.",
+        description: error.message || "Unable to create your account. Please try again later.",
         variant: "destructive",
       });
     } finally {

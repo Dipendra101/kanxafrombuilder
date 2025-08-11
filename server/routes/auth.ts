@@ -6,6 +6,31 @@ import User from "../models/User";
 
 const router = Router();
 
+// Verify token middleware
+export const verifyToken = (req: any, res: any, next: any) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '') || 
+                req.cookies?.token || 
+                req.query?.token;
+
+  if (!token) {
+    return res.status(401).json({ 
+      success: false,
+      error: "Access denied. No token provided." 
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "kanxa-safari-secret") as any;
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ 
+      success: false,
+      error: "Invalid token." 
+    });
+  }
+};
+
 // Validation schemas
 const registerSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -321,7 +346,7 @@ router.get("/me", verifyToken, async (req, res) => {
 // Update user profile
 router.put("/profile", verifyToken, async (req, res) => {
   try {
-    const { firstName, lastName, phone, address, company } = req.body;
+    const { firstName, lastName, phone, address, company, profilePicture } = req.body;
     
     const user = await User.findById(req.user.userId);
     if (!user) {
@@ -337,6 +362,7 @@ router.put("/profile", verifyToken, async (req, res) => {
     if (phone) user.phone = phone;
     if (address !== undefined) user.address = address;
     if (company !== undefined) user.company = company;
+    if (profilePicture !== undefined) user.profilePicture = profilePicture;
 
     await user.save();
 
@@ -349,6 +375,7 @@ router.put("/profile", verifyToken, async (req, res) => {
       phone: user.phone,
       address: user.address,
       company: user.company,
+      profilePicture: user.profilePicture,
       role: user.role,
       isVerified: user.isVerified,
       createdAt: user.createdAt,
@@ -414,30 +441,5 @@ router.put("/change-password", verifyToken, async (req, res) => {
     });
   }
 });
-
-// Verify token middleware
-export const verifyToken = (req: any, res: any, next: any) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '') || 
-                req.cookies?.token || 
-                req.query?.token;
-
-  if (!token) {
-    return res.status(401).json({ 
-      success: false,
-      error: "Access denied. No token provided." 
-    });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "kanxa-safari-secret") as any;
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(401).json({ 
-      success: false,
-      error: "Invalid token." 
-    });
-  }
-};
 
 export { router as authRoutes };

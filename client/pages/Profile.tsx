@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   User,
   Mail,
@@ -14,6 +14,7 @@ import {
   LogOut,
   Camera,
   Upload,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,11 +32,25 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Layout from "@/components/layout/Layout";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Profile() {
+  const { user, updateProfile, logout } = useAuth();
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Default image provided
@@ -43,14 +58,33 @@ export default function Profile() {
     "https://cdn.builder.io/api/v1/image/assets%2Fe0e990aaf8214381b9783ad82133cc2a%2F726cd8591a334f858722142910fcf4de?format=webp&width=800";
 
   const [profile, setProfile] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+977-XXX-XXXXXX",
-    address: "Lamjung, Nepal",
-    company: "ABC Construction",
-    dateJoined: "2023-01-15",
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    address: user?.address || "",
+    company: user?.company || "",
     bio: "Regular customer of Kanxa Safari services. Primarily use transportation and construction materials.",
   });
+
+  // Update profile data when user changes
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        company: user.company || "",
+        bio: "Regular customer of Kanxa Safari services. Primarily use transportation and construction materials.",
+      });
+      // Set profile picture if user has one
+      if (user.profilePicture) {
+        setProfilePicture(user.profilePicture);
+      }
+    }
+  }, [user]);
 
   const [notifications, setNotifications] = useState({
     bookingUpdates: true,
@@ -59,9 +93,32 @@ export default function Profile() {
     newsletter: true,
   });
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Here you would typically save to backend
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        phone: profile.phone,
+        address: profile.address,
+        company: profile.company,
+        profilePicture: profilePicture, // Add profile picture to the update
+      });
+      
+      setIsEditing(false);
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleProfilePictureUpload = (
@@ -100,36 +157,27 @@ export default function Profile() {
     }
   };
 
-  const recentActivity = [
-    {
-      id: 1,
-      type: "booking",
-      description: "Bus booking confirmed - Lamjung to Kathmandu",
-      date: "2024-01-20",
-      status: "completed",
-    },
-    {
-      id: 2,
-      type: "order",
-      description: "Construction materials order #ORD-2024-001",
-      date: "2024-01-18",
-      status: "delivered",
-    },
-    {
-      id: 3,
-      type: "service",
-      description: "Garage appointment scheduled for tractor service",
-      date: "2024-01-22",
-      status: "upcoming",
-    },
-  ];
+  const handleLogout = () => {
+    setShowLogoutDialog(true);
+  };
 
-  const loyaltyStats = {
-    totalBookings: 15,
-    totalOrders: 8,
-    totalSpent: 245000,
-    loyaltyPoints: 1250,
-    membershipLevel: "Gold",
+  const confirmLogout = () => {
+    logout();
+    setShowLogoutDialog(false);
+    toast({
+      title: "Logged out successfully",
+      description: "You have been logged out of your account.",
+    });
+  };
+
+  // For new accounts, show empty activity and loyalty
+  const recentActivity = user?.recentActivity || [];
+  const loyaltyStats = user?.loyaltyStats || {
+    totalBookings: 0,
+    totalOrders: 0,
+    totalSpent: 0,
+    loyaltyPoints: 0,
+    membershipLevel: "Bronze",
   };
 
   return (
@@ -284,27 +332,44 @@ export default function Profile() {
                           onClick={() =>
                             isEditing ? handleSave() : setIsEditing(true)
                           }
+                          disabled={isSaving}
                           className="text-xs sm:text-sm w-full sm:w-auto"
                         >
-                          {isEditing ? (
+                          {isSaving ? (
+                            <Loader2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+                          ) : isEditing ? (
                             <Save className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           ) : (
                             <Edit className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           )}
-                          {isEditing ? "Save" : "Edit"}
+                          {isSaving ? "Saving..." : isEditing ? "Save" : "Edit"}
                         </Button>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="name" className="text-sm">
-                              Full Name
+                            <Label htmlFor="firstName" className="text-sm">
+                              First Name
                             </Label>
                             <Input
-                              id="name"
-                              value={profile.name}
+                              id="firstName"
+                              value={profile.firstName}
                               onChange={(e) =>
-                                setProfile({ ...profile, name: e.target.value })
+                                setProfile({ ...profile, firstName: e.target.value })
+                              }
+                              disabled={!isEditing}
+                              className="text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="lastName" className="text-sm">
+                              Last Name
+                            </Label>
+                            <Input
+                              id="lastName"
+                              value={profile.lastName}
+                              onChange={(e) =>
+                                setProfile({ ...profile, lastName: e.target.value })
                               }
                               disabled={!isEditing}
                               className="text-sm"
@@ -318,14 +383,8 @@ export default function Profile() {
                               id="email"
                               type="email"
                               value={profile.email}
-                              onChange={(e) =>
-                                setProfile({
-                                  ...profile,
-                                  email: e.target.value,
-                                })
-                              }
-                              disabled={!isEditing}
-                              className="text-sm"
+                              disabled={true}
+                              className="text-sm bg-gray-50"
                             />
                           </div>
                           <div>
@@ -417,7 +476,7 @@ export default function Profile() {
                               Member Since
                             </p>
                             <p className="font-medium text-sm sm:text-base truncate">
-                              {profile.dateJoined}
+                              {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
                             </p>
                           </div>
                         </div>
@@ -428,7 +487,7 @@ export default function Profile() {
                               Location
                             </p>
                             <p className="font-medium text-sm sm:text-base truncate">
-                              {profile.address}
+                              {profile.address || "Not specified"}
                             </p>
                           </div>
                         </div>
@@ -440,9 +499,13 @@ export default function Profile() {
                             </p>
                             <Badge
                               variant="secondary"
-                              className="bg-green-100 text-green-800 text-xs"
+                              className={`text-xs ${
+                                user?.isVerified 
+                                  ? "bg-green-100 text-green-800" 
+                                  : "bg-yellow-100 text-yellow-800"
+                              }`}
                             >
-                              Verified
+                              {user?.isVerified ? "Verified" : "Pending"}
                             </Badge>
                           </div>
                         </div>
@@ -753,6 +816,7 @@ export default function Profile() {
                     <Separator />
                     <Button
                       variant="destructive"
+                      onClick={handleLogout}
                       className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
                     >
                       <LogOut className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
@@ -765,6 +829,26 @@ export default function Profile() {
           </div>
         </div>
       </section>
+
+      {/* Logout Confirmation Dialog */}
+      <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Logout</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to log out of your account? You will need to log in again to access your profile.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowLogoutDialog(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmLogout}>
+              Logout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }

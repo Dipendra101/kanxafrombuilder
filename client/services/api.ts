@@ -1,193 +1,103 @@
-import { toast } from 'sonner';
+import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api';
-
-// Types
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
-
-export interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address?: string;
-  company?: string;
-  role: 'customer' | 'admin';
-  isVerified: boolean;
-  createdAt: string;
-  updatedAt?: string;
-}
-
+// Type definitions
 export interface BusService {
-  _id: string;
+  id: string;
   name: string;
-  route: string;
-  departure: string;
-  arrival: string;
-  duration: string;
-  price: number;
-  seats: number;
-  availableSeats: number;
-  type: 'Deluxe' | 'Standard' | 'Express';
-  amenities: string[];
-  rating: number;
-  reviews: number;
-  image: string;
-  isActive: boolean;
-  schedule: {
-    days: string[];
-    time: string;
-  };
   description: string;
+  type: string;
+  route: string;
+  departureTime: string;
+  arrivalTime: string;
+  price: number;
+  capacity: number;
+  amenities: string[];
+  status: string;
+  image?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CargoService {
-  _id: string;
+  id: string;
   name: string;
-  type: 'Truck' | 'Van' | 'Container';
-  capacity: string;
-  routes: string[];
+  description: string;
+  type: string;
+  origin: string;
+  destination: string;
+  weight: number;
+  dimensions: string;
   price: number;
   deliveryTime: string;
-  insurance: boolean;
-  tracking: boolean;
-  image: string;
-  isActive: boolean;
-  description: string;
   features: string[];
+  status: string;
+  image?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface TourPackage {
-  _id: string;
+  id: string;
   name: string;
-  destination: string;
-  duration: string;
-  price: number;
-  groupSize: number;
-  rating: number;
-  reviews: number;
-  highlights: string[];
-  image: string;
-  isActive: boolean;
   description: string;
+  category: string;
+  duration: string;
+  difficulty: string;
+  price: number;
+  maxGroupSize: number;
+  highlights: string[];
   itinerary: string[];
   included: string[];
-  excluded: string[];
-  difficulty: 'Easy' | 'Moderate' | 'Difficult';
-  category: 'Adventure' | 'Cultural' | 'Wildlife' | 'Religious' | 'Leisure';
+  notIncluded: string[];
+  status: string;
+  image?: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface Booking {
-  _id: string;
-  userId: string;
-  serviceType: 'bus' | 'cargo' | 'tour';
-  serviceId: BusService | CargoService | TourPackage;
-  bookingDate: string;
-  travelDate: string;
-  passengers: number;
-  totalAmount: number;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
-  paymentMethod: 'khalti' | 'esewa' | 'cash' | 'bank_transfer';
-  contactInfo: {
-    name: string;
-    phone: string;
-    email: string;
-    address?: string;
-  };
-  specialRequests?: string;
-  bookingReference: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// API Client Class
-class ApiClient {
-  private baseURL: string;
-  private token: string | null = null;
-
-  constructor(baseURL: string) {
-    this.baseURL = baseURL;
-    this.token = localStorage.getItem('token');
-  }
-
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
-    const url = `${this.baseURL}${endpoint}`;
-    
-    const headers: HeadersInit = {
+// Create axios instance with base configuration
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
+  timeout: 10000,
+  headers: {
       'Content-Type': 'application/json',
-      ...options.headers,
-    };
+  },
+});
 
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
-    }
-
-    try {
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || `HTTP ${response.status}`);
-      }
-
-      return data;
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
-    }
-  }
-
-  // Set token for authentication
-  setToken(token: string | null) {
-    this.token = token;
+// Request interceptor to add auth token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
     if (token) {
-      localStorage.setItem('token', token);
-    } else {
-      localStorage.removeItem('token');
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
+);
 
-  // Get current token
-  getToken(): string | null {
-    return this.token;
+// Response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear tokens and redirect to login
+      localStorage.removeItem('token');
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('user');
+      localStorage.removeItem('adminUser');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
   }
+);
 
   // Auth API
-  async login(email: string, password: string): Promise<{ user: User; token: string }> {
-    const response = await this.request<{ data: User; token: string }>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
-    
-    if (response.success && response.data) {
-      this.setToken(response.data.token);
-      return { user: response.data.data, token: response.data.token };
-    }
-    
-    throw new Error(response.error || 'Login failed');
-  }
-
-  async register(userData: {
+export const authAPI = {
+  // User registration
+  register: async (userData: {
     firstName: string;
     lastName: string;
     email: string;
@@ -196,375 +106,408 @@ class ApiClient {
     confirmPassword: string;
     address?: string;
     company?: string;
-  }): Promise<{ user: User; token: string }> {
-    const response = await this.request<{ data: User; token: string }>('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
-    
-    if (response.success && response.data) {
-      this.setToken(response.data.token);
-      return { user: response.data.data, token: response.data.token };
-    }
-    
-    throw new Error(response.error || 'Registration failed');
-  }
+  }) => {
+    const response = await api.post('/auth/register', userData);
+    return response.data;
+  },
 
-  async getCurrentUser(): Promise<User> {
-    const response = await this.request<User>('/auth/me');
-    
-    if (response.success && response.data) {
-      return response.data;
-    }
-    
-    throw new Error(response.error || 'Failed to get user data');
-  }
+  // User login
+  login: async (credentials: { email: string; password: string }) => {
+    const response = await api.post('/auth/login', credentials);
+    return response.data;
+  },
 
-  async updateProfile(profileData: Partial<User>): Promise<User> {
-    const response = await this.request<User>('/auth/profile', {
-      method: 'PUT',
-      body: JSON.stringify(profileData),
-    });
-    
-    if (response.success && response.data) {
-      return response.data;
-    }
-    
-    throw new Error(response.error || 'Failed to update profile');
-  }
-
-  async changePassword(passwordData: {
-    currentPassword: string;
-    newPassword: string;
-    confirmPassword: string;
-  }): Promise<void> {
-    const response = await this.request('/auth/change-password', {
-      method: 'PUT',
-      body: JSON.stringify(passwordData),
-    });
-    
-    if (!response.success) {
-      throw new Error(response.error || 'Failed to change password');
-    }
-  }
-
-  async forgotPassword(email: string): Promise<void> {
-    const response = await this.request('/auth/forgot-password', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    });
-    
-    if (!response.success) {
-      throw new Error(response.error || 'Failed to send reset email');
-    }
-  }
-
-  async resetPassword(resetData: {
-    token: string;
-    password: string;
-    confirmPassword: string;
-  }): Promise<void> {
-    const response = await this.request('/auth/reset-password', {
-      method: 'POST',
-      body: JSON.stringify(resetData),
-    });
-    
-    if (!response.success) {
-      throw new Error(response.error || 'Failed to reset password');
-    }
-  }
-
-  // Transportation API
-  async getBusServices(params?: {
-    query?: string;
-    route?: string;
-    type?: string;
-  }): Promise<BusService[]> {
-    const searchParams = new URLSearchParams();
-    if (params?.query) searchParams.append('query', params.query);
-    if (params?.route) searchParams.append('route', params.route);
-    if (params?.type) searchParams.append('type', params.type);
-
-    const response = await this.request<{ data: BusService[] }>(`/transportation/buses?${searchParams}`);
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to fetch bus services');
-  }
-
-  async getBusService(id: string): Promise<BusService> {
-    const response = await this.request<{ data: BusService }>(`/transportation/buses/${id}`);
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to fetch bus service');
-  }
-
-  async getCargoServices(params?: {
-    query?: string;
-    type?: string;
-  }): Promise<CargoService[]> {
-    const searchParams = new URLSearchParams();
-    if (params?.query) searchParams.append('query', params.query);
-    if (params?.type) searchParams.append('type', params.type);
-
-    const response = await this.request<{ data: CargoService[] }>(`/transportation/cargo?${searchParams}`);
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to fetch cargo services');
-  }
-
-  async getCargoService(id: string): Promise<CargoService> {
-    const response = await this.request<{ data: CargoService }>(`/transportation/cargo/${id}`);
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to fetch cargo service');
-  }
-
-  async getTourPackages(params?: {
-    query?: string;
-    category?: string;
-    difficulty?: string;
-  }): Promise<TourPackage[]> {
-    const searchParams = new URLSearchParams();
-    if (params?.query) searchParams.append('query', params.query);
-    if (params?.category) searchParams.append('category', params.category);
-    if (params?.difficulty) searchParams.append('difficulty', params.difficulty);
-
-    const response = await this.request<{ data: TourPackage[] }>(`/transportation/tours?${searchParams}`);
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to fetch tour packages');
-  }
-
-  async getTourPackage(id: string): Promise<TourPackage> {
-    const response = await this.request<{ data: TourPackage }>(`/transportation/tours/${id}`);
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to fetch tour package');
-  }
-
-  async searchTransportation(params: {
-    query?: string;
-    route?: string;
-    date?: string;
-    type?: 'bus' | 'cargo' | 'tour';
-  }): Promise<{
-    buses?: BusService[];
-    cargo?: CargoService[];
-    tours?: TourPackage[];
-  }> {
-    const searchParams = new URLSearchParams();
-    if (params.query) searchParams.append('query', params.query);
-    if (params.route) searchParams.append('route', params.route);
-    if (params.date) searchParams.append('date', params.date);
-    if (params.type) searchParams.append('type', params.type);
-
-    const response = await this.request<{ data: any }>(`/transportation/search?${searchParams}`);
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to search transportation');
-  }
-
-  // Booking API
-  async createBooking(bookingData: {
-    serviceType: 'bus' | 'cargo' | 'tour';
-    serviceId: string;
-    travelDate: string;
-    passengers: number;
-    paymentMethod: 'khalti' | 'esewa' | 'cash' | 'bank_transfer';
-    contactInfo: {
-      name: string;
-      phone: string;
-      email: string;
-      address?: string;
-    };
-    specialRequests?: string;
-  }): Promise<Booking> {
-    const response = await this.request<{ data: Booking }>('/booking', {
-      method: 'POST',
-      body: JSON.stringify(bookingData),
-    });
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to create booking');
-  }
-
-  async getMyBookings(): Promise<Booking[]> {
-    const response = await this.request<{ data: Booking[] }>('/booking/my-bookings');
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to fetch bookings');
-  }
-
-  async getBooking(id: string): Promise<Booking> {
-    const response = await this.request<{ data: Booking }>(`/booking/${id}`);
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to fetch booking');
-  }
-
-  async cancelBooking(id: string): Promise<Booking> {
-    const response = await this.request<{ data: Booking }>(`/booking/${id}/cancel`, {
-      method: 'POST',
-    });
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to cancel booking');
-  }
-
-  // Admin API
-  async getAllBookings(params?: {
-    status?: string;
-    serviceType?: string;
-    page?: number;
-    limit?: number;
-  }): Promise<{
-    bookings: Booking[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      pages: number;
-    };
-  }> {
-    const searchParams = new URLSearchParams();
-    if (params?.status) searchParams.append('status', params.status);
-    if (params?.serviceType) searchParams.append('serviceType', params.serviceType);
-    if (params?.page) searchParams.append('page', params.page.toString());
-    if (params?.limit) searchParams.append('limit', params.limit.toString());
-
-    const response = await this.request<{ data: Booking[]; pagination: any }>(`/booking?${searchParams}`);
-    
-    if (response.success && response.data) {
+  // Admin login
+  adminLogin: async (credentials: { username: string; password: string }) => {
+    // For demo purposes, we'll use a simple check
+    if (credentials.username === 'admin' && credentials.password === 'admin') {
+      const adminUser = {
+        id: 'admin-1',
+        username: 'admin',
+        role: 'super_admin',
+        name: 'System Administrator',
+      };
+      
+      localStorage.setItem('adminToken', 'demo-admin-token');
+      localStorage.setItem('adminUser', JSON.stringify(adminUser));
+      
       return {
-        bookings: response.data.data,
-        pagination: response.data.pagination,
+        success: true,
+        message: 'Admin login successful',
+        data: adminUser,
+        token: 'demo-admin-token',
       };
     }
     
-    throw new Error(response.error || 'Failed to fetch bookings');
-  }
+    throw new Error('Invalid admin credentials');
+  },
 
-  async updateBookingStatus(id: string, status: string): Promise<Booking> {
-    const response = await this.request<{ data: Booking }>(`/booking/${id}/status`, {
-      method: 'PUT',
-      body: JSON.stringify({ status }),
-    });
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to update booking status');
-  }
-
-  async getTransportationStats(): Promise<{
-    totalServices: number;
-    buses: number;
-    cargo: number;
-    tours: number;
-  }> {
-    const response = await this.request<{ data: any }>('/transportation/stats');
-    
-    if (response.success && response.data) {
-      return response.data.data;
-    }
-    
-    throw new Error(response.error || 'Failed to fetch transportation stats');
-  }
-
-  // Health check
-  async healthCheck(): Promise<{ message: string; status: string; database: string }> {
-    const response = await this.request<{ message: string; status: string; database: string }>('/ping');
-    
-    if (response.success && response.data) {
+  // Forgot password
+  forgotPassword: async (email: string) => {
+    const response = await api.post('/auth/forgot-password', { email });
       return response.data;
-    }
-    
-    throw new Error(response.error || 'Health check failed');
-  }
-}
+  },
 
-// Create singleton instance
-export const apiClient = new ApiClient(API_BASE_URL);
+  // Reset password
+  resetPassword: async (data: { token: string; password: string; confirmPassword: string }) => {
+    const response = await api.post('/auth/reset-password', data);
+    return response.data;
+  },
 
-// Utility function for API calls with loading and error handling
-export async function apiCall<T>(
-  apiFunction: () => Promise<T>,
-  options: {
-    loadingMessage?: string;
-    successMessage?: string;
-    errorMessage?: string;
-    showToast?: boolean;
-  } = {}
-): Promise<T> {
-  const {
-    loadingMessage = 'Loading...',
-    successMessage,
-    errorMessage = 'Something went wrong',
-    showToast = true,
-  } = options;
+  // Get current user
+  getCurrentUser: async () => {
+    const response = await api.get('/auth/me');
+    return response.data;
+  },
 
-  let toastId: string | number | undefined;
+  // Update profile
+  updateProfile: async (profileData: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    address?: string;
+    company?: string;
+  }) => {
+    const response = await api.put('/auth/profile', profileData);
+      return response.data;
+  },
 
-  try {
-    if (showToast && loadingMessage) {
-      toastId = toast.loading(loadingMessage);
-    }
+  // Change password
+  changePassword: async (passwordData: {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
+    const response = await api.put('/auth/change-password', passwordData);
+    return response.data;
+  },
 
-    const result = await apiFunction();
+  // Logout
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('adminUser');
+  },
+};
 
-    if (showToast) {
-      if (toastId) {
-        toast.dismiss(toastId);
-      }
-      if (successMessage) {
-        toast.success(successMessage);
-      }
-    }
+  // Transportation API
+export const transportationAPI = {
+  // Get all bus services
+  getBusServices: async () => {
+    const response = await api.get('/transportation/buses');
+    return response.data;
+  },
 
-    return result;
-  } catch (error) {
-    if (showToast) {
-      if (toastId) {
-        toast.dismiss(toastId);
-      }
-      toast.error(errorMessage || (error instanceof Error ? error.message : 'Something went wrong'));
-    }
-    throw error;
-  }
-}
+  // Get bus service by ID
+  getBusService: async (id: string) => {
+    const response = await api.get(`/transportation/buses/${id}`);
+    return response.data;
+  },
 
-export default apiClient;
+  // Create bus service (admin only)
+  createBusService: async (serviceData: any) => {
+    const response = await api.post('/transportation/buses', serviceData);
+    return response.data;
+  },
+
+  // Update bus service (admin only)
+  updateBusService: async (id: string, serviceData: any) => {
+    const response = await api.put(`/transportation/buses/${id}`, serviceData);
+    return response.data;
+  },
+
+  // Delete bus service (admin only)
+  deleteBusService: async (id: string) => {
+    const response = await api.delete(`/transportation/buses/${id}`);
+    return response.data;
+  },
+
+  // Get all cargo services
+  getCargoServices: async () => {
+    const response = await api.get('/transportation/cargo');
+    return response.data;
+  },
+
+  // Get cargo service by ID
+  getCargoService: async (id: string) => {
+    const response = await api.get(`/transportation/cargo/${id}`);
+    return response.data;
+  },
+
+  // Create cargo service (admin only)
+  createCargoService: async (serviceData: any) => {
+    const response = await api.post('/transportation/cargo', serviceData);
+    return response.data;
+  },
+
+  // Update cargo service (admin only)
+  updateCargoService: async (id: string, serviceData: any) => {
+    const response = await api.put(`/transportation/cargo/${id}`, serviceData);
+    return response.data;
+  },
+
+  // Delete cargo service (admin only)
+  deleteCargoService: async (id: string) => {
+    const response = await api.delete(`/transportation/cargo/${id}`);
+    return response.data;
+  },
+
+  // Get all tour packages
+  getTourPackages: async () => {
+    const response = await api.get('/transportation/tours');
+    return response.data;
+  },
+
+  // Get tour package by ID
+  getTourPackage: async (id: string) => {
+    const response = await api.get(`/transportation/tours/${id}`);
+    return response.data;
+  },
+
+  // Create tour package (admin only)
+  createTourPackage: async (packageData: any) => {
+    const response = await api.post('/transportation/tours', packageData);
+    return response.data;
+  },
+
+  // Update tour package (admin only)
+  updateTourPackage: async (id: string, packageData: any) => {
+    const response = await api.put(`/transportation/tours/${id}`, packageData);
+    return response.data;
+  },
+
+  // Delete tour package (admin only)
+  deleteTourPackage: async (id: string) => {
+    const response = await api.delete(`/transportation/tours/${id}`);
+    return response.data;
+  },
+};
+
+// Construction API
+export const constructionAPI = {
+  // Get all materials
+  getMaterials: async () => {
+    const response = await api.get('/construction/materials');
+    return response.data;
+  },
+
+  // Get material by ID
+  getMaterial: async (id: string) => {
+    const response = await api.get(`/construction/materials/${id}`);
+    return response.data;
+  },
+
+  // Create material (admin only)
+  createMaterial: async (materialData: any) => {
+    const response = await api.post('/construction/materials', materialData);
+    return response.data;
+  },
+
+  // Update material (admin only)
+  updateMaterial: async (id: string, materialData: any) => {
+    const response = await api.put(`/construction/materials/${id}`, materialData);
+    return response.data;
+  },
+
+  // Delete material (admin only)
+  deleteMaterial: async (id: string) => {
+    const response = await api.delete(`/construction/materials/${id}`);
+    return response.data;
+  },
+
+  // Get all machinery
+  getMachinery: async () => {
+    const response = await api.get('/construction/machinery');
+    return response.data;
+  },
+
+  // Get machinery by ID
+  getMachineryItem: async (id: string) => {
+    const response = await api.get(`/construction/machinery/${id}`);
+    return response.data;
+  },
+
+  // Create machinery (admin only)
+  createMachinery: async (machineryData: any) => {
+    const response = await api.post('/construction/machinery', machineryData);
+    return response.data;
+  },
+
+  // Update machinery (admin only)
+  updateMachinery: async (id: string, machineryData: any) => {
+    const response = await api.put(`/construction/machinery/${id}`, machineryData);
+    return response.data;
+  },
+
+  // Delete machinery (admin only)
+  deleteMachinery: async (id: string) => {
+    const response = await api.delete(`/construction/machinery/${id}`);
+    return response.data;
+  },
+};
+
+  // Booking API
+export const bookingAPI = {
+  // Get all bookings (user's own bookings or admin can see all)
+  getBookings: async () => {
+    const response = await api.get('/booking');
+    return response.data;
+  },
+
+  // Get booking by ID
+  getBooking: async (id: string) => {
+    const response = await api.get(`/booking/${id}`);
+    return response.data;
+  },
+
+  // Create booking
+  createBooking: async (bookingData: any) => {
+    const response = await api.post('/booking', bookingData);
+    return response.data;
+  },
+
+  // Update booking
+  updateBooking: async (id: string, bookingData: any) => {
+    const response = await api.put(`/booking/${id}`, bookingData);
+    return response.data;
+  },
+
+  // Cancel booking
+  cancelBooking: async (id: string) => {
+    const response = await api.put(`/booking/${id}/cancel`);
+    return response.data;
+  },
+
+  // Delete booking (admin only)
+  deleteBooking: async (id: string) => {
+    const response = await api.delete(`/booking/${id}`);
+    return response.data;
+  },
+};
+
+// Payment API
+export const paymentAPI = {
+  // Get payment methods
+  getPaymentMethods: async () => {
+    const response = await api.get('/payment/methods');
+    return response.data;
+  },
+
+  // Initialize Khalti payment
+  initKhaltiPayment: async (paymentData: {
+    amount: number;
+    orderId: string;
+    customerName?: string;
+    customerEmail?: string;
+    customerPhone?: string;
+  }) => {
+    const response = await api.post('/payment/khalti/init', paymentData);
+    return response.data;
+  },
+
+  // Verify Khalti payment
+  verifyKhaltiPayment: async (verificationData: any) => {
+    const response = await api.post('/payment/khalti/verify', verificationData);
+    return response.data;
+  },
+
+  // Initialize Esewa payment
+  initEsewaPayment: async (paymentData: {
+    amount: number;
+    orderId: string;
+    customerName?: string;
+    customerEmail?: string;
+    customerPhone?: string;
+  }) => {
+    const response = await api.post('/payment/esewa/init', paymentData);
+    return response.data;
+  },
+
+  // Verify Esewa payment
+  verifyEsewaPayment: async (verificationData: any) => {
+    const response = await api.post('/payment/esewa/verify', verificationData);
+    return response.data;
+  },
+
+  // Process Cash on Delivery
+  processCOD: async (paymentData: {
+    orderId: string;
+    amount: number;
+  }) => {
+    const response = await api.post('/payment/cod/process', paymentData);
+    return response.data;
+  },
+
+  // Get payment history
+  getPaymentHistory: async () => {
+    const response = await api.get('/payment/history');
+    return response.data;
+  },
+};
+
+// User API (admin only)
+export const userAPI = {
+  // Get all users
+  getUsers: async () => {
+    const response = await api.get('/user');
+    return response.data;
+  },
+
+  // Get user by ID
+  getUser: async (id: string) => {
+    const response = await api.get(`/user/${id}`);
+    return response.data;
+  },
+
+  // Update user
+  updateUser: async (id: string, userData: any) => {
+    const response = await api.put(`/user/${id}`, userData);
+    return response.data;
+  },
+
+  // Delete user
+  deleteUser: async (id: string) => {
+    const response = await api.delete(`/user/${id}`);
+    return response.data;
+  },
+};
+
+// Chat API
+export const chatAPI = {
+  // Get chat messages
+  getMessages: async (roomId?: string) => {
+    const response = await api.get(`/chat/messages${roomId ? `?roomId=${roomId}` : ''}`);
+    return response.data;
+  },
+
+  // Send message
+  sendMessage: async (messageData: { content: string; roomId?: string }) => {
+    const response = await api.post('/chat/messages', messageData);
+    return response.data;
+  },
+
+  // Get chat rooms
+  getRooms: async () => {
+    const response = await api.get('/chat/rooms');
+      return response.data;
+  },
+};
+
+// Utility functions
+export const isAuthenticated = () => {
+  return !!(localStorage.getItem('token') || localStorage.getItem('adminToken'));
+};
+
+export const isAdmin = () => {
+  const adminUser = localStorage.getItem('adminUser');
+  return !!adminUser;
+};
+
+export const getCurrentUser = () => {
+  const user = localStorage.getItem('user');
+  const adminUser = localStorage.getItem('adminUser');
+  return user ? JSON.parse(user) : adminUser ? JSON.parse(adminUser) : null;
+};
+
+export default api;

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Eye,
   EyeOff,
@@ -26,6 +27,7 @@ import { useToast } from "@/components/ui/use-toast";
 export default function Login() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -72,14 +74,17 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Call the login function from AuthContext
+      await login(formData.email, formData.password);
+      
+      if (rememberMe) {
+        localStorage.setItem("kanxa_remember", "true");
+      }
 
       // Show success notification
       toast({
         title: "Welcome back! 🎉",
-        description:
-          "You have successfully logged into your Kanxa Safari account.",
+        description: "You have successfully logged into your Kanxa Safari account.",
         action: (
           <div className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -88,20 +93,15 @@ export default function Login() {
         ),
       });
 
-      // Store auth data if remember me is checked
-      if (rememberMe) {
-        localStorage.setItem("kanxa_remember", "true");
-      }
-
-      // Redirect to dashboard/profile
+      // Redirect to profile
       setTimeout(() => {
         navigate("/profile");
       }, 1000);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: "Login Failed",
-        description:
-          "Invalid email or password. Please check your credentials and try again.",
+        description: error.message || "Invalid email or password. Please check your credentials and try again.",
         variant: "destructive",
       });
     } finally {

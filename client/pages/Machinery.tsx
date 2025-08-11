@@ -368,6 +368,8 @@ export default function Machinery() {
                 <div>
                   <Label htmlFor="name">Full Name *</Label>
                   <Input
+                    id="name"
+                    name="name"
                     value={rentalForm.name}
                     onChange={(e) =>
                       setRentalForm({ ...rentalForm, name: e.target.value })
@@ -378,6 +380,8 @@ export default function Machinery() {
                 <div>
                   <Label htmlFor="company">Company</Label>
                   <Input
+                    id="company"
+                    name="company"
                     value={rentalForm.company}
                     onChange={(e) =>
                       setRentalForm({ ...rentalForm, company: e.target.value })
@@ -388,6 +392,8 @@ export default function Machinery() {
                 <div>
                   <Label htmlFor="email">Email *</Label>
                   <Input
+                    id="email"
+                    name="email"
                     type="email"
                     value={rentalForm.email}
                     onChange={(e) =>
@@ -399,6 +405,8 @@ export default function Machinery() {
                 <div>
                   <Label htmlFor="phone">Phone *</Label>
                   <Input
+                    id="phone"
+                    name="phone"
                     value={rentalForm.phone}
                     onChange={(e) =>
                       setRentalForm({ ...rentalForm, phone: e.target.value })
@@ -412,6 +420,8 @@ export default function Machinery() {
                 <div>
                   <Label htmlFor="startDate">Start Date *</Label>
                   <Input
+                    id="startDate"
+                    name="startDate"
                     type="date"
                     value={rentalForm.startDate}
                     onChange={(e) =>
@@ -425,6 +435,8 @@ export default function Machinery() {
                 <div>
                   <Label htmlFor="endDate">End Date *</Label>
                   <Input
+                    id="endDate"
+                    name="endDate"
                     type="date"
                     value={rentalForm.endDate}
                     onChange={(e) =>
@@ -437,6 +449,8 @@ export default function Machinery() {
               <div>
                 <Label htmlFor="location">Project Location *</Label>
                 <Input
+                  id="location"
+                  name="location"
                   value={rentalForm.location}
                   onChange={(e) =>
                     setRentalForm({ ...rentalForm, location: e.target.value })
@@ -453,7 +467,7 @@ export default function Machinery() {
                     setRentalForm({ ...rentalForm, projectType: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="projectType">
                     <SelectValue placeholder="Select project type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -486,6 +500,8 @@ export default function Machinery() {
               <div>
                 <Label htmlFor="requirements">Special Requirements</Label>
                 <Textarea
+                  id="requirements"
+                  name="requirements"
                   value={rentalForm.requirements}
                   onChange={(e) =>
                     setRentalForm({

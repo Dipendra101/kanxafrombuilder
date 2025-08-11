@@ -9,6 +9,7 @@ export interface IUser extends Document {
   password: string;
   address?: string;
   company?: string;
+  profilePicture?: string;
   role: 'customer' | 'admin';
   isVerified: boolean;
   resetPasswordToken?: string;
@@ -59,6 +60,10 @@ const userSchema = new Schema<IUser>({
   company: {
     type: String,
     trim: true
+  },
+  profilePicture: {
+    type: String,
+    default: null
   },
   role: {
     type: String,

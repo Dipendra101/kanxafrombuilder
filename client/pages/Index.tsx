@@ -46,17 +46,23 @@ export default function Index() {
               <Button
                 size="lg"
                 className="bg-kanxa-orange hover:bg-kanxa-orange/90 text-white"
+                asChild
               >
-                <Calendar className="mr-2 h-5 w-5" />
-                Book Transportation
+                <Link to="/transportation">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Book Transportation
+                </Link>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 className="border-white text-white hover:bg-white hover:text-kanxa-navy"
+                asChild
               >
-                <Building className="mr-2 h-5 w-5" />
-                Browse Materials
+                <Link to="/construction">
+                  <Building className="mr-2 h-5 w-5" />
+                  Browse Materials
+                </Link>
               </Button>
             </div>
           </div>
@@ -70,8 +76,8 @@ export default function Index() {
       <section className="py-16 bg-gray-50">
         <div className="container px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-kanxa-light-blue to-white"></div>
+            <Card className="relative overflow-hidden group hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer">
+              <div className="absolute inset-0 bg-gradient-to-br from-kanxa-light-blue to-white group-hover:from-kanxa-blue group-hover:to-white transition-all duration-300"></div>
               <CardHeader className="relative z-10">
                 <div className="w-12 h-12 bg-kanxa-blue rounded-lg flex items-center justify-center mb-4">
                   <Bus className="h-6 w-6 text-white" />
@@ -96,8 +102,8 @@ export default function Index() {
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-kanxa-light-orange to-white"></div>
+            <Card className="relative overflow-hidden group hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer">
+              <div className="absolute inset-0 bg-gradient-to-br from-kanxa-light-orange to-white group-hover:from-kanxa-orange group-hover:to-white transition-all duration-300"></div>
               <CardHeader className="relative z-10">
                 <div className="w-12 h-12 bg-kanxa-orange rounded-lg flex items-center justify-center mb-4">
                   <Building className="h-6 w-6 text-white" />
@@ -122,8 +128,8 @@ export default function Index() {
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-kanxa-light-green to-white"></div>
+            <Card className="relative overflow-hidden group hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer">
+              <div className="absolute inset-0 bg-gradient-to-br from-kanxa-light-green to-white group-hover:from-kanxa-green group-hover:to-white transition-all duration-300"></div>
               <CardHeader className="relative z-10">
                 <div className="w-12 h-12 bg-kanxa-green rounded-lg flex items-center justify-center mb-4">
                   <Wrench className="h-6 w-6 text-white" />

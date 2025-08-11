@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Star, MapPin, Clock, Users, Truck, Plane, Bus, Package, Calendar, Phone, Mail, MapPin as MapPinIcon } from 'lucide-react';
-import { apiCall, apiClient, BusService, CargoService, TourPackage } from '@/services/api';
+import { transportationAPI, BusService, CargoService, TourPackage } from '@/services/api';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,6 +21,11 @@ const Transportation: React.FC = () => {
   const [busServices, setBusServices] = useState<BusService[]>([]);
   const [cargoServices, setCargoServices] = useState<CargoService[]>([]);
   const [tourPackages, setTourPackages] = useState<TourPackage[]>([]);
+  
+  // Filtered data states
+  const [filteredBusServices, setFilteredBusServices] = useState<BusService[]>([]);
+  const [filteredCargoServices, setFilteredCargoServices] = useState<CargoService[]>([]);
+  const [filteredTourPackages, setFilteredTourPackages] = useState<TourPackage[]>([]);
   
   // Loading states
   const [loading, setLoading] = useState(true);
@@ -54,11 +59,10 @@ const Transportation: React.FC = () => {
   const loadBusServices = async () => {
     setLoadingBuses(true);
     try {
-      const buses = await apiCall(
-        () => apiClient.getBusServices({ query: searchQuery, type: filterType }),
-        { showToast: false }
-      );
-      setBusServices(buses);
+      const response = await transportationAPI.getBusServices();
+      const services = response.data || [];
+      setBusServices(services);
+      setFilteredBusServices(services);
     } catch (error) {
       console.error('Error loading bus services:', error);
       toast.error('Failed to load bus services');
@@ -70,11 +74,10 @@ const Transportation: React.FC = () => {
   const loadCargoServices = async () => {
     setLoadingCargo(true);
     try {
-      const cargo = await apiCall(
-        () => apiClient.getCargoServices({ query: searchQuery, type: filterType }),
-        { showToast: false }
-      );
-      setCargoServices(cargo);
+      const response = await transportationAPI.getCargoServices();
+      const services = response.data || [];
+      setCargoServices(services);
+      setFilteredCargoServices(services);
     } catch (error) {
       console.error('Error loading cargo services:', error);
       toast.error('Failed to load cargo services');
@@ -86,15 +89,10 @@ const Transportation: React.FC = () => {
   const loadTourPackages = async () => {
     setLoadingTours(true);
     try {
-      const tours = await apiCall(
-        () => apiClient.getTourPackages({ 
-          query: searchQuery, 
-          category: filterCategory, 
-          difficulty: filterDifficulty 
-        }),
-        { showToast: false }
-      );
-      setTourPackages(tours);
+      const response = await transportationAPI.getTourPackages();
+      const packages = response.data || [];
+      setTourPackages(packages);
+      setFilteredTourPackages(packages);
     } catch (error) {
       console.error('Error loading tour packages:', error);
       toast.error('Failed to load tour packages');
@@ -103,24 +101,80 @@ const Transportation: React.FC = () => {
     }
   };
 
+  // Filter functions
+  const filterBusServices = () => {
+    let filtered = busServices;
+    
+    if (searchQuery) {
+      filtered = filtered.filter(bus => 
+        bus.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bus.route.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bus.type.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    if (filterType && filterType !== 'all') {
+      filtered = filtered.filter(bus => bus.type === filterType);
+    }
+    
+    setFilteredBusServices(filtered);
+  };
+
+  const filterCargoServices = () => {
+    let filtered = cargoServices;
+    
+    if (searchQuery) {
+      filtered = filtered.filter(cargo => 
+        cargo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cargo.origin.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cargo.destination.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cargo.type.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    if (filterType && filterType !== 'all') {
+      filtered = filtered.filter(cargo => cargo.type === filterType);
+    }
+    
+    setFilteredCargoServices(filtered);
+  };
+
+  const filterTourPackages = () => {
+    let filtered = tourPackages;
+    
+    if (searchQuery) {
+      filtered = filtered.filter(tour => 
+        tour.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tour.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tour.difficulty.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    if (filterCategory && filterCategory !== 'all') {
+      filtered = filtered.filter(tour => tour.category === filterCategory);
+    }
+    
+    if (filterDifficulty && filterDifficulty !== 'all') {
+      filtered = filtered.filter(tour => tour.difficulty === filterDifficulty);
+    }
+    
+    setFilteredTourPackages(filtered);
+  };
+
   // Handle search and filters
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      if (activeTab === 'buses') {
-        loadBusServices();
-      } else if (activeTab === 'cargo') {
-        loadCargoServices();
-      } else if (activeTab === 'tours') {
-        loadTourPackages();
-      }
-    }, 500);
+      filterBusServices();
+      filterCargoServices();
+      filterTourPackages();
+    }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchQuery, filterType, filterCategory, filterDifficulty, activeTab]);
+  }, [searchQuery, filterType, filterCategory, filterDifficulty, busServices, cargoServices, tourPackages]);
 
   const handleBooking = (service: BusService | CargoService | TourPackage, type: 'bus' | 'cargo' | 'tour') => {
     // Check if user is logged in
-    const token = apiClient.getToken();
+    const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
     if (!token) {
       toast.error('Please login to book services');
       navigate('/login');
@@ -242,7 +296,7 @@ const Transportation: React.FC = () => {
                   <SelectValue placeholder="Bus Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="Deluxe">Deluxe</SelectItem>
                   <SelectItem value="Standard">Standard</SelectItem>
                   <SelectItem value="Express">Express</SelectItem>
@@ -255,7 +309,7 @@ const Transportation: React.FC = () => {
                   <SelectValue placeholder="Cargo Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Types</SelectItem>
+                  <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="Truck">Truck</SelectItem>
                   <SelectItem value="Van">Van</SelectItem>
                   <SelectItem value="Container">Container</SelectItem>
@@ -269,7 +323,7 @@ const Transportation: React.FC = () => {
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     <SelectItem value="Adventure">Adventure</SelectItem>
                     <SelectItem value="Cultural">Cultural</SelectItem>
                     <SelectItem value="Wildlife">Wildlife</SelectItem>
@@ -282,7 +336,7 @@ const Transportation: React.FC = () => {
                     <SelectValue placeholder="Difficulty" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Difficulties</SelectItem>
+                    <SelectItem value="all">All Difficulties</SelectItem>
                     <SelectItem value="Easy">Easy</SelectItem>
                     <SelectItem value="Moderate">Moderate</SelectItem>
                     <SelectItem value="Difficult">Difficult</SelectItem>
@@ -321,7 +375,7 @@ const Transportation: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {busServices.map((bus) => (
+                {filteredBusServices.map((bus) => (
                   <Card key={bus._id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="relative">
                       <img
@@ -409,7 +463,7 @@ const Transportation: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {cargoServices.map((cargo) => (
+                {filteredCargoServices.map((cargo) => (
                   <Card key={cargo._id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="relative">
                       <img
@@ -496,7 +550,7 @@ const Transportation: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {tourPackages.map((tour) => (
+                {filteredTourPackages.map((tour) => (
                   <Card key={tour._id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="relative">
                       <img

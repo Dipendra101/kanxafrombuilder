@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Eye,
   EyeOff,
@@ -19,6 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 export default function AdminLogin() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { adminLogin } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -60,41 +62,28 @@ export default function AdminLogin() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Call the admin login function from AuthContext
+      await adminLogin(formData.username, formData.password);
 
-      // For demo purposes, accept admin/admin
-      if (formData.username === "admin" && formData.password === "admin") {
-        // Store admin token
-        localStorage.setItem("adminToken", "demo-admin-token");
-        localStorage.setItem("adminUser", JSON.stringify({
-          id: "admin-1",
-          username: "admin",
-          role: "super_admin",
-          name: "System Administrator",
-        }));
+      toast({
+        title: "Welcome, Administrator! 🎉",
+        description: "You have successfully logged into the admin panel.",
+        action: (
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <span className="text-green-600 font-medium">Success</span>
+          </div>
+        ),
+      });
 
-        toast({
-          title: "Welcome, Administrator! 🎉",
-          description: "You have successfully logged into the admin panel.",
-          action: (
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <span className="text-green-600 font-medium">Success</span>
-            </div>
-          ),
-        });
-
-        setTimeout(() => {
-          navigate("/admin");
-        }, 1000);
-      } else {
-        throw new Error("Invalid credentials");
-      }
-    } catch (error) {
+      setTimeout(() => {
+        navigate("/admin");
+      }, 1000);
+    } catch (error: any) {
+      console.error('Admin login error:', error);
       toast({
         title: "Login Failed",
-        description: "Invalid username or password. Please try again.",
+        description: error.message || "Invalid username or password. Please try again.",
         variant: "destructive",
       });
     } finally {
