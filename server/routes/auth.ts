@@ -8,7 +8,17 @@ const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'kanxasafari_jwt_secret_key';
 
 // Mock user data (replace with real database)
-const users: any[] = [];
+const users: any[] = [
+  {
+    id: 'user_test',
+    name: 'Test User',
+    email: 'test@kanxasafari.com',
+    phone: '9841234567',
+    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password: "password"
+    role: 'user',
+    createdAt: new Date('2024-01-01')
+  }
+];
 
 // Generate JWT token
 const generateToken = (userId: string) => {
