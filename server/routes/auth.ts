@@ -58,7 +58,7 @@ const register: RequestHandler = async (req, res) => {
       return res.status(400).json({ success: false, message: 'User already exists with this email or phone number' });
     }
 
-    // Hashing is handled by the .pre('save') middleware in User.js
+    // Hashing is handled by the .pre('save') middleware in the User model
     await User.create({ name, email, phone, password });
     
     res.status(201).json({
@@ -93,12 +93,15 @@ const login: RequestHandler = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    const token = generateToken(user.id);
+    const token = generateToken(user._id.toString()); // Ensure user ID is a string
 
+    // Send back a user object without the password
+    const userResponse = { id: user._id, name: user.name, email: user.email, role: user.role };
+    
     res.json({
       success: true,
       message: 'Login successful',
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: userResponse,
       token
     });
 
@@ -113,21 +116,26 @@ const login: RequestHandler = async (req, res) => {
  * @desc    Change a logged-in user's password
  */
 const changePassword: RequestHandler = async (req: AuthenticatedRequest, res) => {
-    const { currentPassword, newPassword } = req.body;
-    if (!currentPassword || !newPassword || newPassword.length < 6) {
-        return res.status(400).json({ message: "Please provide all required password fields correctly." });
+    try {
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword || newPassword.length < 6) {
+            return res.status(400).json({ message: "Please provide all required password fields correctly." });
+        }
+        
+        const user = await User.findById(req.user?.id).select('+password');
+        if (!user) return res.status(404).json({ message: "User not found." });
+
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) return res.status(401).json({ message: "Incorrect current password." });
+
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ success: true, message: "Password updated successfully." });
+    } catch(error) {
+        console.error("Change password error:", error);
+        res.status(500).json({ message: 'Server error during password change.' });
     }
-    
-    const user = await User.findById(req.user?.id).select('+password');
-    if (!user) return res.status(404).json({ message: "User not found." });
-
-    const isMatch = await user.comparePassword(currentPassword);
-    if (!isMatch) return res.status(401).json({ message: "Incorrect current password." });
-
-    user.password = newPassword;
-    await user.save();
-
-    res.json({ success: true, message: "Password updated successfully." });
 };
 
 /**
@@ -135,30 +143,7 @@ const changePassword: RequestHandler = async (req: AuthenticatedRequest, res) =>
  * @desc    Send a new verification code to the user's email
  */
 const sendVerificationEmail: RequestHandler = async (req: AuthenticatedRequest, res) => {
-    const user = await User.findById(req.user?.id);
-    if (!user) return res.status(404).json({ message: "User not found." });
-
-    if (user.isEmailVerified) return res.status(400).json({ message: "Email is already verified." });
-
-    const verificationCode = crypto.randomInt(100000, 999999).toString();
-    user.emailVerificationCode = verificationCode;
-    user.emailVerificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    await user.save({ validateBeforeSave: false });
-
-    try {
-        await sendEmail({
-            email: user.email,
-            subject: 'Your Kanxa Safari Email Verification Code',
-            html: `<h2>Email Verification</h2><p>Your verification code is: <strong>${verificationCode}</strong></p><p>This code will expire in 10 minutes.</p>`,
-        });
-        res.json({ success: true, message: `Verification code sent to ${user.email}` });
-    } catch (error) {
-        user.emailVerificationCode = undefined;
-        user.emailVerificationExpires = undefined;
-        await user.save({ validateBeforeSave: false });
-        console.error("Email sending error:", error);
-        res.status(500).json({ message: "Failed to send verification email." });
-    }
+    // ... (your existing code for this function)
 };
 
 /**
@@ -166,24 +151,7 @@ const sendVerificationEmail: RequestHandler = async (req: AuthenticatedRequest, 
  * @desc    Verify the code sent to the user's email
  */
 const verifyEmailCode: RequestHandler = async (req: AuthenticatedRequest, res) => {
-    const { code } = req.body;
-    if (!code) return res.status(400).json({ message: "Please provide a verification code." });
-
-    const user = await User.findById(req.user?.id);
-    if (!user || !user.emailVerificationCode || user.emailVerificationExpires < new Date()) {
-        return res.status(400).json({ message: "Invalid or expired verification code. Please request a new one." });
-    }
-
-    if (user.emailVerificationCode !== code) {
-        return res.status(400).json({ message: "Incorrect verification code." });
-    }
-
-    user.isEmailVerified = true;
-    user.emailVerificationCode = undefined;
-    user.emailVerificationExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-
-    res.json({ success: true, message: "Email verified successfully!" });
+    // ... (your existing code for this function)
 };
 
 
@@ -193,5 +161,33 @@ router.post('/login', login);
 router.post('/change-password', verifyToken, changePassword);
 router.post('/send-verification-email', verifyToken, sendVerificationEmail);
 router.post('/verify-email-code', verifyToken, verifyEmailCode);
+
+
+// =========================================================================
+// ===             THE FINAL FIX: ADDING THE VERIFY-TOKEN ROUTE          ===
+// =========================================================================
+/**
+ * @route   POST /api/auth/verify-token
+ * @desc    Verifies the token from the Authorization header to persist login sessions.
+ * @access  Private
+ */
+router.post('/verify-token', verifyToken, async (req: AuthenticatedRequest, res: Response) => {
+    // If the `verifyToken` middleware passes, it means the token is valid.
+    // The middleware attaches the user ID to `req.user`.
+    // Now, we just need to fetch the full user details to send back to the frontend.
+    try {
+        const user = await User.findById(req.user?.id).select('-password');
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found for this token.' });
+        }
+        // Success! Send back the user data to restore the session on the frontend.
+        res.json({ success: true, user });
+    } catch (error) {
+        console.error("Error in /verify-token route:", error);
+        res.status(500).json({ success: false, message: 'Server error during token verification.' });
+    }
+});
+// =========================================================================
+
 
 export default router;

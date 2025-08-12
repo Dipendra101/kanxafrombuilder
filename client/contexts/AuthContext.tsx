@@ -25,23 +25,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Start true to show loading state on initial load
+  const [isLoading, setIsLoading] = useState(true); // Start true to show a loader on initial page load
   const navigate = useNavigate();
 
-  // This useEffect runs only once on initial app load to check for an existing session
+  // *** THIS IS THE CRITICAL FIX FOR STATE MANAGEMENT ***
+  // This useEffect runs only once on initial app load to check for an existing session.
   useEffect(() => {
     const verifyUserSession = async () => {
       const token = localStorage.getItem('kanxa_token');
 
-      // Only try to verify if a token actually exists
+      // Only try to verify if a token actually exists in storage
       if (token) {
         try {
-          // *** THE FIX IS HERE ***
           // Call verifyToken WITHOUT any arguments.
-          // The apiRequest helper in `api.ts` automatically finds the token in localStorage and adds it to the header.
+          // The api.ts service automatically finds the token and adds it to the request header.
           const response = await authAPI.verifyToken();
           
           if (response.success) {
+            // If the server confirms the token is valid, restore the user state
             setUser(response.user);
             setIsAuthenticated(true);
           } else {
@@ -60,7 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     verifyUserSession();
-  }, []); // The empty dependency array ensures this runs only once
+  }, []); // The empty dependency array [] ensures this runs only once
 
   const login = async (credentials: any) => {
     try {
@@ -69,13 +70,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Set state first
         setUser(response.user);
         setIsAuthenticated(true);
-        // Then set localStorage
+        // Then set the token in localStorage
         localStorage.setItem('kanxa_token', response.token);
         return response;
       }
     } catch (error) {
       console.error("Login error:", error);
-      throw error; // Re-throw the error so the login form can catch it and display a message
+      throw error; // Re-throw the error so the login form can catch it
     }
   };
 
@@ -90,23 +91,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    // Clear state and localStorage
+    // Clear React state and localStorage
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('kanxa_token');
-    // Redirect to login page
+    // Redirect to login page to prevent access to protected routes
     navigate('/login');
   };
 
-  // Provide the context value to all children components
   return (
     <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, register, logout }}>
+      {/* Don't render the rest of the app until the session check is complete */}
       {!isLoading && children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook to easily consume the AuthContext
+// Custom hook to easily use the AuthContext in other components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
