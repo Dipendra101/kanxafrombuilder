@@ -237,41 +237,31 @@ export function createServer() {
     ) => {
       console.error("Error:", err);
 
-<<<<<<< HEAD
-      if (err.name === "ValidationError") {
-        return res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: Object.values(err.errors).map((e: any) => e.message),
-        });
-      }
-
-      if (err.name === "CastError") {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid ID format",
-        });
-      }
-
-      res.status(500).json({
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
         success: false,
-        message: "Something went wrong!",
-        error:
-          process.env.NODE_ENV === "development"
-            ? err.message
-            : "Internal server error",
+        message: "Validation error",
+        errors: Object.values(err.errors).map((e: any) => e.message),
       });
-    },
-  );
-=======
-  // 404 handler
-  // app.use('*', (req, res) => {
-  //   res.status(404).json({ 
-  //     success: false, 
-  //     message: 'Route not found' 
-  //   });
-  // });
->>>>>>> 9e1a853b5a9934aaeb388675f6691d683261ed53
+    }
+
+    if (err.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid ID format",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong!",
+      error:
+        process.env.NODE_ENV === "development"
+          ? err.message
+          : "Internal server error",
+    });
+  },
+);
 
   return app;
 }
