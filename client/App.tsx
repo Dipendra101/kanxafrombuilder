@@ -31,6 +31,7 @@ import Chat from "./pages/Chat";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminDashboardSimple from "./pages/AdminDashboardSimple";
 import AdminTest from "./pages/AdminTest";
+import SmsTest from "./pages/SmsTest";
 import EnhancedBooking from "./pages/EnhancedBooking";
 import { AuthProvider } from "./contexts/AuthContext";
 
