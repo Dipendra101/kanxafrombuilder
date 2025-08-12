@@ -10,6 +10,13 @@ if (!cached) {
 }
 
 async function connectDB() {
+  // If no MongoDB URI is provided, run in mock mode
+  if (!MONGODB_URI || MONGODB_URI.trim() === '') {
+    console.log('ℹ️  No MongoDB URI provided, running in mock mode');
+    cached.isConnected = false;
+    return null;
+  }
+
   // Return existing connection if available
   if (cached.conn && cached.isConnected) {
     return cached.conn;
