@@ -68,6 +68,7 @@ export function createServer() {
 
   // Main application routes
   app.use("/api/auth", authRoutes);
+  app.use("/api/sms", smsRoutes);
   app.use("/api/users", userRoutes);
   app.use("/api/services", serviceRoutes);
   app.use("/api/bookings", bookingRoutes);
