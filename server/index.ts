@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
 import serviceRoutes from "./routes/services";
 import bookingRoutes from "./routes/bookings";
+import adminRoutes from "./routes/admin";
 import connectDB from "./config/database";
 
 export function createServer() {
