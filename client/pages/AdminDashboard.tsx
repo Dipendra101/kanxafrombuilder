@@ -312,9 +312,13 @@ export default function AdminDashboard() {
     loadDashboardData();
   }, [toast]);
 
-  // Check admin access
+  // Check admin access - allow demo mode for UI preview
+  const isDemoMode = !isAuthenticated || !user;
+  const isAdmin = user?.role === 'admin';
+
   useEffect(() => {
-    if (!isLoading && isAuthenticated && user?.role !== "admin") {
+    // Only redirect if user is authenticated but not admin (allow demo mode)
+    if (!isLoading && isAuthenticated && user && user.role !== "admin") {
       toast({
         title: "Access Denied",
         description: "Admin privileges required to access this page.",
