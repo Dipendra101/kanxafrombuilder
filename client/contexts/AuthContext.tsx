@@ -26,7 +26,10 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isGuest: boolean;
   login: (email: string, password: string) => Promise<void>;
+  smsLogin: (phone: string, code: string) => Promise<void>;
+  guestLogin: () => void;
   register: (userData: {
     name: string;
     email: string;
@@ -56,6 +59,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
 
   const isAuthenticated = !!user && !!token;
 
@@ -66,7 +70,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const storedToken = localStorage.getItem("kanxa_token");
         const storedUser = localStorage.getItem("kanxa_user");
 
-        if (storedToken && storedUser) {
+        const storedGuest = localStorage.getItem("kanxa_guest");
+
+        if (storedGuest === "true") {
+          setIsGuest(true);
+          console.log("ℹ️  Guest mode restored");
+        } else if (storedToken && storedUser) {
           // Verify token with backend
           try {
             const response = await authAPI.verifyToken(storedToken);
@@ -95,6 +104,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Clear any potentially corrupted data
         localStorage.removeItem("kanxa_token");
         localStorage.removeItem("kanxa_user");
+        localStorage.removeItem("kanxa_guest");
       } finally {
         setIsLoading(false);
       }
@@ -154,11 +164,64 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const smsLogin = async (phone: string, code: string) => {
+    try {
+      setIsLoading(true);
+
+      // Simulate SMS verification API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // For demo purposes, accept any 6-digit code
+      if (code.length !== 6) {
+        throw new Error("Invalid verification code");
+      }
+
+      // Create user with phone number
+      const smsUser = {
+        _id: `sms_${Date.now()}`,
+        name: "SMS User",
+        email: "",
+        phone: phone,
+        role: "user",
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      const mockToken = `sms_token_${Date.now()}`;
+
+      setUser(smsUser);
+      setToken(mockToken);
+      setIsGuest(false);
+
+      // Store in localStorage
+      localStorage.setItem("kanxa_token", mockToken);
+      localStorage.setItem("kanxa_user", JSON.stringify(smsUser));
+      localStorage.removeItem("kanxa_guest");
+    } catch (error) {
+      console.error("SMS login error:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const guestLogin = () => {
+    setIsGuest(true);
+    setUser(null);
+    setToken(null);
+    localStorage.setItem("kanxa_guest", "true");
+    localStorage.removeItem("kanxa_token");
+    localStorage.removeItem("kanxa_user");
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
+    setIsGuest(false);
     localStorage.removeItem("kanxa_token");
     localStorage.removeItem("kanxa_user");
+    localStorage.removeItem("kanxa_guest");
   };
 
   const updateUser = async (userData: Partial<User>) => {
@@ -197,7 +260,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     token,
     isLoading,
     isAuthenticated,
+    isGuest,
     login,
+    smsLogin,
+    guestLogin,
     register,
     logout,
     updateUser,
