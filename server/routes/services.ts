@@ -407,11 +407,18 @@ export const getConstructionServices: RequestHandler = async (req, res) => {
       ];
     }
 
-    const constructionItems = await Service.find(query)
-      .populate("createdBy", "name email")
-      .sort({ "rating.average": -1 });
+    const constructionItems = await withDB(
+      async () => {
+        return await Service.find(query)
+          .populate("createdBy", "name email")
+          .sort({ "rating.average": -1 });
+      },
+      // Fallback mock data
+      mockServices.filter(s => s.type === 'construction')
+    );
 
-    const transformedItems = constructionItems.map((item) => ({
+    const itemsArray = Array.isArray(constructionItems) ? constructionItems : [constructionItems];
+    const transformedItems = itemsArray.map((item) => ({
       id: item._id,
       name: item.name,
       category: item.category,
