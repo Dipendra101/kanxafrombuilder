@@ -97,8 +97,12 @@ export default function Login() {
         localStorage.setItem("kanxa_remember", "true");
       }
 
-      // Redirect to home page
-      navigate("/");
+      // Redirect based on user role
+      if (user?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error: any) {
       toast({
         title: "Login Failed",
