@@ -212,6 +212,21 @@ export default function Header() {
                   Sign Out
                 </Button>
               </>
+            ) : isGuest ? (
+              <>
+                <Badge variant="outline" className="text-orange-600 border-orange-300">
+                  Guest Mode
+                </Badge>
+                <Button variant="ghost" asChild>
+                  <Link to="/login">Sign In</Link>
+                </Button>
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy hover:from-kanxa-navy hover:to-kanxa-blue"
+                >
+                  <Link to="/signup">Get Started</Link>
+                </Button>
+              </>
             ) : (
               <>
                 <Button variant="ghost" asChild>
