@@ -398,10 +398,26 @@ export default function AdminDashboard() {
         }
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load dashboard data. Using demo data.",
-          variant: "destructive",
+
+        // Only show error toast for authenticated users, not in demo mode
+        if (!isDemoMode) {
+          toast({
+            title: "Error",
+            description: "Failed to load dashboard data. Using demo data.",
+            variant: "destructive",
+          });
+        }
+
+        // Fallback to demo data
+        setStats({
+          totalUsers: 125,
+          totalServices: 25,
+          totalBookings: 340,
+          totalRevenue: 125000,
+          recentUsers: 8,
+          activeServices: 22,
+          pendingBookings: 12,
+          monthlyRevenue: 25000,
         });
       } finally {
         setIsLoading(false);
