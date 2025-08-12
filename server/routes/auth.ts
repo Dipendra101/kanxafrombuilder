@@ -334,7 +334,20 @@ export const verifyToken: RequestHandler = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET) as any;
-    const user = await User.findById(decoded.userId);
+
+    // Use safe database operation with fallback
+    const user = await withDB(
+      async () => {
+        const foundUser = await User.findById(decoded.userId);
+        return foundUser;
+      },
+      // Fallback: Check mock users
+      (() => {
+        console.log('⚠️  Database unavailable, checking mock users for token verification');
+        const mockUser = mockUsers.find(u => u._id === decoded.userId);
+        return mockUser || null;
+      })()
+    );
 
     if (!user) {
       return res.status(401).json({
@@ -350,19 +363,21 @@ export const verifyToken: RequestHandler = async (req, res) => {
       });
     }
 
-    // Update last activity
-    user.lastActivity = new Date();
-    await user.save();
+    // Update last activity (only for real users)
+    if (isDBConnected() && user.save) {
+      user.lastActivity = new Date();
+      await user.save();
+    }
 
     res.json({
       success: true,
-      user: user.toJSON(),
+      user: user.toJSON ? user.toJSON() : user,
       tokenValid: true
     });
 
   } catch (error: any) {
     console.error('Token verification error:', error);
-    
+
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({
         success: false,
@@ -370,7 +385,7 @@ export const verifyToken: RequestHandler = async (req, res) => {
         tokenExpired: true
       });
     }
-    
+
     res.status(401).json({
       success: false,
       message: 'Invalid token'
