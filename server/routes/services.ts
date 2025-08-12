@@ -351,7 +351,7 @@ export const getCargoServices: RequestHandler = async (req, res) => {
 
     const cargoArray = Array.isArray(cargoServices) ? cargoServices : [cargoServices];
 
-    const transformedCargo = cargoServices.map((cargo) => ({
+    const transformedCargo = cargoArray.map((cargo) => ({
       id: cargo._id,
       name: cargo.name,
       vehicleType: cargo.cargoService?.vehicleType,
