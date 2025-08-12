@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import GuestRestriction from "@/components/auth/GuestRestriction";
 import {
   Package,
   Calendar,
@@ -38,7 +40,18 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Layout from "@/components/layout/Layout";
 
 export default function Orders() {
+  const { isGuest, isAuthenticated } = useAuth();
   const [orderFilter, setOrderFilter] = useState("all");
+
+  // Show guest restriction if user is in guest mode
+  if (isGuest || !isAuthenticated) {
+    return (
+      <GuestRestriction
+        action="view your orders"
+        description="You need to be logged in to view and manage your orders. Create an account to track your purchases and order history."
+      />
+    );
+  }
 
   const orders = [
     {
