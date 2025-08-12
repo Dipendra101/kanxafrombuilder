@@ -148,29 +148,29 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-    // Use real backend registration
-    await register({
-      name: `${formData.firstName} ${formData.lastName}`,
-      email: formData.email,
-      phone: formData.phone,
-      password: formData.password,
-    });
+      // Register user via API (not auto-login)
+      const response = await authAPI.register({
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+      });
 
-    // Show success notification
-    toast({
-      title: "Account Created Successfully! 🎉",
-      description:
-        "Welcome to Kanxa Safari! You have been automatically logged in.",
-      action: (
-        <div className="flex items-center gap-2">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <span className="text-green-600 font-medium">Success</span>
-        </div>
-      ),
-    });
+      // Show success notification
+      toast({
+        title: "Account Created Successfully! 🎉",
+        description:
+          "Please login with your credentials to access your account.",
+        action: (
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <span className="text-green-600 font-medium">Success</span>
+          </div>
+        ),
+      });
 
-    // Redirect to home page since user is automatically logged in
-    navigate("/");
+      // Redirect to login page
+      navigate("/login");
     } catch (error: any) {
     toast({
       title: "Registration Failed",
