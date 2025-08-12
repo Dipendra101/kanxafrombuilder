@@ -154,7 +154,12 @@ export default function Login() {
   };
 
   const handleSmsSuccess = () => {
-    navigate("/");
+    // Check user role from context after SMS login
+    if (user?.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/");
+    }
   };
 
   const handleBackToEmail = () => {
