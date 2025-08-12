@@ -250,21 +250,31 @@ export const getBusServices: RequestHandler = async (req, res) => {
   try {
     const { from, to, date } = req.query;
 
-    const query: any = {
-      type: "bus",
-      isActive: true,
-      isAvailable: true,
-    };
+    const result = await withDB(
+      async () => {
+        const query: any = {
+          type: "bus",
+          isActive: true,
+          isAvailable: true,
+        };
 
-    if (from || to) {
-      if (from)
-        query["busService.route.from"] = { $regex: from, $options: "i" };
-      if (to) query["busService.route.to"] = { $regex: to, $options: "i" };
-    }
+        if (from || to) {
+          if (from)
+            query["busService.route.from"] = { $regex: from, $options: "i" };
+          if (to) query["busService.route.to"] = { $regex: to, $options: "i" };
+        }
 
-    const buses = await Service.find(query)
-      .populate("createdBy", "name email")
-      .sort({ "rating.average": -1 });
+        const buses = await Service.find(query)
+          .populate("createdBy", "name email")
+          .sort({ "rating.average": -1 });
+
+        return buses;
+      },
+      // Fallback mock data
+      mockServices.filter(s => s.type === 'bus')
+    );
+
+    const buses = Array.isArray(result) ? result : [result];
 
     // Transform data to match frontend expectations
     const transformedBuses = buses.map((bus) => ({
