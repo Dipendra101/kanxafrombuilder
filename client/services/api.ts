@@ -457,6 +457,7 @@ export const healthAPI = {
 
 export default {
   authAPI,
+  smsAPI,
   userAPI,
   servicesAPI,
   bookingsAPI,
