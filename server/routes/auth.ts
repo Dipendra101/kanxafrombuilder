@@ -305,10 +305,8 @@ export const login: RequestHandler = async (req, res) => {
       success: true,
       message: 'Login successful' + (!isDBConnected() ? ' (demo mode)' : ''),
       user: userResponse,
-      tokens: {
-        accessToken,
-        refreshToken,
-      }
+      token: accessToken, // Frontend expects 'token', not 'tokens'
+      refreshToken
     });
 
   } catch (error: any) {
