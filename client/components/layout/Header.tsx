@@ -22,7 +22,7 @@ import ChatNotifications from "@/components/chat/ChatNotifications";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Header() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, isGuest } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
