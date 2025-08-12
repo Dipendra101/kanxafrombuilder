@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import SmsLogin from "@/components/auth/SmsLogin";
 import {
   Eye,
   EyeOff,
@@ -27,11 +28,12 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function Login() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { login, guestLogin } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [loginMode, setLoginMode] = useState<"email" | "sms">("email");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -121,6 +123,33 @@ export default function Login() {
     });
   };
 
+  const handleSmsLogin = () => {
+    setLoginMode("sms");
+  };
+
+  const handleGuestLogin = () => {
+    guestLogin();
+    toast({
+      title: "Guest Mode Activated",
+      description: "You can browse the website but cannot make bookings",
+      action: (
+        <div className="flex items-center gap-2">
+          <User className="h-4 w-4 text-orange-600" />
+          <span className="text-orange-600 font-medium">Guest</span>
+        </div>
+      ),
+    });
+    navigate("/");
+  };
+
+  const handleSmsSuccess = () => {
+    navigate("/");
+  };
+
+  const handleBackToEmail = () => {
+    setLoginMode("email");
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
@@ -128,6 +157,15 @@ export default function Login() {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
+
+  if (loginMode === "sms") {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-kanxa-light-blue via-white to-kanxa-light-orange flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
+        <SmsLogin onBack={handleBackToEmail} onSuccess={handleSmsSuccess} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-kanxa-light-blue via-white to-kanxa-light-orange flex items-center justify-center p-4">
@@ -327,6 +365,7 @@ export default function Login() {
               <Button
                 variant="outline"
                 className="text-sm"
+                onClick={handleSmsLogin}
                 disabled={isLoading}
               >
                 <Smartphone className="mr-2 h-3 w-3" />
@@ -335,6 +374,7 @@ export default function Login() {
               <Button
                 variant="outline"
                 className="text-sm"
+                onClick={handleGuestLogin}
                 disabled={isLoading}
               >
                 <User className="mr-2 h-3 w-3" />
