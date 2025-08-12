@@ -230,8 +230,13 @@ export default function Transportation() {
   };
 
   useEffect(() => {
-    fetchServices(selectedTab === 'buses' ? 'bus' : selectedTab);
-  }, [selectedTab]);
+    // Use a timeout to debounce rapid tab changes
+    const timeoutId = setTimeout(() => {
+      fetchServices(selectedTab === 'buses' ? 'bus' : selectedTab);
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [selectedTab, isLoading]);
 
   const filteredBuses = busRoutes.filter((bus) => {
     if (selectedRoute && selectedRoute !== "all" && !`${bus.from} → ${bus.to}`.includes(selectedRoute)) {
