@@ -1,4 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/components/ui/use-toast";
+import GuestRestriction from "@/components/auth/GuestRestriction";
 import {
   User,
   Mail,
@@ -34,23 +37,52 @@ import { Switch } from "@/components/ui/switch";
 import Layout from "@/components/layout/Layout";
 
 export default function Profile() {
+  const { user, isGuest, isAuthenticated, updateUser, logout } = useAuth();
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Show guest restriction if user is in guest mode
+  if (isGuest || !isAuthenticated) {
+    return (
+      <GuestRestriction
+        action="access your profile"
+        description="You need to be logged in to view and edit your profile. Create an account to manage your personal information and preferences."
+      />
+    );
+  }
 
   // Default image provided
   const defaultImage =
     "https://cdn.builder.io/api/v1/image/assets%2Fe0e990aaf8214381b9783ad82133cc2a%2F726cd8591a334f858722142910fcf4de?format=webp&width=800";
 
   const [profile, setProfile] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+977-XXX-XXXXXX",
-    address: "Lamjung, Nepal",
-    company: "ABC Construction",
-    dateJoined: "2023-01-15",
-    bio: "Regular customer of Kanxa Safari services. Primarily use transportation and construction materials.",
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    address: user?.address || "",
+    company: "",
+    dateJoined: user?.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    bio: "",
   });
+
+  // Update profile when user data changes
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        company: "",
+        dateJoined: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        bio: "",
+      });
+      setProfilePicture(user.profilePicture || null);
+    }
+  }, [user]);
 
   const [notifications, setNotifications] = useState({
     bookingUpdates: true,
@@ -59,9 +91,39 @@ export default function Profile() {
     newsletter: true,
   });
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Here you would typically save to backend
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      await updateUser({
+        name: profile.name,
+        email: profile.email,
+        phone: profile.phone,
+        address: profile.address,
+        profilePicture: profilePicture || undefined,
+      });
+
+      setIsEditing(false);
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been successfully updated.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
   };
 
   const handleProfilePictureUpload = (
@@ -285,13 +347,16 @@ export default function Profile() {
                             isEditing ? handleSave() : setIsEditing(true)
                           }
                           className="text-xs sm:text-sm w-full sm:w-auto"
+                          disabled={isLoading}
                         >
-                          {isEditing ? (
+                          {isLoading ? (
+                            <Loader2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+                          ) : isEditing ? (
                             <Save className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           ) : (
                             <Edit className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           )}
-                          {isEditing ? "Save" : "Edit"}
+                          {isLoading ? "Saving..." : isEditing ? "Save" : "Edit"}
                         </Button>
                       </CardHeader>
                       <CardContent className="space-y-4">
@@ -754,6 +819,7 @@ export default function Profile() {
                     <Button
                       variant="destructive"
                       className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
+                      onClick={handleLogout}
                     >
                       <LogOut className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Sign Out
