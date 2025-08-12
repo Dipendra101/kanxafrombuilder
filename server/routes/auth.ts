@@ -2,13 +2,52 @@ import { Router, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import User, { IUser } from "../models/User";
-import connectDB from "../config/database";
+import { withDB, isDBConnected } from "../config/database";
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'kanxasafari_jwt_secret_key_super_secure_2024';
 
-// Connect to database
-connectDB();
+// Mock users for when database is unavailable
+const mockUsers = [
+  {
+    _id: 'mock_user_1',
+    name: 'Demo User',
+    email: 'user@demo.com',
+    phone: '1234567890',
+    password: '$2b$12$DEMO_HASH_PASSWORD',
+    role: 'user',
+    isActive: true,
+    toJSON: () => ({
+      _id: 'mock_user_1',
+      name: 'Demo User',
+      email: 'user@demo.com',
+      phone: '1234567890',
+      role: 'user',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    })
+  },
+  {
+    _id: 'mock_admin_1',
+    name: 'Demo Admin',
+    email: 'admin@demo.com',
+    phone: '0987654321',
+    password: '$2b$12$DEMO_HASH_PASSWORD',
+    role: 'admin',
+    isActive: true,
+    toJSON: () => ({
+      _id: 'mock_admin_1',
+      name: 'Demo Admin',
+      email: 'admin@demo.com',
+      phone: '0987654321',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    })
+  }
+];
 
 // Utility functions
 const generateToken = (user: IUser) => {
