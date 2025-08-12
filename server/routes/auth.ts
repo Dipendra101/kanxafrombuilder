@@ -179,10 +179,8 @@ export const register: RequestHandler = async (req, res) => {
       success: true,
       message: 'User registered successfully' + (!isDBConnected() ? ' (demo mode)' : ''),
       user: userResponse,
-      tokens: {
-        accessToken,
-        refreshToken,
-      }
+      token: accessToken, // Frontend expects 'token', not 'tokens'
+      refreshToken
     });
 
   } catch (error: any) {
