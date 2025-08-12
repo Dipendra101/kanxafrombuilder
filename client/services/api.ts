@@ -367,6 +367,29 @@ export const bookingsAPI = {
   },
 };
 
+// Admin API
+export const adminAPI = {
+  getDashboard: async () => {
+    return apiRequest('/admin/dashboard');
+  },
+
+  getStats: async () => {
+    return apiRequest('/admin/stats');
+  },
+
+  getAnalytics: async (period: string = '30d') => {
+    return apiRequest(`/admin/analytics?period=${period}`);
+  },
+
+  exportData: async (type: string) => {
+    return apiRequest(`/admin/export/${type}`);
+  },
+
+  getSystemHealth: async () => {
+    return apiRequest('/admin/health');
+  },
+};
+
 // Health check
 export const healthAPI = {
   check: async () => {
@@ -379,5 +402,6 @@ export default {
   userAPI,
   servicesAPI,
   bookingsAPI,
+  adminAPI,
   healthAPI,
 };
