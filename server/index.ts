@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import authRoutes from "./routes/auth";
+import smsRoutes from "./routes/sms";
 import userRoutes from "./routes/users";
 import serviceRoutes from "./routes/services";
 import bookingRoutes from "./routes/bookings";
