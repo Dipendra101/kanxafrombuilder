@@ -436,9 +436,7 @@ export default function Transportation() {
                                     Book Seats
                                   </Button>
                                 </DialogTrigger>
-                                {selectedBus && bus.id === selectedBus.id && (
-                                  <SeatSelectionDialog bus={selectedBus} />
-                                )}
+                                <SeatSelectionDialog bus={selectedBus || bus} />
                               </Dialog>
                             </div>
                           </div>
