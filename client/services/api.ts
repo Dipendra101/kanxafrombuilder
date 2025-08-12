@@ -120,6 +120,55 @@ export const userAPI = {
       body: JSON.stringify(passwordData),
     });
   },
+
+  // Admin functions
+  getAllUsers: async (filters: {
+    page?: number;
+    limit?: number;
+    role?: string;
+    isActive?: boolean;
+  } = {}) => {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined) {
+        params.append(key, value.toString());
+      }
+    });
+
+    return apiRequest(`/users?${params.toString()}`);
+  },
+
+  createUser: async (userData: {
+    name: string;
+    email: string;
+    phone: string;
+    role: string;
+    isActive: boolean;
+  }) => {
+    return apiRequest('/users', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  },
+
+  updateUser: async (userId: string, userData: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    role?: string;
+    isActive?: boolean;
+  }) => {
+    return apiRequest(`/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+  },
+
+  deleteUser: async (userId: string) => {
+    return apiRequest(`/users/${userId}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 // Services API
