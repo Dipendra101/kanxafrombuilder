@@ -2,29 +2,11 @@ import { Router, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import User, { IUser } from "../models/User";
 import { withDB, isDBConnected } from "../config/database";
-import twilio from "twilio";
+import { smsConfig, sendSMS, isValidSMSNumber } from "../config/sms";
 
 const router = Router();
 const JWT_SECRET =
   process.env.JWT_SECRET || "kanxasafari_jwt_secret_key_super_secure_2024";
-
-// Twilio configuration
-const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
-const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
-
-// Initialize Twilio client if credentials are available
-let twilioClient: any = null;
-if (TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN) {
-  try {
-    twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-    console.log("✅ Twilio client initialized successfully");
-  } catch (error) {
-    console.error("❌ Failed to initialize Twilio client:", error);
-  }
-} else {
-  console.log("⚠️  Twilio credentials not found - SMS will be simulated");
-}
 
 // In-memory storage for SMS codes (in production, use Redis or database)
 const smsCodeStore = new Map<string, { code: string; expires: number; attempts: number }>();
@@ -86,33 +68,32 @@ export const sendSMSCode: RequestHandler = async (req, res) => {
       attempts: 0,
     });
 
-    // Send SMS using Twilio if configured, otherwise simulate
-    if (twilioClient && TWILIO_PHONE_NUMBER) {
-      try {
-        const message = await twilioClient.messages.create({
-          body: `Your Kanxa Safari verification code is: ${code}. This code will expire in 10 minutes.`,
-          from: TWILIO_PHONE_NUMBER,
-          to: formattedPhone
-        });
-        console.log(`✅ SMS sent successfully to ${formattedPhone}. Message SID: ${message.sid}`);
-      } catch (twilioError: any) {
-        console.error(`❌ Failed to send SMS via Twilio:`, twilioError.message);
-        // Continue with fallback simulation
+    // Send SMS using configured service
+    const smsMessage = `Your Kanxa Safari verification code is: ${code}. This code will expire in 10 minutes.`;
+
+    if (smsConfig.isConfigured) {
+      const smsResult = await sendSMS(formattedPhone, smsMessage);
+
+      if (smsResult.success) {
+        console.log(`✅ SMS sent successfully to ${formattedPhone}. Message ID: ${smsResult.messageId}`);
+      } else {
+        console.error(`❌ Failed to send SMS:`, smsResult.error);
+        // Continue with fallback - log code for development
         console.log(`📱 Fallback - SMS Code for ${formattedPhone}: ${code}`);
       }
     } else {
-      // Fallback simulation
+      // Fallback simulation for development
       console.log(`📱 SMS Code for ${formattedPhone}: ${code}`);
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     res.json({
       success: true,
-      message: twilioClient && TWILIO_PHONE_NUMBER
+      message: smsConfig.isConfigured
         ? "Verification code sent to your phone"
         : "Verification code sent successfully",
-      // Include code in development mode for testing (only if Twilio is not configured)
-      ...(!twilioClient && process.env.NODE_ENV === "development" && { code }),
+      // Include code in development mode for testing (only if SMS is not configured)
+      ...(!smsConfig.isConfigured && process.env.NODE_ENV === "development" && { code }),
     });
   } catch (error: any) {
     console.error("Send SMS code error:", error);
@@ -334,33 +315,32 @@ export const resendSMSCode: RequestHandler = async (req, res) => {
       attempts: 0,
     });
 
-    // Send SMS using Twilio if configured, otherwise simulate
-    if (twilioClient && TWILIO_PHONE_NUMBER) {
-      try {
-        const message = await twilioClient.messages.create({
-          body: `Your Kanxa Safari verification code is: ${code}. This code will expire in 10 minutes.`,
-          from: TWILIO_PHONE_NUMBER,
-          to: formattedPhone
-        });
-        console.log(`✅ SMS resent successfully to ${formattedPhone}. Message SID: ${message.sid}`);
-      } catch (twilioError: any) {
-        console.error(`❌ Failed to resend SMS via Twilio:`, twilioError.message);
-        // Continue with fallback simulation
+    // Send SMS using configured service
+    const smsMessage = `Your Kanxa Safari verification code is: ${code}. This code will expire in 10 minutes.`;
+
+    if (smsConfig.isConfigured) {
+      const smsResult = await sendSMS(formattedPhone, smsMessage);
+
+      if (smsResult.success) {
+        console.log(`✅ SMS resent successfully to ${formattedPhone}. Message ID: ${smsResult.messageId}`);
+      } else {
+        console.error(`❌ Failed to resend SMS:`, smsResult.error);
+        // Continue with fallback - log code for development
         console.log(`📱 Fallback - Resent SMS Code for ${formattedPhone}: ${code}`);
       }
     } else {
-      // Fallback simulation
+      // Fallback simulation for development
       console.log(`📱 Resent SMS Code for ${formattedPhone}: ${code}`);
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     res.json({
       success: true,
-      message: twilioClient && TWILIO_PHONE_NUMBER
+      message: smsConfig.isConfigured
         ? "Verification code resent to your phone"
         : "Verification code resent successfully",
-      // Include code in development mode for testing (only if Twilio is not configured)
-      ...(!twilioClient && process.env.NODE_ENV === "development" && { code }),
+      // Include code in development mode for testing (only if SMS is not configured)
+      ...(!smsConfig.isConfigured && process.env.NODE_ENV === "development" && { code }),
     });
   } catch (error: any) {
     console.error("Resend SMS code error:", error);
