@@ -249,6 +249,49 @@ export const servicesAPI = {
   getServiceById: async (id: string) => {
     return apiRequest(`/services/${id}`);
   },
+
+  // Admin functions
+  createService: async (serviceData: {
+    name: string;
+    description: string;
+    type: string;
+    category: string;
+    pricing: {
+      basePrice: number;
+      currency: string;
+    };
+    isActive: boolean;
+    isFeatured: boolean;
+  }) => {
+    return apiRequest('/services', {
+      method: 'POST',
+      body: JSON.stringify(serviceData),
+    });
+  },
+
+  updateService: async (serviceId: string, serviceData: {
+    name?: string;
+    description?: string;
+    type?: string;
+    category?: string;
+    pricing?: {
+      basePrice: number;
+      currency: string;
+    };
+    isActive?: boolean;
+    isFeatured?: boolean;
+  }) => {
+    return apiRequest(`/services/${serviceId}`, {
+      method: 'PUT',
+      body: JSON.stringify(serviceData),
+    });
+  },
+
+  deleteService: async (serviceId: string) => {
+    return apiRequest(`/services/${serviceId}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 // Bookings API
