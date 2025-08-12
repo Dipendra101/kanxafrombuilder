@@ -28,6 +28,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { authAPI } from "@/services/api";
 
 export default function Signup() {
   const navigate = useNavigate();
