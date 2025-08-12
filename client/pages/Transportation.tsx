@@ -147,11 +147,16 @@ export default function Transportation() {
 
   // Fetch services from backend
   const fetchServices = async (type: string = "bus") => {
+    // Prevent multiple concurrent calls
+    if (isLoading) {
+      return;
+    }
+
     try {
       setIsLoading(true);
       const filters = {
-        from: selectedRoute.split(' → ')[0] || undefined,
-        to: selectedRoute.split(' → ')[1] || undefined,
+        from: selectedRoute && selectedRoute !== 'all' ? selectedRoute.split(' → ')[0] : undefined,
+        to: selectedRoute && selectedRoute !== 'all' ? selectedRoute.split(' → ')[1] : undefined,
         type
       };
 
