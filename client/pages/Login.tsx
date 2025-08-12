@@ -74,8 +74,8 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      // Use real backend authentication
-      await login(formData.email, formData.password);
+      // Use real backend authentication\
+      await login(formData);
 
       // Show success notification
       toast({

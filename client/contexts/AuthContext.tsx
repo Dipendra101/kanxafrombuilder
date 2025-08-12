@@ -1,39 +1,112 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authAPI, userAPI } from '@/services/api';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authAPI } from '@/services/api';
 
+// Interface for the User object
 interface User {
   id: string;
   name: string;
   email: string;
-  phone: string;
   role: string;
-  profilePicture?: string;
-  address?: string;
-  dateOfBirth?: string;
-  preferences?: any;
-  isEmailVerified?: boolean;
-  createdAt?: string;
 }
 
+// Interface for the context's value
 interface AuthContextType {
   user: User | null;
-  token: string | null;
-  isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (userData: {
-    name: string;
-    email: string;
-    phone: string;
-    password: string;
-  }) => Promise<void>;
+  isLoading: boolean;
+  login: (credentials: any) => Promise<any>;
+  register: (userData: any) => Promise<any>;
   logout: () => void;
-  updateUser: (userData: Partial<User>) => Promise<void>;
-  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Start true to show loading state on initial load
+  const navigate = useNavigate();
+
+  // This useEffect runs only once on initial app load to check for an existing session
+  useEffect(() => {
+    const verifyUserSession = async () => {
+      const token = localStorage.getItem('kanxa_token');
+
+      // Only try to verify if a token actually exists
+      if (token) {
+        try {
+          // *** THE FIX IS HERE ***
+          // Call verifyToken WITHOUT any arguments.
+          // The apiRequest helper in `api.ts` automatically finds the token in localStorage and adds it to the header.
+          const response = await authAPI.verifyToken();
+          
+          if (response.success) {
+            setUser(response.user);
+            setIsAuthenticated(true);
+          } else {
+            // This case handles a token that is present but invalid (e.g., expired)
+            localStorage.removeItem('kanxa_token');
+          }
+        } catch (error) {
+          console.error("Session verification failed:", error);
+          // If the API call fails (e.g., 401 Unauthorized), remove the bad token
+          localStorage.removeItem('kanxa_token');
+        }
+      }
+      
+      // We have finished checking for a token, so we are no longer loading
+      setIsLoading(false);
+    };
+
+    verifyUserSession();
+  }, []); // The empty dependency array ensures this runs only once
+
+  const login = async (credentials: any) => {
+    try {
+      const response = await authAPI.login(credentials);
+      if (response.success) {
+        // Set state first
+        setUser(response.user);
+        setIsAuthenticated(true);
+        // Then set localStorage
+        localStorage.setItem('kanxa_token', response.token);
+        return response;
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error; // Re-throw the error so the login form can catch it and display a message
+    }
+  };
+
+  const register = async (userData: any) => {
+    try {
+      const response = await authAPI.register(userData);
+      return response;
+    } catch (error) {
+      console.error("Registration error:", error);
+      throw error;
+    }
+  };
+
+  const logout = () => {
+    // Clear state and localStorage
+    setUser(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem('kanxa_token');
+    // Redirect to login page
+    navigate('/login');
+  };
+
+  // Provide the context value to all children components
+  return (
+    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, register, logout }}>
+      {!isLoading && children}
+    </AuthContext.Provider>
+  );
+};
+
+// Custom hook to easily consume the AuthContext
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -41,158 +114,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const isAuthenticated = !!user && !!token;
-
-  // Initialize auth state from localStorage
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const storedToken = localStorage.getItem('kanxa_token');
-        const storedUser = localStorage.getItem('kanxa_user');
-
-        if (storedToken && storedUser) {
-          // Verify token with backend
-          const response = await authAPI.verifyToken(storedToken);
-          
-          if (response.success) {
-            setToken(storedToken);
-            setUser(response.user);
-          } else {
-          // Token is invalid, clear storage
-          console.log('Token verification failed, clearing storage');
-          localStorage.removeItem('kanxa_token');
-          localStorage.removeItem('kanxa_user');
-        }
-        }
-      } catch (error) {
-        console.error('Failed to initialize auth:', error);
-        // Clear invalid data
-        localStorage.removeItem('kanxa_token');
-        localStorage.removeItem('kanxa_user');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initializeAuth();
-  }, []);
-
-  const login = async (email: string, password: string) => {
-    try {
-      setIsLoading(true);
-      const response = await authAPI.login({ email, password });
-      
-      if (response.success) {
-        setUser(response.user);
-        setToken(response.token);
-        
-        // Store in localStorage
-        localStorage.setItem('kanxa_token', response.token);
-        localStorage.setItem('kanxa_user', JSON.stringify(response.user));
-      } else {
-        throw new Error(response.message || 'Login failed');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const register = async (userData: {
-    name: string;
-    email: string;
-    phone: string;
-    password: string;
-  }) => {
-    try {
-      setIsLoading(true);
-      const response = await authAPI.register(userData);
-      
-      if (response.success) {
-        setUser(response.user);
-        setToken(response.token);
-        
-        // Store in localStorage
-        localStorage.setItem('kanxa_token', response.token);
-        localStorage.setItem('kanxa_user', JSON.stringify(response.user));
-      } else {
-        throw new Error(response.message || 'Registration failed');
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('kanxa_token');
-    localStorage.removeItem('kanxa_user');
-  };
-
-  const updateUser = async (userData: Partial<User>) => {
-    try {
-      const response = await userAPI.updateProfile(userData);
-      
-      if (response.success) {
-        setUser(response.user);
-        localStorage.setItem('kanxa_user', JSON.stringify(response.user));
-      } else {
-        throw new Error(response.message || 'Update failed');
-      }
-    } catch (error) {
-      console.error('Update user error:', error);
-      throw error;
-    }
-  };
-
-  const refreshUser = async () => {
-    try {
-      const response = await userAPI.getProfile();
-      
-      if (response.success) {
-        setUser(response.user);
-        localStorage.setItem('kanxa_user', JSON.stringify(response.user));
-      }
-    } catch (error) {
-      console.error('Refresh user error:', error);
-      // If profile fetch fails, user might be logged out
-      logout();
-    }
-  };
-
-  const value: AuthContextType = {
-    user,
-    token,
-    isLoading,
-    isAuthenticated,
-    login,
-    register,
-    logout,
-    updateUser,
-    refreshUser,
-  };
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export default AuthProvider;
