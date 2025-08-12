@@ -1,12 +1,9 @@
 import { Router, RequestHandler } from "express";
 import User, { IUser } from "../models/User";
 import { authenticate, adminOnly, authorize } from "../middleware/auth";
-import connectDB from "../config/database";
+import { withDB, isDBConnected } from "../config/database";
 
 const router = Router();
-
-// Connect to database
-connectDB();
 
 // @route   GET /api/users/profile
 // @desc    Get current user's profile
