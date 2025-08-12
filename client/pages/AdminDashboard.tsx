@@ -194,17 +194,112 @@ export default function AdminDashboard() {
       try {
         setIsLoading(true);
 
-        // Load all data in parallel
+        // In demo mode, skip API calls and use mock data
+        if (isDemoMode) {
+          console.log("Loading dashboard in demo mode");
+
+          // Use demo data directly without API calls
+          setStats({
+            totalUsers: 125,
+            totalServices: 25,
+            totalBookings: 340,
+            totalRevenue: 125000,
+            recentUsers: 8,
+            activeServices: 22,
+            pendingBookings: 12,
+            monthlyRevenue: 25000,
+          });
+
+          // Set demo users
+          const demoUsers = [
+            {
+              _id: "demo1",
+              name: "John Doe",
+              email: "john@example.com",
+              phone: "+977-980-123456",
+              role: "user",
+              isActive: true,
+              createdAt: new Date().toISOString(),
+            },
+            {
+              _id: "demo2",
+              name: "Jane Smith",
+              email: "jane@example.com",
+              phone: "+977-981-234567",
+              role: "user",
+              isActive: true,
+              createdAt: new Date().toISOString(),
+            },
+          ];
+          setAllUsers(demoUsers);
+          setRecentUsers(demoUsers);
+
+          // Set demo services
+          const demoServices = [
+            {
+              _id: "service1",
+              name: "Bus Transportation",
+              type: "transportation",
+              category: "bus",
+              isActive: true,
+              isFeatured: true,
+              pricing: { basePrice: 500, currency: "NPR" },
+            },
+            {
+              _id: "service2",
+              name: "Cargo Service",
+              type: "transportation",
+              category: "cargo",
+              isActive: true,
+              isFeatured: false,
+              pricing: { basePrice: 1000, currency: "NPR" },
+            },
+          ];
+          setAllServices(demoServices);
+
+          // Set demo bookings
+          const demoBookings = [
+            {
+              _id: "booking1",
+              user: demoUsers[0],
+              service: demoServices[0],
+              totalAmount: 1500,
+              status: "confirmed",
+              createdAt: new Date().toISOString(),
+              bookingDate: new Date().toISOString(),
+            },
+          ];
+          setRecentBookings(demoBookings);
+          setAllBookings(demoBookings);
+
+          setIsLoading(false);
+          return;
+        }
+
+        // For authenticated admin users, try API calls with better error handling
+        console.log("Loading dashboard with API calls");
         const [
           dashboardResponse,
           usersResponse,
           servicesResponse,
           bookingsResponse,
         ] = await Promise.allSettled([
-          adminAPI.getDashboard(),
-          userAPI.getAllUsers(),
-          servicesAPI.getAllServices({ limit: 100 }),
-          bookingsAPI.getAllBookings({ limit: 100 }),
+          adminAPI.getDashboard().catch(err => {
+            console.warn("Dashboard API failed:", err.message);
+            return { data: null };
+          }),
+          userAPI.getAllUsers().catch(err => {
+            console.warn("Users API failed:", err.message);
+            return { users: [] };
+          }),
+          servicesAPI.getAllServices({ limit: 100 }).catch(err => {
+            console.warn("Services API failed:", err.message);
+            return { services: [] };
+          }),
+          bookingsAPI.getAllBookings({ limit: 100 }).catch(err => {
+            console.warn("Bookings API failed:", err.message);
+            return { bookings: [] };
+          }),
         ]);
 
         // Handle dashboard stats
