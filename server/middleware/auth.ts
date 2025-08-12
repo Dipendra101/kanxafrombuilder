@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
+import { withDB, isDBConnected } from '../config/database';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'kanxasafari_jwt_secret_key_super_secure_2024';
 
