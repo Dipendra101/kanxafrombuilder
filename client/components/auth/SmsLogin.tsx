@@ -113,6 +113,9 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
     
     try {
       const cleanPhone = phoneNumber.replace(/\D/g, "");
+      const response = await smsAPI.verifyCode(`+977${cleanPhone}`, verificationCode);
+
+      // Use the response to login (this will be handled by AuthContext)
       await smsLogin(`+977${cleanPhone}`, verificationCode);
       
       toast({
