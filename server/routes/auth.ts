@@ -218,10 +218,27 @@ export const login: RequestHandler = async (req, res) => {
       });
     }
 
-    // Find user and include password for comparison
-    const user = await User.findOne({ email: email.toLowerCase() })
-      .select('+password')
-      .exec();
+    // Use safe database operation
+    const user = await withDB(
+      async () => {
+        // Find user and include password for comparison
+        const foundUser = await User.findOne({ email: email.toLowerCase() })
+          .select('+password')
+          .exec();
+        return foundUser;
+      },
+      // Fallback: Check mock users
+      (() => {
+        console.log('⚠️  Database unavailable, checking mock users');
+        const mockUser = mockUsers.find(u => u.email === email.toLowerCase());
+
+        // Simple demo authentication - accept any password for demo users
+        if (mockUser && (password === 'demo123' || email.includes('demo'))) {
+          return mockUser;
+        }
+        return null;
+      })()
+    );
 
     if (!user) {
       return res.status(401).json({
@@ -238,51 +255,55 @@ export const login: RequestHandler = async (req, res) => {
       });
     }
 
-    // Check password
-    const isPasswordValid = await user.comparePassword(password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid email or password'
-      });
+    // Check password (skip for mock users)
+    if (isDBConnected() && user.comparePassword) {
+      const isPasswordValid = await user.comparePassword(password);
+      if (!isPasswordValid) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid email or password'
+        });
+      }
     }
 
-    // Update login history and last login
-    user.loginHistory.push({
-      ip: req.ip,
-      userAgent: req.get('User-Agent') || 'Unknown',
-      timestamp: new Date(),
-    } as any);
-    
-    // Keep only last 10 login records
-    if (user.loginHistory.length > 10) {
-      user.loginHistory = user.loginHistory.slice(-10);
+    // Update login history (only for real users)
+    if (isDBConnected() && user.save) {
+      user.loginHistory = user.loginHistory || [];
+      user.loginHistory.push({
+        ip: req.ip,
+        userAgent: req.get('User-Agent') || 'Unknown',
+        timestamp: new Date(),
+      } as any);
+
+      // Keep only last 10 login records
+      if (user.loginHistory.length > 10) {
+        user.loginHistory = user.loginHistory.slice(-10);
+      }
+
+      user.lastLogin = new Date();
+      user.lastActivity = new Date();
+      await user.save();
     }
-    
-    user.lastLogin = new Date();
-    user.lastActivity = new Date();
-    await user.save();
 
     // Generate tokens
     const accessTokenExpiry = rememberMe ? '30d' : '7d';
     const accessToken = jwt.sign(
-      { 
+      {
         userId: user._id,
         email: user.email,
-        role: user.role 
+        role: user.role
       },
       JWT_SECRET,
       { expiresIn: accessTokenExpiry }
     );
-    const refreshToken = generateRefreshToken(user);
+    const refreshToken = generateRefreshToken(user as any);
 
     // Remove password from response
-    const userResponse = user.toJSON();
+    const userResponse = user.toJSON ? user.toJSON() : user;
 
     res.json({
       success: true,
-      message: 'Login successful',
+      message: 'Login successful' + (!isDBConnected() ? ' (demo mode)' : ''),
       user: userResponse,
       tokens: {
         accessToken,
