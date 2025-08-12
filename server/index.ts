@@ -237,6 +237,7 @@ export function createServer() {
     ) => {
       console.error("Error:", err);
 
+<<<<<<< HEAD
       if (err.name === "ValidationError") {
         return res.status(400).json({
           success: false,
@@ -262,6 +263,15 @@ export function createServer() {
       });
     },
   );
+=======
+  // 404 handler
+  // app.use('*', (req, res) => {
+  //   res.status(404).json({ 
+  //     success: false, 
+  //     message: 'Route not found' 
+  //   });
+  // });
+>>>>>>> 9e1a853b5a9934aaeb388675f6691d683261ed53
 
   return app;
 }

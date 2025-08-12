@@ -38,15 +38,113 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Layout from "@/components/layout/Layout";
+<<<<<<< HEAD
 import { servicesAPI } from "@/services/api";
 import { useToast } from "@/components/ui/use-toast";
+=======
+import { SeatSelectionDialog } from "@/components/bus/SeatSelectionDialog";
+
+const busRoutes = [
+  {
+    id: 1,
+    from: "Lamjung",
+    to: "Kathmandu",
+    departureTime: "06:00 AM",
+    arrivalTime: "12:00 PM",
+    duration: "6h 0m",
+    price: 800,
+    availableSeats: 12,
+    totalSeats: 45,
+    busType: "Deluxe AC",
+    amenities: ["AC", "WiFi", "Charging Port", "Entertainment"],
+    rating: 4.8,
+    operator: "Kanxa Express",
+  },
+  {
+    id: 2,
+    from: "Lamjung",
+    to: "Pokhara",
+    departureTime: "08:30 AM",
+    arrivalTime: "11:00 AM",
+    duration: "2h 30m",
+    price: 500,
+    availableSeats: 8,
+    totalSeats: 35,
+    busType: "Standard",
+    amenities: ["Comfortable Seats", "Music System"],
+    rating: 4.6,
+    operator: "Mountain Express",
+  },
+  {
+    id: 3,
+    from: "Kathmandu",
+    to: "Lamjung",
+    departureTime: "02:00 PM",
+    arrivalTime: "08:00 PM",
+    duration: "6h 0m",
+    price: 800,
+    availableSeats: 15,
+    totalSeats: 45,
+    busType: "Deluxe AC",
+    amenities: ["AC", "WiFi", "Charging Port", "Entertainment"],
+    rating: 4.9,
+    operator: "Kanxa Express",
+  },
+  {
+    id: 4,
+    from: "Pokhara",
+    to: "Lamjung",
+    departureTime: "04:30 PM",
+    arrivalTime: "07:00 PM",
+    duration: "2h 30m",
+    price: 500,
+    availableSeats: 20,
+    totalSeats: 35,
+    busType: "Standard",
+    amenities: ["Comfortable Seats", "Music System"],
+    rating: 4.5,
+    operator: "Lake City Transport",
+  },
+];
+
+const cargoServices = [
+  {
+    id: 1,
+    type: "Heavy Truck",
+    capacity: "10 tons",
+    routes: ["Lamjung → Kathmandu", "Kathmandu → Lamjung"],
+    pricePerKm: 25,
+    basePrice: 15000,
+    features: ["GPS Tracking", "Insurance Covered", "24/7 Support"],
+  },
+  {
+    id: 2,
+    type: "Medium Truck",
+    capacity: "5 tons",
+    routes: ["Lamjung → Pokhara", "Pokhara → Lamjung"],
+    pricePerKm: 18,
+    basePrice: 8000,
+    features: ["GPS Tracking", "Insurance Covered"],
+  },
+  {
+    id: 3,
+    type: "Light Truck",
+    capacity: "2 tons",
+    routes: ["Local Delivery", "Custom Routes"],
+    pricePerKm: 12,
+    basePrice: 3000,
+    features: ["Flexible Routes", "Quick Delivery"],
+  },
+];
+>>>>>>> 9e1a853b5a9934aaeb388675f6691d683261ed53
 
 export default function Transportation() {
   const { toast } = useToast();
   const [selectedTab, setSelectedTab] = useState("buses");
-  const [selectedRoute, setSelectedRoute] = useState("");
+  const [selectedRoute, setSelectedRoute] = useState("all");
   const [selectedDate, setSelectedDate] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+<<<<<<< HEAD
   const [services, setServices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -85,6 +183,13 @@ export default function Transportation() {
       loadSampleData(type);
     } finally {
       setIsLoading(false);
+=======
+  const [selectedBus, setSelectedBus] = useState<any>(null);
+
+  const filteredBuses = busRoutes.filter((bus) => {
+    if (selectedRoute && selectedRoute !== "all" && !`${bus.from} → ${bus.to}`.includes(selectedRoute)) {
+      return false;
+>>>>>>> 9e1a853b5a9934aaeb388675f6691d683261ed53
     }
   };
 
@@ -212,7 +317,7 @@ export default function Transportation() {
                             <SelectValue placeholder="Choose route" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">All Routes</SelectItem>
+                            <SelectItem value="all">All Routes</SelectItem>
                             <SelectItem value="Lamjung → Kathmandu">Lamjung → Kathmandu</SelectItem>
                             <SelectItem value="Lamjung → Pokhara">Lamjung → Pokhara</SelectItem>
                             <SelectItem value="Kathmandu → Lamjung">Kathmandu → Lamjung</SelectItem>
@@ -320,6 +425,7 @@ export default function Transportation() {
                                 )}
                               </div>
                             </div>
+<<<<<<< HEAD
 
                             <div className="text-center space-y-2">
                               <div className="text-2xl font-bold text-kanxa-navy">
@@ -331,6 +437,21 @@ export default function Transportation() {
                                 </Button>
                               </Link>
                             </div>
+=======
+                            <Dialog onOpenChange={(open) => !open && setSelectedBus(null)}>
+                              <DialogTrigger asChild>
+                                <Button
+                                  className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90"
+                                  onClick={() => setSelectedBus(bus)}
+                                >
+                                  Book Seats
+                                </Button>
+                              </DialogTrigger>
+                              {selectedBus && bus.id === selectedBus.id && (
+                                <SeatSelectionDialog bus={selectedBus} />
+                              )}
+                            </Dialog>
+>>>>>>> 9e1a853b5a9934aaeb388675f6691d683261ed53
                           </div>
                         </CardContent>
                       </Card>

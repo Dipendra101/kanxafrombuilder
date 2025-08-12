@@ -9,6 +9,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import {
   DropdownMenu,
@@ -156,25 +157,15 @@ export default function Header() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link
-                    to="/garage"
-                    className="text-kanxa-navy hover:text-kanxa-green transition-colors"
-                  >
-                    Garage & Workshop
-                  </Link>
-                </NavigationMenuLink>
+                <Link to="/garage" className={navigationMenuTriggerStyle()}>
+                  Garage & Workshop
+                </Link>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link
-                    to="/about"
-                    className="text-kanxa-navy hover:text-kanxa-blue transition-colors"
-                  >
-                    About
-                  </Link>
-                </NavigationMenuLink>
+                <Link to="/about" className={navigationMenuTriggerStyle()}>
+                  About
+                </Link>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
