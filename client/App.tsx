@@ -75,8 +75,9 @@ const App = () => (
           <Route path="/chat" element={<Chat />} />
 
           {/* Admin Routes */}
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminDashboardSimple />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin-simple" element={<AdminDashboardSimple />} />
           <Route path="/admin-test" element={<AdminTest />} />
 
           {/* Information & Support Routes */}
