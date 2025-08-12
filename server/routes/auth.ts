@@ -5,19 +5,21 @@ import User from "../models/User.js"; // Import the real User model
 
 const router = Router();
 
-// Ensure JWT_SECRET is loaded
+// Ensure JWT_SECRET is loaded from your .env file
 if (!process.env.JWT_SECRET) {
   throw new Error("FATAL ERROR: JWT_SECRET is not defined in the environment variables.");
 }
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Generate JWT token
+// Helper to generate a token
 const generateToken = (userId: string) => {
   return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '7d' });
 };
 
-// @route   POST /api/auth/register
-// @desc    Register a new user in the database
+/**
+ * @route   POST /api/auth/register
+ * @desc    Register a new user in the database
+ */
 const register: RequestHandler = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
@@ -29,42 +31,37 @@ const register: RequestHandler = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Password must be at least 6 characters long' });
     }
 
-    // Check if user already exists in the database
     const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
     if (existingUser) {
       return res.status(400).json({ success: false, message: 'User already exists with this email or phone number' });
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create a new user in the database
-    const user = await User.create({
+    await User.create({
       name,
       email,
       phone,
       password: hashedPassword,
     });
     
-    // Generate token
-    const token = generateToken(user.id);
-
+    // FIX: Only return a success message. Do not log the user in.
     res.status(201).json({
       success: true,
-      message: 'User registered successfully',
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
-      token
+      message: 'User registered successfully. Please log in.',
     });
 
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ success: false, message: 'Registration failed' });
+    res.status(500).json({ success: false, message: 'Registration failed due to a server error.' });
   }
 };
 
-// @route   POST /api/auth/login
-// @desc    Login user from the database
+/**
+ * @route   POST /api/auth/login
+ * @desc    Login user from the database
+ */
 const login: RequestHandler = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -73,19 +70,19 @@ const login: RequestHandler = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please provide email and password' });
     }
 
-    // Find user in the database
+    // FIX 1: Find user and explicitly request the password field which is hidden by default.
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    // Check password
+    // FIX 2: Correctly compare the plain-text password from the request with the stored hash.
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    // Generate token
+    // If credentials are valid, generate and send a token.
     const token = generateToken(user.id);
 
     res.json({
@@ -97,11 +94,10 @@ const login: RequestHandler = async (req, res) => {
 
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ success: false, message: 'Login failed' });
+    res.status(500).json({ success: false, message: 'Login failed due to a server error.' });
   }
 };
 
-// Set up routes
 router.post('/register', register);
 router.post('/login', login);
 

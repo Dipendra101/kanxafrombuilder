@@ -334,6 +334,23 @@ export const authAPI = {
 };
 
 // --- User Profile API ---
+// export const userAPI = {
+//   getProfile: async () => {
+//     return apiRequest('/users/profile');
+//   },
+//   updateProfile: async (profileData: any) => {
+//     return apiRequest('/users/profile', {
+//       method: 'PUT',
+//       body: JSON.stringify(profileData),
+//     });
+//   },
+//   changePassword: async (passwordData: { currentPassword: string; newPassword: string }) => {
+//     return apiRequest('/users/change-password', {
+//       method: 'PUT',
+//       body: JSON.stringify(passwordData),
+//     });
+//   },
+// };
 export const userAPI = {
   getProfile: async () => {
     return apiRequest('/users/profile');
@@ -344,13 +361,22 @@ export const userAPI = {
       body: JSON.stringify(profileData),
     });
   },
-  changePassword: async (passwordData: { currentPassword: string; newPassword: string }) => {
-    return apiRequest('/users/change-password', {
+  getActivity: async () => {
+    return apiRequest('/users/activity');
+  },
+  getLoyalty: async () => {
+    return apiRequest('/users/loyalty');
+  },
+  getNotifications: async () => {
+    return apiRequest('/users/notifications');
+  },
+  updateNotifications: async (notificationData: any) => {
+    return apiRequest('/users/notifications', {
       method: 'PUT',
-      body: JSON.stringify(passwordData),
+      body: JSON.stringify(notificationData),
     });
   },
-};
+}
 
 // --- Services API ---
 export const servicesAPI = {
@@ -408,6 +434,7 @@ export const bookingsAPI = {
     });
   },
 };
+
 
 // --- Health Check API ---
 export const healthAPI = {
