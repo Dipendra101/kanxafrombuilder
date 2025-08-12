@@ -77,6 +77,12 @@ export default function Login() {
 
     try {
       // Use real backend authentication
+      const loginResponse = await authAPI.login({
+        email: formData.email,
+        password: formData.password
+      });
+
+      // Update auth context
       await login(formData.email, formData.password);
 
       // Show success notification
@@ -97,8 +103,8 @@ export default function Login() {
         localStorage.setItem("kanxa_remember", "true");
       }
 
-      // Redirect based on user role
-      if (user?.role === "admin") {
+      // Redirect based on user role from login response
+      if (loginResponse.user?.role === "admin") {
         navigate("/admin");
       } else {
         navigate("/");
