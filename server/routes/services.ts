@@ -8,70 +8,70 @@ const router = Router();
 // Mock services for when database is unavailable
 const mockServices = [
   {
-    _id: 'mock_service_1',
-    name: 'Kathmandu to Pokhara Bus',
-    description: 'Comfortable AC bus service from Kathmandu to Pokhara',
-    type: 'bus',
-    category: 'Transportation',
-    pricing: { basePrice: 800, currency: 'NPR' },
+    _id: "mock_service_1",
+    name: "Kathmandu to Pokhara Bus",
+    description: "Comfortable AC bus service from Kathmandu to Pokhara",
+    type: "bus",
+    category: "Transportation",
+    pricing: { basePrice: 800, currency: "NPR" },
     isActive: true,
     isFeatured: true,
     rating: { average: 4.5, count: 120 },
     busDetails: {
-      busNumber: 'BA-1234',
+      busNumber: "BA-1234",
       capacity: 45,
-      busType: 'AC',
-      amenities: ['AC', 'WiFi', 'Entertainment'],
-      route: { from: 'Kathmandu', to: 'Pokhara', duration: '6 hours' }
+      busType: "AC",
+      amenities: ["AC", "WiFi", "Entertainment"],
+      route: { from: "Kathmandu", to: "Pokhara", duration: "6 hours" },
     },
-    images: ['/placeholder.svg'],
+    images: ["/placeholder.svg"],
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
-    _id: 'mock_service_2',
-    name: 'Cargo Delivery Service',
-    description: 'Fast and reliable cargo delivery across Nepal',
-    type: 'cargo',
-    category: 'Logistics',
-    pricing: { basePrice: 50, currency: 'NPR' },
+    _id: "mock_service_2",
+    name: "Cargo Delivery Service",
+    description: "Fast and reliable cargo delivery across Nepal",
+    type: "cargo",
+    category: "Logistics",
+    pricing: { basePrice: 50, currency: "NPR" },
     isActive: true,
     isFeatured: false,
     rating: { average: 4.2, count: 85 },
     cargoDetails: {
       maxWeight: 1000,
       maxDimensions: { length: 200, width: 150, height: 100 },
-      deliveryTypes: ['standard', 'express', 'overnight'],
-      coverage: ['valley', 'nationwide']
+      deliveryTypes: ["standard", "express", "overnight"],
+      coverage: ["valley", "nationwide"],
     },
-    images: ['/placeholder.svg'],
+    images: ["/placeholder.svg"],
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
-    _id: 'mock_service_3',
-    name: 'Everest Base Camp Tour',
-    description: 'Guided tour to Everest Base Camp with accommodation',
-    type: 'tour',
-    category: 'Adventure',
-    pricing: { basePrice: 50000, currency: 'NPR' },
+    _id: "mock_service_3",
+    name: "Everest Base Camp Tour",
+    description: "Guided tour to Everest Base Camp with accommodation",
+    type: "tour",
+    category: "Adventure",
+    pricing: { basePrice: 50000, currency: "NPR" },
     isActive: true,
     isFeatured: true,
     rating: { average: 4.8, count: 45 },
     tourDetails: {
-      duration: '14 days',
-      difficulty: 'moderate',
+      duration: "14 days",
+      difficulty: "moderate",
       groupSize: { min: 4, max: 12 },
-      includes: ['Guide', 'Accommodation', 'Meals', 'Permits'],
+      includes: ["Guide", "Accommodation", "Meals", "Permits"],
       itinerary: [
-        { day: 1, activity: 'Fly to Lukla' },
-        { day: 2, activity: 'Trek to Namche Bazaar' }
-      ]
+        { day: 1, activity: "Fly to Lukla" },
+        { day: 2, activity: "Trek to Namche Bazaar" },
+      ],
     },
-    images: ['/placeholder.svg'],
+    images: ["/placeholder.svg"],
     createdAt: new Date(),
-    updatedAt: new Date()
-  }
+    updatedAt: new Date(),
+  },
 ];
 
 // @route   GET /api/services
@@ -85,14 +85,14 @@ export const getAllServices: RequestHandler = async (req, res) => {
       type,
       category,
       search,
-      isActive = 'true',
+      isActive = "true",
       isFeatured,
-      sortBy = 'createdAt',
-      sortOrder = 'desc',
+      sortBy = "createdAt",
+      sortOrder = "desc",
       minPrice,
       maxPrice,
       from,
-      to
+      to,
     } = req.query;
 
     // Use safe database operation
@@ -101,8 +101,8 @@ export const getAllServices: RequestHandler = async (req, res) => {
         const query: any = {};
 
         // Base filters
-        if (isActive !== '') {
-          query.isActive = isActive === 'true';
+        if (isActive !== "") {
+          query.isActive = isActive === "true";
         }
 
         if (type) {
@@ -110,42 +110,43 @@ export const getAllServices: RequestHandler = async (req, res) => {
         }
 
         if (category) {
-          query.category = { $regex: category, $options: 'i' };
+          query.category = { $regex: category, $options: "i" };
         }
 
         if (isFeatured !== undefined) {
-          query.isFeatured = isFeatured === 'true';
+          query.isFeatured = isFeatured === "true";
         }
 
         // Search functionality
         if (search) {
           query.$or = [
-            { name: { $regex: search, $options: 'i' } },
-            { description: { $regex: search, $options: 'i' } },
-            { shortDescription: { $regex: search, $options: 'i' } },
-            { features: { $in: [new RegExp(search as string, 'i')] } }
+            { name: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+            { shortDescription: { $regex: search, $options: "i" } },
+            { features: { $in: [new RegExp(search as string, "i")] } },
           ];
         }
 
         // Price range filtering
         if (minPrice || maxPrice) {
-          query['pricing.basePrice'] = {};
-          if (minPrice) query['pricing.basePrice'].$gte = Number(minPrice);
-          if (maxPrice) query['pricing.basePrice'].$lte = Number(maxPrice);
+          query["pricing.basePrice"] = {};
+          if (minPrice) query["pricing.basePrice"].$gte = Number(minPrice);
+          if (maxPrice) query["pricing.basePrice"].$lte = Number(maxPrice);
         }
 
         // Bus route filtering
         if (from || to) {
-          if (from) query['busService.route.from'] = { $regex: from, $options: 'i' };
-          if (to) query['busService.route.to'] = { $regex: to, $options: 'i' };
+          if (from)
+            query["busService.route.from"] = { $regex: from, $options: "i" };
+          if (to) query["busService.route.to"] = { $regex: to, $options: "i" };
         }
 
         // Sorting
         const sort: any = {};
-        sort[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
+        sort[sortBy as string] = sortOrder === "asc" ? 1 : -1;
 
         const services = await Service.find(query)
-          .populate('createdBy', 'name email')
+          .populate("createdBy", "name email")
           .sort(sort)
           .limit(Number(limit))
           .skip((Number(page) - 1) * Number(limit))
@@ -157,32 +158,36 @@ export const getAllServices: RequestHandler = async (req, res) => {
       },
       // Fallback: Use mock services
       (() => {
-        console.log('⚠️  Database unavailable, using mock services');
+        console.log("⚠️  Database unavailable, using mock services");
         let filteredServices = [...mockServices];
 
         // Apply basic filters to mock data
         if (type) {
-          filteredServices = filteredServices.filter(s => s.type === type);
+          filteredServices = filteredServices.filter((s) => s.type === type);
         }
-        if (isActive === 'true') {
-          filteredServices = filteredServices.filter(s => s.isActive);
+        if (isActive === "true") {
+          filteredServices = filteredServices.filter((s) => s.isActive);
         }
-        if (isFeatured === 'true') {
-          filteredServices = filteredServices.filter(s => s.isFeatured);
+        if (isFeatured === "true") {
+          filteredServices = filteredServices.filter((s) => s.isFeatured);
         }
         if (search) {
           const searchLower = (search as string).toLowerCase();
-          filteredServices = filteredServices.filter(s =>
-            s.name.toLowerCase().includes(searchLower) ||
-            s.description.toLowerCase().includes(searchLower)
+          filteredServices = filteredServices.filter(
+            (s) =>
+              s.name.toLowerCase().includes(searchLower) ||
+              s.description.toLowerCase().includes(searchLower),
           );
         }
 
         const startIndex = (Number(page) - 1) * Number(limit);
-        const paginatedServices = filteredServices.slice(startIndex, startIndex + Number(limit));
+        const paginatedServices = filteredServices.slice(
+          startIndex,
+          startIndex + Number(limit),
+        );
 
         return { services: paginatedServices, total: filteredServices.length };
-      })()
+      })(),
     );
 
     res.json({
@@ -192,16 +197,19 @@ export const getAllServices: RequestHandler = async (req, res) => {
         page: Number(page),
         limit: Number(limit),
         total: result.total,
-        pages: Math.ceil(result.total / Number(limit))
+        pages: Math.ceil(result.total / Number(limit)),
       },
-      ...((!isDBConnected()) && { mode: 'demo' })
+      ...(!isDBConnected() && { mode: "demo" }),
     });
   } catch (error: any) {
-    console.error('Get all services error:', error);
+    console.error("Get all services error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch services',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      message: "Failed to fetch services",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
@@ -215,22 +223,22 @@ export const getFeaturedServices: RequestHandler = async (req, res) => {
 
     const services = await Service.find({
       isActive: true,
-      isFeatured: true
+      isFeatured: true,
     })
-      .populate('createdBy', 'name email')
-      .sort({ 'rating.average': -1, createdAt: -1 })
+      .populate("createdBy", "name email")
+      .sort({ "rating.average": -1, createdAt: -1 })
       .limit(Number(limit))
       .exec();
 
     res.json({
       success: true,
-      services
+      services,
     });
   } catch (error: any) {
-    console.error('Get featured services error:', error);
+    console.error("Get featured services error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch featured services'
+      message: "Failed to fetch featured services",
     });
   }
 };
@@ -243,22 +251,23 @@ export const getBusServices: RequestHandler = async (req, res) => {
     const { from, to, date } = req.query;
 
     const query: any = {
-      type: 'bus',
+      type: "bus",
       isActive: true,
-      isAvailable: true
+      isAvailable: true,
     };
 
     if (from || to) {
-      if (from) query['busService.route.from'] = { $regex: from, $options: 'i' };
-      if (to) query['busService.route.to'] = { $regex: to, $options: 'i' };
+      if (from)
+        query["busService.route.from"] = { $regex: from, $options: "i" };
+      if (to) query["busService.route.to"] = { $regex: to, $options: "i" };
     }
 
     const buses = await Service.find(query)
-      .populate('createdBy', 'name email')
-      .sort({ 'rating.average': -1 });
+      .populate("createdBy", "name email")
+      .sort({ "rating.average": -1 });
 
     // Transform data to match frontend expectations
-    const transformedBuses = buses.map(bus => ({
+    const transformedBuses = buses.map((bus) => ({
       id: bus._id,
       name: bus.name,
       from: bus.busService?.route.from,
@@ -272,18 +281,18 @@ export const getBusServices: RequestHandler = async (req, res) => {
       rating: bus.rating,
       images: bus.images,
       features: bus.features,
-      description: bus.shortDescription
+      description: bus.shortDescription,
     }));
 
     res.json({
       success: true,
-      buses: transformedBuses
+      buses: transformedBuses,
     });
   } catch (error: any) {
-    console.error('Get bus services error:', error);
+    console.error("Get bus services error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch bus services'
+      message: "Failed to fetch bus services",
     });
   }
 };
@@ -296,24 +305,29 @@ export const getCargoServices: RequestHandler = async (req, res) => {
     const { vehicleType, route } = req.query;
 
     const query: any = {
-      type: 'cargo',
+      type: "cargo",
       isActive: true,
-      isAvailable: true
+      isAvailable: true,
     };
 
     if (vehicleType) {
-      query['cargoService.vehicleType'] = { $regex: vehicleType, $options: 'i' };
+      query["cargoService.vehicleType"] = {
+        $regex: vehicleType,
+        $options: "i",
+      };
     }
 
     if (route) {
-      query['cargoService.availableRoutes'] = { $in: [new RegExp(route as string, 'i')] };
+      query["cargoService.availableRoutes"] = {
+        $in: [new RegExp(route as string, "i")],
+      };
     }
 
     const cargoServices = await Service.find(query)
-      .populate('createdBy', 'name email')
-      .sort({ 'rating.average': -1 });
+      .populate("createdBy", "name email")
+      .sort({ "rating.average": -1 });
 
-    const transformedCargo = cargoServices.map(cargo => ({
+    const transformedCargo = cargoServices.map((cargo) => ({
       id: cargo._id,
       name: cargo.name,
       vehicleType: cargo.cargoService?.vehicleType,
@@ -325,18 +339,18 @@ export const getCargoServices: RequestHandler = async (req, res) => {
       rating: cargo.rating,
       images: cargo.images,
       features: cargo.features,
-      description: cargo.shortDescription
+      description: cargo.shortDescription,
     }));
 
     res.json({
       success: true,
-      cargo: transformedCargo
+      cargo: transformedCargo,
     });
   } catch (error: any) {
-    console.error('Get cargo services error:', error);
+    console.error("Get cargo services error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch cargo services'
+      message: "Failed to fetch cargo services",
     });
   }
 };
@@ -349,31 +363,31 @@ export const getConstructionServices: RequestHandler = async (req, res) => {
     const { category, search, itemType } = req.query;
 
     const query: any = {
-      type: 'construction',
+      type: "construction",
       isActive: true,
-      isAvailable: true
+      isAvailable: true,
     };
 
     if (category) {
-      query.category = { $regex: category, $options: 'i' };
+      query.category = { $regex: category, $options: "i" };
     }
 
     if (itemType) {
-      query['constructionService.itemType'] = itemType;
+      query["constructionService.itemType"] = itemType;
     }
 
     if (search) {
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
       ];
     }
 
     const constructionItems = await Service.find(query)
-      .populate('createdBy', 'name email')
-      .sort({ 'rating.average': -1 });
+      .populate("createdBy", "name email")
+      .sort({ "rating.average": -1 });
 
-    const transformedItems = constructionItems.map(item => ({
+    const transformedItems = constructionItems.map((item) => ({
       id: item._id,
       name: item.name,
       category: item.category,
@@ -386,18 +400,18 @@ export const getConstructionServices: RequestHandler = async (req, res) => {
       rating: item.rating,
       images: item.images,
       features: item.features,
-      description: item.shortDescription
+      description: item.shortDescription,
     }));
 
     res.json({
       success: true,
-      items: transformedItems
+      items: transformedItems,
     });
   } catch (error: any) {
-    console.error('Get construction services error:', error);
+    console.error("Get construction services error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch construction items'
+      message: "Failed to fetch construction items",
     });
   }
 };
@@ -410,24 +424,28 @@ export const getGarageServices: RequestHandler = async (req, res) => {
     const { serviceType, vehicleType } = req.query;
 
     const query: any = {
-      type: 'garage',
+      type: "garage",
       isActive: true,
-      isAvailable: true
+      isAvailable: true,
     };
 
     if (serviceType) {
-      query['garageService.serviceTypes'] = { $in: [new RegExp(serviceType as string, 'i')] };
+      query["garageService.serviceTypes"] = {
+        $in: [new RegExp(serviceType as string, "i")],
+      };
     }
 
     if (vehicleType) {
-      query['garageService.vehicleTypes'] = { $in: [new RegExp(vehicleType as string, 'i')] };
+      query["garageService.vehicleTypes"] = {
+        $in: [new RegExp(vehicleType as string, "i")],
+      };
     }
 
     const garageServices = await Service.find(query)
-      .populate('createdBy', 'name email')
-      .sort({ 'rating.average': -1 });
+      .populate("createdBy", "name email")
+      .sort({ "rating.average": -1 });
 
-    const transformedServices = garageServices.map(service => ({
+    const transformedServices = garageServices.map((service) => ({
       id: service._id,
       name: service.name,
       serviceTypes: service.garageService?.serviceTypes,
@@ -440,18 +458,18 @@ export const getGarageServices: RequestHandler = async (req, res) => {
       rating: service.rating,
       images: service.images,
       features: service.features,
-      description: service.shortDescription
+      description: service.shortDescription,
     }));
 
     res.json({
       success: true,
-      services: transformedServices
+      services: transformedServices,
     });
   } catch (error: any) {
-    console.error('Get garage services error:', error);
+    console.error("Get garage services error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch garage services'
+      message: "Failed to fetch garage services",
     });
   }
 };
@@ -464,13 +482,13 @@ export const getServiceById: RequestHandler = async (req, res) => {
     const { id } = req.params;
 
     const service = await Service.findById(id)
-      .populate('createdBy', 'name email')
-      .populate('updatedBy', 'name email');
+      .populate("createdBy", "name email")
+      .populate("updatedBy", "name email");
 
     if (!service) {
       return res.status(404).json({
         success: false,
-        message: 'Service not found'
+        message: "Service not found",
       });
     }
 
@@ -480,13 +498,13 @@ export const getServiceById: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      service
+      service,
     });
   } catch (error: any) {
-    console.error('Get service by ID error:', error);
+    console.error("Get service by ID error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch service'
+      message: "Failed to fetch service",
     });
   }
 };
@@ -499,44 +517,49 @@ export const createService: RequestHandler = async (req, res) => {
     const serviceData = {
       ...req.body,
       createdBy: req.user.userId,
-      updatedBy: req.user.userId
+      updatedBy: req.user.userId,
     };
 
     // Validate required fields based on service type
     const { type } = serviceData;
-    
-    if (type === 'bus' && !serviceData.busService) {
+
+    if (type === "bus" && !serviceData.busService) {
       return res.status(400).json({
         success: false,
-        message: 'Bus service details are required for bus type services'
+        message: "Bus service details are required for bus type services",
       });
     }
 
     const service = new Service(serviceData);
     await service.save();
 
-    const populatedService = await Service.findById(service._id)
-      .populate('createdBy', 'name email');
+    const populatedService = await Service.findById(service._id).populate(
+      "createdBy",
+      "name email",
+    );
 
     res.status(201).json({
       success: true,
-      message: 'Service created successfully',
-      service: populatedService
+      message: "Service created successfully",
+      service: populatedService,
     });
   } catch (error: any) {
-    console.error('Create service error:', error);
-    
+    console.error("Create service error:", error);
+
     if (error.code === 11000) {
       return res.status(409).json({
         success: false,
-        message: 'Service with this slug already exists'
+        message: "Service with this slug already exists",
       });
     }
-    
+
     res.status(500).json({
       success: false,
-      message: 'Failed to create service',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      message: "Failed to create service",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
@@ -549,32 +572,32 @@ export const updateService: RequestHandler = async (req, res) => {
     const { id } = req.params;
     const updateData = {
       ...req.body,
-      updatedBy: req.user.userId
+      updatedBy: req.user.userId,
     };
 
     const service = await Service.findByIdAndUpdate(
       id,
       { $set: updateData },
-      { new: true, runValidators: true }
-    ).populate('createdBy updatedBy', 'name email');
+      { new: true, runValidators: true },
+    ).populate("createdBy updatedBy", "name email");
 
     if (!service) {
       return res.status(404).json({
         success: false,
-        message: 'Service not found'
+        message: "Service not found",
       });
     }
 
     res.json({
       success: true,
-      message: 'Service updated successfully',
-      service
+      message: "Service updated successfully",
+      service,
     });
   } catch (error: any) {
-    console.error('Update service error:', error);
+    console.error("Update service error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update service'
+      message: "Failed to update service",
     });
   }
 };
@@ -591,19 +614,19 @@ export const deleteService: RequestHandler = async (req, res) => {
     if (!service) {
       return res.status(404).json({
         success: false,
-        message: 'Service not found'
+        message: "Service not found",
       });
     }
 
     res.json({
       success: true,
-      message: 'Service deleted successfully'
+      message: "Service deleted successfully",
     });
   } catch (error: any) {
-    console.error('Delete service error:', error);
+    console.error("Delete service error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to delete service'
+      message: "Failed to delete service",
     });
   }
 };
@@ -618,30 +641,35 @@ export const getServiceStats: RequestHandler = async (req, res) => {
         $facet: {
           totalServices: [{ $count: "count" }],
           activeServices: [{ $match: { isActive: true } }, { $count: "count" }],
-          servicesByType: [
-            { $group: { _id: "$type", count: { $sum: 1 } } }
-          ],
+          servicesByType: [{ $group: { _id: "$type", count: { $sum: 1 } } }],
           featuredServices: [
             { $match: { isFeatured: true } },
-            { $count: "count" }
+            { $count: "count" },
           ],
           averageRating: [
-            { $group: { _id: null, avgRating: { $avg: "$rating.average" } } }
+            { $group: { _id: null, avgRating: { $avg: "$rating.average" } } },
           ],
           totalViews: [
-            { $group: { _id: null, totalViews: { $sum: "$analytics.views" } } }
+            { $group: { _id: null, totalViews: { $sum: "$analytics.views" } } },
           ],
           totalRevenue: [
-            { $group: { _id: null, totalRevenue: { $sum: "$analytics.revenue" } } }
-          ]
-        }
-      }
+            {
+              $group: {
+                _id: null,
+                totalRevenue: { $sum: "$analytics.revenue" },
+              },
+            },
+          ],
+        },
+      },
     ]);
 
     const result = {
       totalServices: stats[0].totalServices[0]?.count || 0,
       activeServices: stats[0].activeServices[0]?.count || 0,
-      inactiveServices: (stats[0].totalServices[0]?.count || 0) - (stats[0].activeServices[0]?.count || 0),
+      inactiveServices:
+        (stats[0].totalServices[0]?.count || 0) -
+        (stats[0].activeServices[0]?.count || 0),
       featuredServices: stats[0].featuredServices[0]?.count || 0,
       averageRating: stats[0].averageRating[0]?.avgRating || 0,
       totalViews: stats[0].totalViews[0]?.totalViews || 0,
@@ -649,35 +677,35 @@ export const getServiceStats: RequestHandler = async (req, res) => {
       servicesByType: stats[0].servicesByType.reduce((acc: any, item: any) => {
         acc[item._id] = item.count;
         return acc;
-      }, {})
+      }, {}),
     };
 
     res.json({
       success: true,
-      stats: result
+      stats: result,
     });
   } catch (error: any) {
-    console.error('Get service stats error:', error);
+    console.error("Get service stats error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch service statistics'
+      message: "Failed to fetch service statistics",
     });
   }
 };
 
 // Set up routes
-router.get('/', optionalAuth, getAllServices);
-router.get('/featured', getFeaturedServices);
-router.get('/buses', getBusServices);
-router.get('/cargo', getCargoServices);
-router.get('/construction', getConstructionServices);
-router.get('/garage', getGarageServices);
-router.get('/stats', authenticate, adminOnly, getServiceStats);
-router.get('/:id', getServiceById);
+router.get("/", optionalAuth, getAllServices);
+router.get("/featured", getFeaturedServices);
+router.get("/buses", getBusServices);
+router.get("/cargo", getCargoServices);
+router.get("/construction", getConstructionServices);
+router.get("/garage", getGarageServices);
+router.get("/stats", authenticate, adminOnly, getServiceStats);
+router.get("/:id", getServiceById);
 
 // Admin routes
-router.post('/', authenticate, adminOnly, createService);
-router.put('/:id', authenticate, adminOnly, updateService);
-router.delete('/:id', authenticate, adminOnly, deleteService);
+router.post("/", authenticate, adminOnly, createService);
+router.put("/:id", authenticate, adminOnly, updateService);
+router.delete("/:id", authenticate, adminOnly, deleteService);
 
 export default router;

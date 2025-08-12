@@ -26,10 +26,16 @@ import {
   AlertTriangle,
   Mail,
   Phone,
-  MapPin
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -57,7 +63,13 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { adminAPI, servicesAPI, bookingsAPI, userAPI } from "@/services/api";
@@ -127,7 +139,7 @@ export default function AdminDashboard() {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     totalServices: 0,
@@ -136,7 +148,7 @@ export default function AdminDashboard() {
     recentUsers: 0,
     activeServices: 0,
     pendingBookings: 0,
-    monthlyRevenue: 0
+    monthlyRevenue: 0,
   });
 
   const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([]);
@@ -146,7 +158,7 @@ export default function AdminDashboard() {
   const [allBookings, setAllBookings] = useState<RecentBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
-  
+
   // Modal states
   const [isServiceDialogOpen, setIsServiceDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
@@ -155,21 +167,21 @@ export default function AdminDashboard() {
 
   // Form states
   const [serviceForm, setServiceForm] = useState({
-    name: '',
-    description: '',
-    type: 'bus',
-    category: '',
-    basePrice: '',
+    name: "",
+    description: "",
+    type: "bus",
+    category: "",
+    basePrice: "",
     isActive: true,
-    isFeatured: false
+    isFeatured: false,
   });
 
   const [userForm, setUserForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    role: 'user',
-    isActive: true
+    name: "",
+    email: "",
+    phone: "",
+    role: "user",
+    isActive: true,
   });
 
   // Load dashboard data
@@ -177,22 +189,22 @@ export default function AdminDashboard() {
     const loadDashboardData = async () => {
       try {
         setIsLoading(true);
-        
+
         // Load all data in parallel
         const [
           dashboardResponse,
           usersResponse,
           servicesResponse,
-          bookingsResponse
+          bookingsResponse,
         ] = await Promise.allSettled([
           adminAPI.getDashboard(),
           userAPI.getAllUsers(),
           servicesAPI.getAllServices({ limit: 100 }),
-          bookingsAPI.getAllBookings({ limit: 100 })
+          bookingsAPI.getAllBookings({ limit: 100 }),
         ]);
 
         // Handle dashboard stats
-        if (dashboardResponse.status === 'fulfilled') {
+        if (dashboardResponse.status === "fulfilled") {
           setStats(dashboardResponse.value.data);
         } else {
           // Fallback stats if API fails
@@ -204,12 +216,12 @@ export default function AdminDashboard() {
             recentUsers: 8,
             activeServices: 22,
             pendingBookings: 12,
-            monthlyRevenue: 25000
+            monthlyRevenue: 25000,
           });
         }
 
         // Handle users data
-        if (usersResponse.status === 'fulfilled') {
+        if (usersResponse.status === "fulfilled") {
           const users = usersResponse.value.users || [];
           setAllUsers(users);
           setRecentUsers(users.slice(0, 5));
@@ -217,55 +229,55 @@ export default function AdminDashboard() {
           // Fallback users
           const mockUsers = [
             {
-              _id: '1',
-              name: 'Ram Kumar Sharma',
-              email: 'ram@example.com',
-              phone: '9841234567',
-              role: 'user',
+              _id: "1",
+              name: "Ram Kumar Sharma",
+              email: "ram@example.com",
+              phone: "9841234567",
+              role: "user",
               isActive: true,
               createdAt: new Date().toISOString(),
-              lastLogin: new Date().toISOString()
+              lastLogin: new Date().toISOString(),
             },
             {
-              _id: '2',
-              name: 'Sita Devi Thapa',
-              email: 'sita@example.com',
-              phone: '9841234568',
-              role: 'user',
+              _id: "2",
+              name: "Sita Devi Thapa",
+              email: "sita@example.com",
+              phone: "9841234568",
+              role: "user",
               isActive: true,
-              createdAt: new Date().toISOString()
-            }
+              createdAt: new Date().toISOString(),
+            },
           ];
           setAllUsers(mockUsers);
           setRecentUsers(mockUsers);
         }
 
         // Handle services data
-        if (servicesResponse.status === 'fulfilled') {
+        if (servicesResponse.status === "fulfilled") {
           const services = servicesResponse.value.services || [];
           setAllServices(services);
         } else {
           // Fallback services
           const mockServices = [
             {
-              _id: '1',
-              name: 'Kathmandu to Pokhara Bus',
-              description: 'Comfortable AC bus service',
-              type: 'bus',
-              category: 'Transportation',
-              pricing: { basePrice: 800, currency: 'NPR' },
+              _id: "1",
+              name: "Kathmandu to Pokhara Bus",
+              description: "Comfortable AC bus service",
+              type: "bus",
+              category: "Transportation",
+              pricing: { basePrice: 800, currency: "NPR" },
               isActive: true,
               isFeatured: true,
               rating: { average: 4.5, count: 120 },
               createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
-            }
+              updatedAt: new Date().toISOString(),
+            },
           ];
           setAllServices(mockServices);
         }
 
         // Handle bookings data
-        if (bookingsResponse.status === 'fulfilled') {
+        if (bookingsResponse.status === "fulfilled") {
           const bookings = bookingsResponse.value.bookings || [];
           setAllBookings(bookings);
           setRecentBookings(bookings.slice(0, 5));
@@ -273,21 +285,20 @@ export default function AdminDashboard() {
           // Fallback bookings
           const mockBookings = [
             {
-              _id: '1',
-              user: { _id: '1', name: 'Ram Kumar', email: 'ram@example.com' },
-              service: { _id: '1', name: 'Kathmandu Bus', type: 'bus' },
+              _id: "1",
+              user: { _id: "1", name: "Ram Kumar", email: "ram@example.com" },
+              service: { _id: "1", name: "Kathmandu Bus", type: "bus" },
               totalAmount: 800,
-              status: 'confirmed',
+              status: "confirmed",
               createdAt: new Date().toISOString(),
-              bookingDate: new Date().toISOString()
-            }
+              bookingDate: new Date().toISOString(),
+            },
           ];
           setAllBookings(mockBookings);
           setRecentBookings(mockBookings);
         }
-
       } catch (error) {
-        console.error('Failed to load dashboard data:', error);
+        console.error("Failed to load dashboard data:", error);
         toast({
           title: "Error",
           description: "Failed to load dashboard data. Using demo data.",
@@ -303,13 +314,13 @@ export default function AdminDashboard() {
 
   // Check admin access
   useEffect(() => {
-    if (!isLoading && isAuthenticated && user?.role !== 'admin') {
+    if (!isLoading && isAuthenticated && user?.role !== "admin") {
       toast({
         title: "Access Denied",
         description: "Admin privileges required to access this page.",
         variant: "destructive",
       });
-      navigate('/');
+      navigate("/");
     }
   }, [user, isAuthenticated, isLoading, navigate, toast]);
 
@@ -320,8 +331,8 @@ export default function AdminDashboard() {
         ...serviceForm,
         pricing: {
           basePrice: parseFloat(serviceForm.basePrice),
-          currency: 'NPR'
-        }
+          currency: "NPR",
+        },
       };
 
       if (editingService) {
@@ -341,16 +352,16 @@ export default function AdminDashboard() {
       // Reload services
       const response = await servicesAPI.getAllServices({ limit: 100 });
       setAllServices(response.services || []);
-      
+
       // Reset form
       setServiceForm({
-        name: '',
-        description: '',
-        type: 'bus',
-        category: '',
-        basePrice: '',
+        name: "",
+        description: "",
+        type: "bus",
+        category: "",
+        basePrice: "",
         isActive: true,
-        isFeatured: false
+        isFeatured: false,
       });
       setEditingService(null);
       setIsServiceDialogOpen(false);
@@ -372,7 +383,7 @@ export default function AdminDashboard() {
       category: service.category,
       basePrice: service.pricing.basePrice.toString(),
       isActive: service.isActive,
-      isFeatured: service.isFeatured
+      isFeatured: service.isFeatured,
     });
     setIsServiceDialogOpen(true);
   };
@@ -380,7 +391,7 @@ export default function AdminDashboard() {
   const handleServiceDelete = async (serviceId: string) => {
     try {
       await servicesAPI.deleteService(serviceId);
-      setAllServices(prev => prev.filter(s => s._id !== serviceId));
+      setAllServices((prev) => prev.filter((s) => s._id !== serviceId));
       toast({
         title: "Success",
         description: "Service deleted successfully.",
@@ -416,14 +427,14 @@ export default function AdminDashboard() {
       const users = response.users || [];
       setAllUsers(users);
       setRecentUsers(users.slice(0, 5));
-      
+
       // Reset form
       setUserForm({
-        name: '',
-        email: '',
-        phone: '',
-        role: 'user',
-        isActive: true
+        name: "",
+        email: "",
+        phone: "",
+        role: "user",
+        isActive: true,
       });
       setEditingUser(null);
       setIsUserDialogOpen(false);
@@ -443,7 +454,7 @@ export default function AdminDashboard() {
       email: user.email,
       phone: user.phone,
       role: user.role,
-      isActive: user.isActive
+      isActive: user.isActive,
     });
     setIsUserDialogOpen(true);
   };
@@ -451,8 +462,8 @@ export default function AdminDashboard() {
   const handleUserDelete = async (userId: string) => {
     try {
       await userAPI.deleteUser(userId);
-      setAllUsers(prev => prev.filter(u => u._id !== userId));
-      setRecentUsers(prev => prev.filter(u => u._id !== userId));
+      setAllUsers((prev) => prev.filter((u) => u._id !== userId));
+      setRecentUsers((prev) => prev.filter((u) => u._id !== userId));
       toast({
         title: "Success",
         description: "User deleted successfully.",
@@ -474,13 +485,14 @@ export default function AdminDashboard() {
       in_progress: { color: "bg-blue-100 text-blue-800", icon: Activity },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     const Icon = config.icon;
 
     return (
       <Badge className={`${config.color} flex items-center gap-1`}>
         <Icon className="w-3 h-3" />
-        {status.replace('_', ' ')}
+        {status.replace("_", " ")}
       </Badge>
     );
   };
@@ -493,7 +505,7 @@ export default function AdminDashboard() {
       changeType: "positive" as const,
       icon: Users,
       color: "text-blue-600",
-      bgColor: "bg-blue-50"
+      bgColor: "bg-blue-50",
     },
     {
       title: "Active Services",
@@ -502,7 +514,7 @@ export default function AdminDashboard() {
       changeType: "positive" as const,
       icon: FileText,
       color: "text-green-600",
-      bgColor: "bg-green-50"
+      bgColor: "bg-green-50",
     },
     {
       title: "Total Bookings",
@@ -511,7 +523,7 @@ export default function AdminDashboard() {
       changeType: "positive" as const,
       icon: Calendar,
       color: "text-purple-600",
-      bgColor: "bg-purple-50"
+      bgColor: "bg-purple-50",
     },
     {
       title: "Total Revenue",
@@ -520,17 +532,19 @@ export default function AdminDashboard() {
       changeType: "positive" as const,
       icon: DollarSign,
       color: "text-orange-600",
-      bgColor: "bg-orange-50"
-    }
+      bgColor: "bg-orange-50",
+    },
   ];
 
-  if (!isAuthenticated || (user && user.role !== 'admin')) {
+  if (!isAuthenticated || (user && user.role !== "admin")) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="max-w-md mx-auto">
             <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+            <h1 className="text-2xl font-bold text-red-600 mb-4">
+              Access Denied
+            </h1>
             <p className="text-gray-600 mb-8">
               Admin privileges required to access this dashboard.
             </p>
@@ -539,13 +553,18 @@ export default function AdminDashboard() {
                 <Button className="w-full">Login as Admin</Button>
               </Link>
               <Link to="/">
-                <Button variant="outline" className="w-full">Go Home</Button>
+                <Button variant="outline" className="w-full">
+                  Go Home
+                </Button>
               </Link>
             </div>
             <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-semibold text-blue-800 mb-2">Demo Admin Access</h3>
+              <h3 className="font-semibold text-blue-800 mb-2">
+                Demo Admin Access
+              </h3>
               <p className="text-sm text-blue-600">
-                Email: admin@demo.com<br />
+                Email: admin@demo.com
+                <br />
                 Password: demo123
               </p>
             </div>
@@ -576,9 +595,12 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Admin Dashboard
+            </h1>
             <p className="text-gray-600">
-              Welcome back, {user?.name}! Here's what's happening with Kanxa Safari.
+              Welcome back, {user?.name}! Here's what's happening with Kanxa
+              Safari.
             </p>
           </div>
           <div className="flex items-center space-x-4 mt-4 sm:mt-0">
@@ -618,7 +640,9 @@ export default function AdminDashboard() {
                         ) : (
                           <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
                         )}
-                        <span className={`text-sm font-medium ${stat.changeType === "positive" ? "text-green-600" : "text-red-600"}`}>
+                        <span
+                          className={`text-sm font-medium ${stat.changeType === "positive" ? "text-green-600" : "text-red-600"}`}
+                        >
                           {stat.change}
                         </span>
                         <span className="text-sm text-gray-500 ml-1">
@@ -637,7 +661,11 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
@@ -665,16 +693,25 @@ export default function AdminDashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     {recentBookings.map((booking) => (
-                      <div key={booking._id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div
+                        key={booking._id}
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
                         <div className="space-y-1">
-                          <p className="text-sm font-medium">{booking.user.name}</p>
-                          <p className="text-sm text-gray-600">{booking.service.name}</p>
+                          <p className="text-sm font-medium">
+                            {booking.user.name}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {booking.service.name}
+                          </p>
                           <p className="text-xs text-gray-500">
                             {new Date(booking.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="text-right space-y-1">
-                          <p className="text-sm font-medium">NPR {booking.totalAmount.toLocaleString()}</p>
+                          <p className="text-sm font-medium">
+                            NPR {booking.totalAmount.toLocaleString()}
+                          </p>
                           {getStatusBadge(booking.status)}
                         </div>
                       </div>
@@ -699,18 +736,25 @@ export default function AdminDashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     {recentUsers.map((user) => (
-                      <div key={user._id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div
+                        key={user._id}
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                             <Users className="w-5 h-5 text-blue-600" />
                           </div>
                           <div>
                             <p className="text-sm font-medium">{user.name}</p>
-                            <p className="text-sm text-gray-600">{user.email}</p>
+                            <p className="text-sm text-gray-600">
+                              {user.email}
+                            </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <Badge variant={user.isActive ? "default" : "secondary"}>
+                          <Badge
+                            variant={user.isActive ? "default" : "secondary"}
+                          >
                             {user.role}
                           </Badge>
                           <p className="text-xs text-gray-500 mt-1">
@@ -731,7 +775,9 @@ export default function AdminDashboard() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle>User Management</CardTitle>
-                  <CardDescription>Manage system users and their permissions</CardDescription>
+                  <CardDescription>
+                    Manage system users and their permissions
+                  </CardDescription>
                 </div>
                 <Button onClick={() => setIsUserDialogOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
@@ -767,7 +813,9 @@ export default function AdminDashboard() {
                         <TableCell>
                           <div>
                             <p className="font-medium">{user.name}</p>
-                            <p className="text-sm text-gray-600">{user.email}</p>
+                            <p className="text-sm text-gray-600">
+                              {user.email}
+                            </p>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -777,13 +825,19 @@ export default function AdminDashboard() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                          <Badge
+                            variant={
+                              user.role === "admin" ? "default" : "secondary"
+                            }
+                          >
                             {user.role}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={user.isActive ? 'default' : 'secondary'}>
-                            {user.isActive ? 'Active' : 'Inactive'}
+                          <Badge
+                            variant={user.isActive ? "default" : "secondary"}
+                          >
+                            {user.isActive ? "Active" : "Inactive"}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -797,11 +851,13 @@ export default function AdminDashboard() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                              <DropdownMenuItem onClick={() => handleUserEdit(user)}>
+                              <DropdownMenuItem
+                                onClick={() => handleUserEdit(user)}
+                              >
                                 <Edit className="w-4 h-4 mr-2" />
                                 Edit
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => handleUserDelete(user._id)}
                                 className="text-red-600"
                               >
@@ -825,7 +881,9 @@ export default function AdminDashboard() {
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle>Service Management</CardTitle>
-                  <CardDescription>Manage available services and their details</CardDescription>
+                  <CardDescription>
+                    Manage available services and their details
+                  </CardDescription>
                 </div>
                 <Button onClick={() => setIsServiceDialogOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
@@ -886,8 +944,12 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col space-y-1">
-                            <Badge variant={service.isActive ? 'default' : 'secondary'}>
-                              {service.isActive ? 'Active' : 'Inactive'}
+                            <Badge
+                              variant={
+                                service.isActive ? "default" : "secondary"
+                              }
+                            >
+                              {service.isActive ? "Active" : "Inactive"}
                             </Badge>
                             {service.isFeatured && (
                               <Badge variant="outline" className="text-xs">
@@ -904,11 +966,13 @@ export default function AdminDashboard() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                              <DropdownMenuItem onClick={() => handleServiceEdit(service)}>
+                              <DropdownMenuItem
+                                onClick={() => handleServiceEdit(service)}
+                              >
                                 <Edit className="w-4 h-4 mr-2" />
                                 Edit
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => handleServiceDelete(service._id)}
                                 className="text-red-600"
                               >
@@ -931,7 +995,9 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Booking Management</CardTitle>
-                <CardDescription>Monitor and manage customer bookings</CardDescription>
+                <CardDescription>
+                  Monitor and manage customer bookings
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center space-x-4 mb-4">
@@ -966,12 +1032,16 @@ export default function AdminDashboard() {
                         <TableCell>
                           <div>
                             <p className="font-medium">{booking.user.name}</p>
-                            <p className="text-sm text-gray-600">{booking.user.email}</p>
+                            <p className="text-sm text-gray-600">
+                              {booking.user.email}
+                            </p>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium">{booking.service.name}</p>
+                            <p className="font-medium">
+                              {booking.service.name}
+                            </p>
                             <Badge variant="outline" className="mt-1">
                               {booking.service.type}
                             </Badge>
@@ -983,9 +1053,7 @@ export default function AdminDashboard() {
                         <TableCell>
                           {new Date(booking.bookingDate).toLocaleDateString()}
                         </TableCell>
-                        <TableCell>
-                          {getStatusBadge(booking.status)}
-                        </TableCell>
+                        <TableCell>{getStatusBadge(booking.status)}</TableCell>
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -1040,7 +1108,10 @@ export default function AdminDashboard() {
                         <span>60%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-600 h-2 rounded-full" style={{ width: '60%' }}></div>
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
+                          style={{ width: "60%" }}
+                        ></div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -1049,7 +1120,10 @@ export default function AdminDashboard() {
                         <span>25%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-green-600 h-2 rounded-full" style={{ width: '25%' }}></div>
+                        <div
+                          className="bg-green-600 h-2 rounded-full"
+                          style={{ width: "25%" }}
+                        ></div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -1058,7 +1132,10 @@ export default function AdminDashboard() {
                         <span>15%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-purple-600 h-2 rounded-full" style={{ width: '15%' }}></div>
+                        <div
+                          className="bg-purple-600 h-2 rounded-full"
+                          style={{ width: "15%" }}
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -1075,7 +1152,9 @@ export default function AdminDashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="text-center">
-                      <p className="text-3xl font-bold text-gray-900">{stats.activeServices}</p>
+                      <p className="text-3xl font-bold text-gray-900">
+                        {stats.activeServices}
+                      </p>
                       <p className="text-sm text-gray-600">Active Services</p>
                     </div>
                     <div className="space-y-3">
@@ -1115,14 +1194,19 @@ export default function AdminDashboard() {
         </Tabs>
 
         {/* Service Dialog */}
-        <Dialog open={isServiceDialogOpen} onOpenChange={setIsServiceDialogOpen}>
+        <Dialog
+          open={isServiceDialogOpen}
+          onOpenChange={setIsServiceDialogOpen}
+        >
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>
-                {editingService ? 'Edit Service' : 'Add New Service'}
+                {editingService ? "Edit Service" : "Add New Service"}
               </DialogTitle>
               <DialogDescription>
-                {editingService ? 'Update service details' : 'Create a new service for customers to book'}
+                {editingService
+                  ? "Update service details"
+                  : "Create a new service for customers to book"}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -1131,7 +1215,9 @@ export default function AdminDashboard() {
                 <Input
                   id="name"
                   value={serviceForm.name}
-                  onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })}
+                  onChange={(e) =>
+                    setServiceForm({ ...serviceForm, name: e.target.value })
+                  }
                   placeholder="Enter service name"
                 />
               </div>
@@ -1140,7 +1226,12 @@ export default function AdminDashboard() {
                 <Textarea
                   id="description"
                   value={serviceForm.description}
-                  onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
+                  onChange={(e) =>
+                    setServiceForm({
+                      ...serviceForm,
+                      description: e.target.value,
+                    })
+                  }
                   placeholder="Enter service description"
                 />
               </div>
@@ -1149,7 +1240,9 @@ export default function AdminDashboard() {
                   <Label htmlFor="type">Type</Label>
                   <Select
                     value={serviceForm.type}
-                    onValueChange={(value) => setServiceForm({ ...serviceForm, type: value })}
+                    onValueChange={(value) =>
+                      setServiceForm({ ...serviceForm, type: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -1168,7 +1261,12 @@ export default function AdminDashboard() {
                   <Input
                     id="category"
                     value={serviceForm.category}
-                    onChange={(e) => setServiceForm({ ...serviceForm, category: e.target.value })}
+                    onChange={(e) =>
+                      setServiceForm({
+                        ...serviceForm,
+                        category: e.target.value,
+                      })
+                    }
                     placeholder="Category"
                   />
                 </div>
@@ -1179,7 +1277,12 @@ export default function AdminDashboard() {
                   id="basePrice"
                   type="number"
                   value={serviceForm.basePrice}
-                  onChange={(e) => setServiceForm({ ...serviceForm, basePrice: e.target.value })}
+                  onChange={(e) =>
+                    setServiceForm({
+                      ...serviceForm,
+                      basePrice: e.target.value,
+                    })
+                  }
                   placeholder="Enter base price"
                 />
               </div>
@@ -1188,7 +1291,12 @@ export default function AdminDashboard() {
                   <input
                     type="checkbox"
                     checked={serviceForm.isActive}
-                    onChange={(e) => setServiceForm({ ...serviceForm, isActive: e.target.checked })}
+                    onChange={(e) =>
+                      setServiceForm({
+                        ...serviceForm,
+                        isActive: e.target.checked,
+                      })
+                    }
                   />
                   <span className="text-sm">Active</span>
                 </label>
@@ -1196,18 +1304,26 @@ export default function AdminDashboard() {
                   <input
                     type="checkbox"
                     checked={serviceForm.isFeatured}
-                    onChange={(e) => setServiceForm({ ...serviceForm, isFeatured: e.target.checked })}
+                    onChange={(e) =>
+                      setServiceForm({
+                        ...serviceForm,
+                        isFeatured: e.target.checked,
+                      })
+                    }
                   />
                   <span className="text-sm">Featured</span>
                 </label>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsServiceDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsServiceDialogOpen(false)}
+              >
                 Cancel
               </Button>
               <Button onClick={handleServiceSubmit}>
-                {editingService ? 'Update' : 'Create'} Service
+                {editingService ? "Update" : "Create"} Service
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1218,10 +1334,12 @@ export default function AdminDashboard() {
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>
-                {editingUser ? 'Edit User' : 'Add New User'}
+                {editingUser ? "Edit User" : "Add New User"}
               </DialogTitle>
               <DialogDescription>
-                {editingUser ? 'Update user details and permissions' : 'Create a new user account'}
+                {editingUser
+                  ? "Update user details and permissions"
+                  : "Create a new user account"}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -1230,7 +1348,9 @@ export default function AdminDashboard() {
                 <Input
                   id="userName"
                   value={userForm.name}
-                  onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                  onChange={(e) =>
+                    setUserForm({ ...userForm, name: e.target.value })
+                  }
                   placeholder="Enter full name"
                 />
               </div>
@@ -1240,7 +1360,9 @@ export default function AdminDashboard() {
                   id="userEmail"
                   type="email"
                   value={userForm.email}
-                  onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                  onChange={(e) =>
+                    setUserForm({ ...userForm, email: e.target.value })
+                  }
                   placeholder="Enter email address"
                 />
               </div>
@@ -1249,7 +1371,9 @@ export default function AdminDashboard() {
                 <Input
                   id="userPhone"
                   value={userForm.phone}
-                  onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })}
+                  onChange={(e) =>
+                    setUserForm({ ...userForm, phone: e.target.value })
+                  }
                   placeholder="Enter phone number"
                 />
               </div>
@@ -1257,7 +1381,9 @@ export default function AdminDashboard() {
                 <Label htmlFor="userRole">Role</Label>
                 <Select
                   value={userForm.role}
-                  onValueChange={(value) => setUserForm({ ...userForm, role: value })}
+                  onValueChange={(value) =>
+                    setUserForm({ ...userForm, role: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -1274,17 +1400,22 @@ export default function AdminDashboard() {
                   type="checkbox"
                   id="userActive"
                   checked={userForm.isActive}
-                  onChange={(e) => setUserForm({ ...userForm, isActive: e.target.checked })}
+                  onChange={(e) =>
+                    setUserForm({ ...userForm, isActive: e.target.checked })
+                  }
                 />
                 <Label htmlFor="userActive">Active Account</Label>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsUserDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsUserDialogOpen(false)}
+              >
                 Cancel
               </Button>
               <Button onClick={handleUserSubmit}>
-                {editingUser ? 'Update' : 'Create'} User
+                {editingUser ? "Update" : "Create"} User
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -22,13 +22,13 @@ export const getDashboard: RequestHandler = async (req, res) => {
         const [userCount, serviceCount, bookingCount] = await Promise.all([
           User.countDocuments({ isActive: true }),
           Service.countDocuments({ isActive: true }),
-          Booking.countDocuments({})
+          Booking.countDocuments({}),
         ]);
 
         // Calculate revenue (sum of all confirmed bookings)
         const revenueResult = await Booking.aggregate([
-          { $match: { paymentStatus: 'completed' } },
-          { $group: { _id: null, totalRevenue: { $sum: '$totalAmount' } } }
+          { $match: { paymentStatus: "completed" } },
+          { $group: { _id: null, totalRevenue: { $sum: "$totalAmount" } } },
         ]);
         const totalRevenue = revenueResult[0]?.totalRevenue || 0;
 
@@ -38,23 +38,23 @@ export const getDashboard: RequestHandler = async (req, res) => {
         monthStart.setHours(0, 0, 0, 0);
 
         const [monthlyUsers, monthlyBookings] = await Promise.all([
-          User.countDocuments({ 
+          User.countDocuments({
             createdAt: { $gte: monthStart },
-            isActive: true 
+            isActive: true,
           }),
-          Booking.countDocuments({ 
-            createdAt: { $gte: monthStart } 
-          })
+          Booking.countDocuments({
+            createdAt: { $gte: monthStart },
+          }),
         ]);
 
         const monthlyRevenueResult = await Booking.aggregate([
-          { 
-            $match: { 
-              paymentStatus: 'completed',
-              createdAt: { $gte: monthStart }
-            } 
+          {
+            $match: {
+              paymentStatus: "completed",
+              createdAt: { $gte: monthStart },
+            },
           },
-          { $group: { _id: null, monthlyRevenue: { $sum: '$totalAmount' } } }
+          { $group: { _id: null, monthlyRevenue: { $sum: "$totalAmount" } } },
         ]);
         const monthlyRevenue = monthlyRevenueResult[0]?.monthlyRevenue || 0;
 
@@ -65,8 +65,8 @@ export const getDashboard: RequestHandler = async (req, res) => {
           totalRevenue,
           recentUsers: monthlyUsers,
           activeServices: serviceCount,
-          pendingBookings: await Booking.countDocuments({ status: 'pending' }),
-          monthlyRevenue
+          pendingBookings: await Booking.countDocuments({ status: "pending" }),
+          monthlyRevenue,
         };
       },
       // Fallback mock data
@@ -78,19 +78,19 @@ export const getDashboard: RequestHandler = async (req, res) => {
         recentUsers: 23,
         activeServices: 48,
         pendingBookings: 15,
-        monthlyRevenue: 186000
-      }
+        monthlyRevenue: 186000,
+      },
     );
 
     res.json({
       success: true,
-      data: dashboardData
+      data: dashboardData,
     });
   } catch (error: any) {
-    console.error('Admin dashboard error:', error);
+    console.error("Admin dashboard error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch dashboard data'
+      message: "Failed to fetch dashboard data",
     });
   }
 };
@@ -100,24 +100,18 @@ export const getDashboard: RequestHandler = async (req, res) => {
 // @access  Private/Admin
 export const getAllUsers: RequestHandler = async (req, res) => {
   try {
-    const {
-      page = 1,
-      limit = 20,
-      role,
-      isActive,
-      search
-    } = req.query;
+    const { page = 1, limit = 20, role, isActive, search } = req.query;
 
     const users = await withDB(
       async () => {
         const query: any = {};
-        
+
         if (role) query.role = role;
-        if (isActive !== undefined) query.isActive = isActive === 'true';
+        if (isActive !== undefined) query.isActive = isActive === "true";
         if (search) {
           query.$or = [
-            { name: { $regex: search, $options: 'i' } },
-            { email: { $regex: search, $options: 'i' } }
+            { name: { $regex: search, $options: "i" } },
+            { email: { $regex: search, $options: "i" } },
           ];
         }
 
@@ -125,7 +119,7 @@ export const getAllUsers: RequestHandler = async (req, res) => {
           .sort({ createdAt: -1 })
           .limit(Number(limit))
           .skip((Number(page) - 1) * Number(limit))
-          .select('-password')
+          .select("-password")
           .exec();
 
         const total = await User.countDocuments(query);
@@ -136,27 +130,27 @@ export const getAllUsers: RequestHandler = async (req, res) => {
       {
         users: [
           {
-            _id: 'mock_user_1',
-            name: 'Ram Kumar Sharma',
-            email: 'ram@example.com',
-            phone: '9841234567',
-            role: 'user',
+            _id: "mock_user_1",
+            name: "Ram Kumar Sharma",
+            email: "ram@example.com",
+            phone: "9841234567",
+            role: "user",
             isActive: true,
             createdAt: new Date(),
-            lastLogin: new Date()
+            lastLogin: new Date(),
           },
           {
-            _id: 'mock_user_2',
-            name: 'Sita Devi Thapa',
-            email: 'sita@example.com',
-            phone: '9841234568',
-            role: 'user',
+            _id: "mock_user_2",
+            name: "Sita Devi Thapa",
+            email: "sita@example.com",
+            phone: "9841234568",
+            role: "user",
             isActive: true,
-            createdAt: new Date()
-          }
+            createdAt: new Date(),
+          },
         ],
-        total: 2
-      }
+        total: 2,
+      },
     );
 
     res.json({
@@ -166,14 +160,14 @@ export const getAllUsers: RequestHandler = async (req, res) => {
         page: Number(page),
         limit: Number(limit),
         total: users.total,
-        pages: Math.ceil(users.total / Number(limit))
-      }
+        pages: Math.ceil(users.total / Number(limit)),
+      },
     });
   } catch (error: any) {
-    console.error('Get all users error:', error);
+    console.error("Get all users error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch users'
+      message: "Failed to fetch users",
     });
   }
 };
@@ -183,12 +177,12 @@ export const getAllUsers: RequestHandler = async (req, res) => {
 // @access  Private/Admin
 export const createUser: RequestHandler = async (req, res) => {
   try {
-    const { name, email, phone, role = 'user', isActive = true } = req.body;
+    const { name, email, phone, role = "user", isActive = true } = req.body;
 
     if (!name || !email || !phone) {
       return res.status(400).json({
         success: false,
-        message: 'Name, email, and phone are required'
+        message: "Name, email, and phone are required",
       });
     }
 
@@ -196,11 +190,11 @@ export const createUser: RequestHandler = async (req, res) => {
       async () => {
         // Check if user already exists
         const existingUser = await User.findOne({
-          $or: [{ email }, { phone }]
+          $or: [{ email }, { phone }],
         });
 
         if (existingUser) {
-          throw new Error('User already exists with this email or phone');
+          throw new Error("User already exists with this email or phone");
         }
 
         // Create new user with default password
@@ -208,10 +202,10 @@ export const createUser: RequestHandler = async (req, res) => {
           name,
           email,
           phone,
-          password: 'temppassword123', // User should change this
+          password: "temppassword123", // User should change this
           role,
           isActive,
-          isEmailVerified: true // Admin created users are pre-verified
+          isEmailVerified: true, // Admin created users are pre-verified
         });
 
         await newUser.save();
@@ -225,20 +219,20 @@ export const createUser: RequestHandler = async (req, res) => {
         phone,
         role,
         isActive,
-        createdAt: new Date()
-      }
+        createdAt: new Date(),
+      },
     );
 
     res.status(201).json({
       success: true,
-      message: 'User created successfully',
-      user
+      message: "User created successfully",
+      user,
     });
   } catch (error: any) {
-    console.error('Create user error:', error);
+    console.error("Create user error:", error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Failed to create user'
+      message: error.message || "Failed to create user",
     });
   }
 };
@@ -253,14 +247,13 @@ export const updateUser: RequestHandler = async (req, res) => {
 
     const user = await withDB(
       async () => {
-        const user = await User.findByIdAndUpdate(
-          id,
-          updateData,
-          { new: true, runValidators: true }
-        ).select('-password');
+        const user = await User.findByIdAndUpdate(id, updateData, {
+          new: true,
+          runValidators: true,
+        }).select("-password");
 
         if (!user) {
-          throw new Error('User not found');
+          throw new Error("User not found");
         }
 
         return user.toJSON();
@@ -269,20 +262,20 @@ export const updateUser: RequestHandler = async (req, res) => {
       {
         _id: id,
         ...updateData,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     );
 
     res.json({
       success: true,
-      message: 'User updated successfully',
-      user
+      message: "User updated successfully",
+      user,
     });
   } catch (error: any) {
-    console.error('Update user error:', error);
+    console.error("Update user error:", error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Failed to update user'
+      message: error.message || "Failed to update user",
     });
   }
 };
@@ -298,23 +291,23 @@ export const deleteUser: RequestHandler = async (req, res) => {
       async () => {
         const user = await User.findByIdAndDelete(id);
         if (!user) {
-          throw new Error('User not found');
+          throw new Error("User not found");
         }
         return user;
       },
       // Fallback for demo mode
-      { deleted: true }
+      { deleted: true },
     );
 
     res.json({
       success: true,
-      message: 'User deleted successfully'
+      message: "User deleted successfully",
     });
   } catch (error: any) {
-    console.error('Delete user error:', error);
+    console.error("Delete user error:", error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Failed to delete user'
+      message: error.message || "Failed to delete user",
     });
   }
 };
@@ -324,25 +317,19 @@ export const deleteUser: RequestHandler = async (req, res) => {
 // @access  Private/Admin
 export const getAllBookings: RequestHandler = async (req, res) => {
   try {
-    const {
-      page = 1,
-      limit = 20,
-      status,
-      userId,
-      serviceId
-    } = req.query;
+    const { page = 1, limit = 20, status, userId, serviceId } = req.query;
 
     const bookings = await withDB(
       async () => {
         const query: any = {};
-        
+
         if (status) query.status = status;
         if (userId) query.userId = userId;
         if (serviceId) query.serviceId = serviceId;
 
         const bookings = await Booking.find(query)
-          .populate('userId', 'name email')
-          .populate('serviceId', 'name type')
+          .populate("userId", "name email")
+          .populate("serviceId", "name type")
           .sort({ createdAt: -1 })
           .limit(Number(limit))
           .skip((Number(page) - 1) * Number(limit))
@@ -356,17 +343,17 @@ export const getAllBookings: RequestHandler = async (req, res) => {
       {
         bookings: [
           {
-            _id: 'mock_booking_1',
-            user: { _id: 'user1', name: 'Ram Kumar', email: 'ram@example.com' },
-            service: { _id: 'service1', name: 'Kathmandu Bus', type: 'bus' },
+            _id: "mock_booking_1",
+            user: { _id: "user1", name: "Ram Kumar", email: "ram@example.com" },
+            service: { _id: "service1", name: "Kathmandu Bus", type: "bus" },
             totalAmount: 800,
-            status: 'confirmed',
+            status: "confirmed",
             createdAt: new Date(),
-            bookingDate: new Date()
-          }
+            bookingDate: new Date(),
+          },
         ],
-        total: 1
-      }
+        total: 1,
+      },
     );
 
     res.json({
@@ -376,14 +363,14 @@ export const getAllBookings: RequestHandler = async (req, res) => {
         page: Number(page),
         limit: Number(limit),
         total: bookings.total,
-        pages: Math.ceil(bookings.total / Number(limit))
-      }
+        pages: Math.ceil(bookings.total / Number(limit)),
+      },
     });
   } catch (error: any) {
-    console.error('Get all bookings error:', error);
+    console.error("Get all bookings error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch bookings'
+      message: "Failed to fetch bookings",
     });
   }
 };
@@ -393,22 +380,22 @@ export const getAllBookings: RequestHandler = async (req, res) => {
 // @access  Private/Admin
 export const getAnalytics: RequestHandler = async (req, res) => {
   try {
-    const { period = '30d' } = req.query;
+    const { period = "30d" } = req.query;
 
     const analytics = await withDB(
       async () => {
         // Calculate date range based on period
         const now = new Date();
         let startDate = new Date();
-        
+
         switch (period) {
-          case '7d':
+          case "7d":
             startDate.setDate(now.getDate() - 7);
             break;
-          case '30d':
+          case "30d":
             startDate.setDate(now.getDate() - 30);
             break;
-          case '90d':
+          case "90d":
             startDate.setDate(now.getDate() - 90);
             break;
           default:
@@ -419,94 +406,94 @@ export const getAnalytics: RequestHandler = async (req, res) => {
         const revenueByType = await Booking.aggregate([
           {
             $match: {
-              paymentStatus: 'completed',
-              createdAt: { $gte: startDate }
-            }
+              paymentStatus: "completed",
+              createdAt: { $gte: startDate },
+            },
           },
           {
             $lookup: {
-              from: 'services',
-              localField: 'serviceId',
-              foreignField: '_id',
-              as: 'service'
-            }
+              from: "services",
+              localField: "serviceId",
+              foreignField: "_id",
+              as: "service",
+            },
           },
           {
-            $unwind: '$service'
+            $unwind: "$service",
           },
           {
             $group: {
-              _id: '$service.type',
-              revenue: { $sum: '$totalAmount' },
-              count: { $sum: 1 }
-            }
-          }
+              _id: "$service.type",
+              revenue: { $sum: "$totalAmount" },
+              count: { $sum: 1 },
+            },
+          },
         ]);
 
         // User growth
         const userGrowth = await User.aggregate([
           {
             $match: {
-              createdAt: { $gte: startDate }
-            }
+              createdAt: { $gte: startDate },
+            },
           },
           {
             $group: {
               _id: {
-                year: { $year: '$createdAt' },
-                month: { $month: '$createdAt' },
-                day: { $dayOfMonth: '$createdAt' }
+                year: { $year: "$createdAt" },
+                month: { $month: "$createdAt" },
+                day: { $dayOfMonth: "$createdAt" },
               },
-              count: { $sum: 1 }
-            }
+              count: { $sum: 1 },
+            },
           },
           {
-            $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 }
-          }
+            $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 },
+          },
         ]);
 
         return {
           revenueByType,
           userGrowth,
-          period
+          period,
         };
       },
       // Fallback mock analytics
       {
         revenueByType: [
-          { _id: 'bus', revenue: 75000, count: 150 },
-          { _id: 'tour', revenue: 45000, count: 30 },
-          { _id: 'construction', revenue: 30000, count: 20 }
+          { _id: "bus", revenue: 75000, count: 150 },
+          { _id: "tour", revenue: 45000, count: 30 },
+          { _id: "construction", revenue: 30000, count: 20 },
         ],
         userGrowth: [
           { _id: { year: 2024, month: 8, day: 10 }, count: 5 },
           { _id: { year: 2024, month: 8, day: 11 }, count: 8 },
-          { _id: { year: 2024, month: 8, day: 12 }, count: 3 }
+          { _id: { year: 2024, month: 8, day: 12 }, count: 3 },
         ],
-        period
-      }
+        period,
+      },
     );
 
     res.json({
       success: true,
-      data: analytics
+      data: analytics,
     });
   } catch (error: any) {
-    console.error('Get analytics error:', error);
+    console.error("Get analytics error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch analytics'
+      message: "Failed to fetch analytics",
     });
   }
 };
 
 // Set up routes
-router.get('/dashboard', getDashboard);
-router.get('/users', getAllUsers);
-router.post('/users', createUser);
-router.put('/users/:id', updateUser);
-router.delete('/users/:id', deleteUser);
-router.get('/bookings', getAllBookings);
-router.get('/analytics', getAnalytics);
+router.get("/dashboard", getDashboard);
+router.get("/users", getAllUsers);
+router.post("/users", createUser);
+router.put("/users/:id", updateUser);
+router.delete("/users/:id", deleteUser);
+router.get("/bookings", getAllBookings);
+router.get("/analytics", getAnalytics);
 
 export default router;

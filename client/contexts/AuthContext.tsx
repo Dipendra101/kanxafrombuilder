@@ -1,5 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authAPI, userAPI } from '@/services/api';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { authAPI, userAPI } from "@/services/api";
 
 interface User {
   id: string;
@@ -37,7 +43,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -57,8 +63,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const storedToken = localStorage.getItem('kanxa_token');
-        const storedUser = localStorage.getItem('kanxa_user');
+        const storedToken = localStorage.getItem("kanxa_token");
+        const storedUser = localStorage.getItem("kanxa_user");
 
         if (storedToken && storedUser) {
           // Verify token with backend
@@ -68,27 +74,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (response.success && response.user) {
               setToken(storedToken);
               setUser(response.user);
-              console.log('✅ Auth initialized successfully');
+              console.log("✅ Auth initialized successfully");
             } else {
               // Token is invalid, clear storage
-              console.log('❌ Token verification failed, clearing storage');
-              localStorage.removeItem('kanxa_token');
-              localStorage.removeItem('kanxa_user');
+              console.log("❌ Token verification failed, clearing storage");
+              localStorage.removeItem("kanxa_token");
+              localStorage.removeItem("kanxa_user");
             }
           } catch (tokenError: any) {
-            console.log('❌ Token verification error:', tokenError.message);
+            console.log("❌ Token verification error:", tokenError.message);
             // Clear invalid token data
-            localStorage.removeItem('kanxa_token');
-            localStorage.removeItem('kanxa_user');
+            localStorage.removeItem("kanxa_token");
+            localStorage.removeItem("kanxa_user");
           }
         } else {
-          console.log('ℹ️  No stored auth data found');
+          console.log("ℹ️  No stored auth data found");
         }
       } catch (error) {
-        console.error('Failed to initialize auth:', error);
+        console.error("Failed to initialize auth:", error);
         // Clear any potentially corrupted data
-        localStorage.removeItem('kanxa_token');
-        localStorage.removeItem('kanxa_user');
+        localStorage.removeItem("kanxa_token");
+        localStorage.removeItem("kanxa_user");
       } finally {
         setIsLoading(false);
       }
@@ -101,19 +107,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       const response = await authAPI.login({ email, password });
-      
+
       if (response.success) {
         setUser(response.user);
         setToken(response.token);
-        
+
         // Store in localStorage
-        localStorage.setItem('kanxa_token', response.token);
-        localStorage.setItem('kanxa_user', JSON.stringify(response.user));
+        localStorage.setItem("kanxa_token", response.token);
+        localStorage.setItem("kanxa_user", JSON.stringify(response.user));
       } else {
-        throw new Error(response.message || 'Login failed');
+        throw new Error(response.message || "Login failed");
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -129,19 +135,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       const response = await authAPI.register(userData);
-      
+
       if (response.success) {
         setUser(response.user);
         setToken(response.token);
-        
+
         // Store in localStorage
-        localStorage.setItem('kanxa_token', response.token);
-        localStorage.setItem('kanxa_user', JSON.stringify(response.user));
+        localStorage.setItem("kanxa_token", response.token);
+        localStorage.setItem("kanxa_user", JSON.stringify(response.user));
       } else {
-        throw new Error(response.message || 'Registration failed');
+        throw new Error(response.message || "Registration failed");
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -151,22 +157,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('kanxa_token');
-    localStorage.removeItem('kanxa_user');
+    localStorage.removeItem("kanxa_token");
+    localStorage.removeItem("kanxa_user");
   };
 
   const updateUser = async (userData: Partial<User>) => {
     try {
       const response = await userAPI.updateProfile(userData);
-      
+
       if (response.success) {
         setUser(response.user);
-        localStorage.setItem('kanxa_user', JSON.stringify(response.user));
+        localStorage.setItem("kanxa_user", JSON.stringify(response.user));
       } else {
-        throw new Error(response.message || 'Update failed');
+        throw new Error(response.message || "Update failed");
       }
     } catch (error) {
-      console.error('Update user error:', error);
+      console.error("Update user error:", error);
       throw error;
     }
   };
@@ -174,13 +180,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const refreshUser = async () => {
     try {
       const response = await userAPI.getProfile();
-      
+
       if (response.success) {
         setUser(response.user);
-        localStorage.setItem('kanxa_user', JSON.stringify(response.user));
+        localStorage.setItem("kanxa_user", JSON.stringify(response.user));
       }
     } catch (error) {
-      console.error('Refresh user error:', error);
+      console.error("Refresh user error:", error);
       // If profile fetch fails, user might be logged out
       logout();
     }
@@ -198,11 +204,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     refreshUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

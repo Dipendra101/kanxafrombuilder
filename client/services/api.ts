@@ -1,20 +1,20 @@
-const API_BASE_URL = '/api';
+const API_BASE_URL = "/api";
 
 // Helper function to get auth token
 const getAuthToken = () => {
-  return localStorage.getItem('kanxa_token');
+  return localStorage.getItem("kanxa_token");
 };
 
 // Helper function to create headers
 const createHeaders = (includeAuth = true) => {
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 
   if (includeAuth) {
     const token = getAuthToken();
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
   }
 
@@ -38,19 +38,21 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
 
     if (!response.ok) {
       // Handle specific auth errors
-      if (response.status === 401 && data.message?.includes('token')) {
+      if (response.status === 401 && data.message?.includes("token")) {
         // Clear invalid token from storage
-        localStorage.removeItem('kanxa_token');
-        localStorage.removeItem('kanxa_user');
+        localStorage.removeItem("kanxa_token");
+        localStorage.removeItem("kanxa_user");
       }
-      throw new Error(data.message || `HTTP ${response.status}: Request failed`);
+      throw new Error(
+        data.message || `HTTP ${response.status}: Request failed`,
+      );
     }
 
     return data;
   } catch (error) {
     // Network or parsing errors
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new Error('Network error: Unable to connect to server');
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new Error("Network error: Unable to connect to server");
     }
     throw error;
   }
@@ -64,29 +66,29 @@ export const authAPI = {
     phone: string;
     password: string;
   }) => {
-    return apiRequest('/auth/register', {
-      method: 'POST',
+    return apiRequest("/auth/register", {
+      method: "POST",
       body: JSON.stringify(userData),
     });
   },
 
   login: async (credentials: { email: string; password: string }) => {
-    return apiRequest('/auth/login', {
-      method: 'POST',
+    return apiRequest("/auth/login", {
+      method: "POST",
       body: JSON.stringify(credentials),
     });
   },
 
   verifyToken: async (token: string) => {
-    return apiRequest('/auth/verify-token', {
-      method: 'POST',
+    return apiRequest("/auth/verify-token", {
+      method: "POST",
       body: JSON.stringify({ token }),
     });
   },
 
   forgotPassword: async (email: string) => {
-    return apiRequest('/auth/forgot-password', {
-      method: 'POST',
+    return apiRequest("/auth/forgot-password", {
+      method: "POST",
       body: JSON.stringify({ email }),
     });
   },
@@ -95,7 +97,7 @@ export const authAPI = {
 // User API
 export const userAPI = {
   getProfile: async () => {
-    return apiRequest('/users/profile');
+    return apiRequest("/users/profile");
   },
 
   updateProfile: async (profileData: {
@@ -105,8 +107,8 @@ export const userAPI = {
     dateOfBirth?: string;
     preferences?: any;
   }) => {
-    return apiRequest('/users/profile', {
-      method: 'PUT',
+    return apiRequest("/users/profile", {
+      method: "PUT",
       body: JSON.stringify(profileData),
     });
   },
@@ -115,19 +117,21 @@ export const userAPI = {
     currentPassword: string;
     newPassword: string;
   }) => {
-    return apiRequest('/users/change-password', {
-      method: 'PUT',
+    return apiRequest("/users/change-password", {
+      method: "PUT",
       body: JSON.stringify(passwordData),
     });
   },
 
   // Admin functions
-  getAllUsers: async (filters: {
-    page?: number;
-    limit?: number;
-    role?: string;
-    isActive?: boolean;
-  } = {}) => {
+  getAllUsers: async (
+    filters: {
+      page?: number;
+      limit?: number;
+      role?: string;
+      isActive?: boolean;
+    } = {},
+  ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -145,104 +149,117 @@ export const userAPI = {
     role: string;
     isActive: boolean;
   }) => {
-    return apiRequest('/users', {
-      method: 'POST',
+    return apiRequest("/users", {
+      method: "POST",
       body: JSON.stringify(userData),
     });
   },
 
-  updateUser: async (userId: string, userData: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    role?: string;
-    isActive?: boolean;
-  }) => {
+  updateUser: async (
+    userId: string,
+    userData: {
+      name?: string;
+      email?: string;
+      phone?: string;
+      role?: string;
+      isActive?: boolean;
+    },
+  ) => {
     return apiRequest(`/users/${userId}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(userData),
     });
   },
 
   deleteUser: async (userId: string) => {
     return apiRequest(`/users/${userId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   },
 };
 
 // Services API
 export const servicesAPI = {
-  getAllServices: async (filters: {
-    type?: string;
-    active?: boolean;
-    page?: number;
-    limit?: number;
-  } = {}) => {
+  getAllServices: async (
+    filters: {
+      type?: string;
+      active?: boolean;
+      page?: number;
+      limit?: number;
+    } = {},
+  ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined) {
         params.append(key, value.toString());
       }
     });
-    
+
     return apiRequest(`/services?${params.toString()}`);
   },
 
-  getBuses: async (filters: {
-    from?: string;
-    to?: string;
-    date?: string;
-  } = {}) => {
+  getBuses: async (
+    filters: {
+      from?: string;
+      to?: string;
+      date?: string;
+    } = {},
+  ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value) {
         params.append(key, value);
       }
     });
-    
+
     return apiRequest(`/services/buses?${params.toString()}`);
   },
 
-  getCargo: async (filters: {
-    vehicleType?: string;
-    route?: string;
-  } = {}) => {
+  getCargo: async (
+    filters: {
+      vehicleType?: string;
+      route?: string;
+    } = {},
+  ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value) {
         params.append(key, value);
       }
     });
-    
+
     return apiRequest(`/services/cargo?${params.toString()}`);
   },
 
-  getConstruction: async (filters: {
-    category?: string;
-    search?: string;
-  } = {}) => {
+  getConstruction: async (
+    filters: {
+      category?: string;
+      search?: string;
+    } = {},
+  ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value) {
         params.append(key, value);
       }
     });
-    
+
     return apiRequest(`/services/construction?${params.toString()}`);
   },
 
-  getGarage: async (filters: {
-    serviceType?: string;
-    vehicleType?: string;
-  } = {}) => {
+  getGarage: async (
+    filters: {
+      serviceType?: string;
+      vehicleType?: string;
+    } = {},
+  ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value) {
         params.append(key, value);
       }
     });
-    
+
     return apiRequest(`/services/garage?${params.toString()}`);
   },
 
@@ -263,33 +280,36 @@ export const servicesAPI = {
     isActive: boolean;
     isFeatured: boolean;
   }) => {
-    return apiRequest('/services', {
-      method: 'POST',
+    return apiRequest("/services", {
+      method: "POST",
       body: JSON.stringify(serviceData),
     });
   },
 
-  updateService: async (serviceId: string, serviceData: {
-    name?: string;
-    description?: string;
-    type?: string;
-    category?: string;
-    pricing?: {
-      basePrice: number;
-      currency: string;
-    };
-    isActive?: boolean;
-    isFeatured?: boolean;
-  }) => {
+  updateService: async (
+    serviceId: string,
+    serviceData: {
+      name?: string;
+      description?: string;
+      type?: string;
+      category?: string;
+      pricing?: {
+        basePrice: number;
+        currency: string;
+      };
+      isActive?: boolean;
+      isFeatured?: boolean;
+    },
+  ) => {
     return apiRequest(`/services/${serviceId}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(serviceData),
     });
   },
 
   deleteService: async (serviceId: string) => {
     return apiRequest(`/services/${serviceId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   },
 };
@@ -297,18 +317,20 @@ export const servicesAPI = {
 // Bookings API
 export const bookingsAPI = {
   createBooking: async (bookingData: any) => {
-    return apiRequest('/bookings', {
-      method: 'POST',
+    return apiRequest("/bookings", {
+      method: "POST",
       body: JSON.stringify(bookingData),
     });
   },
 
-  getBookings: async (filters: {
-    status?: string;
-    type?: string;
-    page?: number;
-    limit?: number;
-  } = {}) => {
+  getBookings: async (
+    filters: {
+      status?: string;
+      type?: string;
+      page?: number;
+      limit?: number;
+    } = {},
+  ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -325,25 +347,27 @@ export const bookingsAPI = {
 
   updateBooking: async (id: string, updateData: any) => {
     return apiRequest(`/bookings/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(updateData),
     });
   },
 
   cancelBooking: async (id: string) => {
     return apiRequest(`/bookings/${id}/cancel`, {
-      method: 'PUT',
+      method: "PUT",
     });
   },
 
   // Admin functions
-  getAllBookings: async (filters: {
-    status?: string;
-    userId?: string;
-    serviceId?: string;
-    page?: number;
-    limit?: number;
-  } = {}) => {
+  getAllBookings: async (
+    filters: {
+      status?: string;
+      userId?: string;
+      serviceId?: string;
+      page?: number;
+      limit?: number;
+    } = {},
+  ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined) {
@@ -354,14 +378,17 @@ export const bookingsAPI = {
     return apiRequest(`/admin/bookings?${params.toString()}`);
   },
 
-  updatePayment: async (id: string, paymentData: {
-    paymentStatus: string;
-    paymentMethod: string;
-    transactionId?: string;
-    gatewayResponse?: any;
-  }) => {
+  updatePayment: async (
+    id: string,
+    paymentData: {
+      paymentStatus: string;
+      paymentMethod: string;
+      transactionId?: string;
+      gatewayResponse?: any;
+    },
+  ) => {
     return apiRequest(`/bookings/${id}/payment`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(paymentData),
     });
   },
@@ -370,14 +397,14 @@ export const bookingsAPI = {
 // Admin API
 export const adminAPI = {
   getDashboard: async () => {
-    return apiRequest('/admin/dashboard');
+    return apiRequest("/admin/dashboard");
   },
 
   getStats: async () => {
-    return apiRequest('/admin/stats');
+    return apiRequest("/admin/stats");
   },
 
-  getAnalytics: async (period: string = '30d') => {
+  getAnalytics: async (period: string = "30d") => {
     return apiRequest(`/admin/analytics?period=${period}`);
   },
 
@@ -386,14 +413,14 @@ export const adminAPI = {
   },
 
   getSystemHealth: async () => {
-    return apiRequest('/admin/health');
+    return apiRequest("/admin/health");
   },
 };
 
 // Health check
 export const healthAPI = {
   check: async () => {
-    return apiRequest('/health');
+    return apiRequest("/health");
   },
 };
 

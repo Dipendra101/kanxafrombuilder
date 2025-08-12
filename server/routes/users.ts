@@ -11,27 +11,30 @@ const router = Router();
 export const getProfile: RequestHandler = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).populate({
-      path: 'loginHistory',
-      options: { sort: { timestamp: -1 }, limit: 5 }
+      path: "loginHistory",
+      options: { sort: { timestamp: -1 }, limit: 5 },
     });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     res.json({
       success: true,
-      user: user.toJSON()
+      user: user.toJSON(),
     });
   } catch (error: any) {
-    console.error('Get profile error:', error);
+    console.error("Get profile error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch profile',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      message: "Failed to fetch profile",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
@@ -43,12 +46,18 @@ export const updateProfile: RequestHandler = async (req, res) => {
   try {
     const userId = req.user.userId;
     const allowedUpdates = [
-      'name', 'phone', 'address', 'dateOfBirth', 'gender', 
-      'preferences', 'profile', 'avatar'
+      "name",
+      "phone",
+      "address",
+      "dateOfBirth",
+      "gender",
+      "preferences",
+      "profile",
+      "avatar",
     ];
 
     const updates: any = {};
-    allowedUpdates.forEach(field => {
+    allowedUpdates.forEach((field) => {
       if (req.body[field] !== undefined) {
         updates[field] = req.body[field];
       }
@@ -58,21 +67,21 @@ export const updateProfile: RequestHandler = async (req, res) => {
     if (updates.phone && !/^[0-9]{10}$/.test(updates.phone)) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide a valid 10-digit phone number'
+        message: "Please provide a valid 10-digit phone number",
       });
     }
 
     // Check if phone is already taken by another user
     if (updates.phone) {
-      const existingUser = await User.findOne({ 
-        phone: updates.phone, 
-        _id: { $ne: userId } 
+      const existingUser = await User.findOne({
+        phone: updates.phone,
+        _id: { $ne: userId },
       });
-      
+
       if (existingUser) {
         return res.status(409).json({
           success: false,
-          message: 'Phone number already exists'
+          message: "Phone number already exists",
         });
       }
     }
@@ -80,36 +89,39 @@ export const updateProfile: RequestHandler = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       userId,
       { $set: updates },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     res.json({
       success: true,
-      message: 'Profile updated successfully',
-      user: user.toJSON()
+      message: "Profile updated successfully",
+      user: user.toJSON(),
     });
   } catch (error: any) {
-    console.error('Update profile error:', error);
-    
+    console.error("Update profile error:", error);
+
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
       return res.status(409).json({
         success: false,
-        message: `${field} already exists`
+        message: `${field} already exists`,
       });
     }
-    
+
     res.status(500).json({
       success: false,
-      message: 'Failed to update profile',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      message: "Failed to update profile",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
@@ -120,32 +132,32 @@ export const updateProfile: RequestHandler = async (req, res) => {
 export const deactivateAccount: RequestHandler = async (req, res) => {
   try {
     const userId = req.user.userId;
-    
+
     const user = await User.findByIdAndUpdate(
       userId,
-      { 
+      {
         isActive: false,
-        lastActivity: new Date()
+        lastActivity: new Date(),
       },
-      { new: true }
+      { new: true },
     );
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     res.json({
       success: true,
-      message: 'Account deactivated successfully'
+      message: "Account deactivated successfully",
     });
   } catch (error: any) {
-    console.error('Deactivate account error:', error);
+    console.error("Deactivate account error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to deactivate account'
+      message: "Failed to deactivate account",
     });
   }
 };
@@ -155,14 +167,14 @@ export const deactivateAccount: RequestHandler = async (req, res) => {
 // @access  Private/Admin
 export const getAllUsers: RequestHandler = async (req, res) => {
   try {
-    const { 
-      page = 1, 
-      limit = 10, 
-      search = '', 
-      role = '', 
-      isActive = '',
-      sortBy = 'createdAt',
-      sortOrder = 'desc'
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      role = "",
+      isActive = "",
+      sortBy = "createdAt",
+      sortOrder = "desc",
     } = req.query;
 
     const query: any = {};
@@ -170,8 +182,8 @@ export const getAllUsers: RequestHandler = async (req, res) => {
     // Search by name or email
     if (search) {
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } }
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
       ];
     }
 
@@ -181,18 +193,18 @@ export const getAllUsers: RequestHandler = async (req, res) => {
     }
 
     // Filter by active status
-    if (isActive !== '') {
-      query.isActive = isActive === 'true';
+    if (isActive !== "") {
+      query.isActive = isActive === "true";
     }
 
     const sort: any = {};
-    sort[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
+    sort[sortBy as string] = sortOrder === "asc" ? 1 : -1;
 
     const users = await User.find(query)
       .sort(sort)
       .limit(Number(limit))
       .skip((Number(page) - 1) * Number(limit))
-      .select('-password -verification')
+      .select("-password -verification")
       .exec();
 
     const total = await User.countDocuments(query);
@@ -204,15 +216,18 @@ export const getAllUsers: RequestHandler = async (req, res) => {
         page: Number(page),
         limit: Number(limit),
         total,
-        pages: Math.ceil(total / Number(limit))
-      }
+        pages: Math.ceil(total / Number(limit)),
+      },
     });
   } catch (error: any) {
-    console.error('Get all users error:', error);
+    console.error("Get all users error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch users',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      message: "Failed to fetch users",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
@@ -226,27 +241,27 @@ export const getUserById: RequestHandler = async (req, res) => {
 
     const user = await User.findById(id)
       .populate({
-        path: 'loginHistory',
-        options: { sort: { timestamp: -1 }, limit: 10 }
+        path: "loginHistory",
+        options: { sort: { timestamp: -1 }, limit: 10 },
       })
-      .select('-password');
+      .select("-password");
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     res.json({
       success: true,
-      user: user.toJSON()
+      user: user.toJSON(),
     });
   } catch (error: any) {
-    console.error('Get user by ID error:', error);
+    console.error("Get user by ID error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch user'
+      message: "Failed to fetch user",
     });
   }
 };
@@ -258,29 +273,42 @@ export const updateUserById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const allowedUpdates = [
-      'name', 'email', 'phone', 'role', 'isActive', 'isEmailVerified', 
-      'isPhoneVerified', 'address', 'dateOfBirth', 'gender', 'preferences', 'profile'
+      "name",
+      "email",
+      "phone",
+      "role",
+      "isActive",
+      "isEmailVerified",
+      "isPhoneVerified",
+      "address",
+      "dateOfBirth",
+      "gender",
+      "preferences",
+      "profile",
     ];
 
     const updates: any = {};
-    allowedUpdates.forEach(field => {
+    allowedUpdates.forEach((field) => {
       if (req.body[field] !== undefined) {
         updates[field] = req.body[field];
       }
     });
 
     // Validate email and phone if being updated
-    if (updates.email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(updates.email)) {
+    if (
+      updates.email &&
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(updates.email)
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide a valid email address'
+        message: "Please provide a valid email address",
       });
     }
 
     if (updates.phone && !/^[0-9]{10}$/.test(updates.phone)) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide a valid 10-digit phone number'
+        message: "Please provide a valid 10-digit phone number",
       });
     }
 
@@ -293,15 +321,15 @@ export const updateUserById: RequestHandler = async (req, res) => {
       const existingUser = await User.findOne({
         $or: [
           updates.email ? { email: updates.email, _id: { $ne: id } } : {},
-          updates.phone ? { phone: updates.phone, _id: { $ne: id } } : {}
-        ].filter(obj => Object.keys(obj).length > 0)
+          updates.phone ? { phone: updates.phone, _id: { $ne: id } } : {},
+        ].filter((obj) => Object.keys(obj).length > 0),
       });
 
       if (existingUser) {
-        const field = existingUser.email === updates.email ? 'email' : 'phone';
+        const field = existingUser.email === updates.email ? "email" : "phone";
         return res.status(409).json({
           success: false,
-          message: `User already exists with this ${field}`
+          message: `User already exists with this ${field}`,
         });
       }
     }
@@ -309,35 +337,35 @@ export const updateUserById: RequestHandler = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       id,
       { $set: updates },
-      { new: true, runValidators: true }
-    ).select('-password');
+      { new: true, runValidators: true },
+    ).select("-password");
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     res.json({
       success: true,
-      message: 'User updated successfully',
-      user: user.toJSON()
+      message: "User updated successfully",
+      user: user.toJSON(),
     });
   } catch (error: any) {
-    console.error('Update user by ID error:', error);
-    
+    console.error("Update user by ID error:", error);
+
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
       return res.status(409).json({
         success: false,
-        message: `${field} already exists`
+        message: `${field} already exists`,
       });
     }
-    
+
     res.status(500).json({
       success: false,
-      message: 'Failed to update user'
+      message: "Failed to update user",
     });
   }
 };
@@ -353,7 +381,7 @@ export const deleteUser: RequestHandler = async (req, res) => {
     if (id === req.user.userId) {
       return res.status(400).json({
         success: false,
-        message: 'Cannot delete your own account'
+        message: "Cannot delete your own account",
       });
     }
 
@@ -362,19 +390,19 @@ export const deleteUser: RequestHandler = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     res.json({
       success: true,
-      message: 'User deleted successfully'
+      message: "User deleted successfully",
     });
   } catch (error: any) {
-    console.error('Delete user error:', error);
+    console.error("Delete user error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to delete user'
+      message: "Failed to delete user",
     });
   }
 };
@@ -389,56 +417,62 @@ export const getUserStats: RequestHandler = async (req, res) => {
         $facet: {
           totalUsers: [{ $count: "count" }],
           activeUsers: [{ $match: { isActive: true } }, { $count: "count" }],
-          usersByRole: [
-            { $group: { _id: "$role", count: { $sum: 1 } } }
-          ],
+          usersByRole: [{ $group: { _id: "$role", count: { $sum: 1 } } }],
           recentUsers: [
-            { $match: { createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } },
-            { $count: "count" }
+            {
+              $match: {
+                createdAt: {
+                  $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+                },
+              },
+            },
+            { $count: "count" },
           ],
           verifiedUsers: [
             { $match: { isEmailVerified: true } },
-            { $count: "count" }
-          ]
-        }
-      }
+            { $count: "count" },
+          ],
+        },
+      },
     ]);
 
     const result = {
       totalUsers: stats[0].totalUsers[0]?.count || 0,
       activeUsers: stats[0].activeUsers[0]?.count || 0,
-      inactiveUsers: (stats[0].totalUsers[0]?.count || 0) - (stats[0].activeUsers[0]?.count || 0),
+      inactiveUsers:
+        (stats[0].totalUsers[0]?.count || 0) -
+        (stats[0].activeUsers[0]?.count || 0),
       recentUsers: stats[0].recentUsers[0]?.count || 0,
       verifiedUsers: stats[0].verifiedUsers[0]?.count || 0,
       usersByRole: stats[0].usersByRole.reduce((acc: any, item: any) => {
         acc[item._id] = item.count;
         return acc;
-      }, {})
+      }, {}),
     };
 
     res.json({
       success: true,
-      stats: result
+      stats: result,
     });
   } catch (error: any) {
-    console.error('Get user stats error:', error);
+    console.error("Get user stats error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch user statistics'
+      message: "Failed to fetch user statistics",
     });
   }
 };
 
 // Set up routes
-router.get('/profile', authenticate, getProfile);
-router.put('/profile', authenticate, updateProfile);
-router.delete('/profile', authenticate, deactivateAccount);
+router.get("/profile", authenticate, getProfile);
+router.put("/profile", authenticate, updateProfile);
+router.delete("/profile", authenticate, deactivateAccount);
 
 // Admin routes
-router.get('/', authenticate, adminOnly, getAllUsers);
-router.get('/stats', authenticate, adminOnly, getUserStats);
-router.get('/:id', authenticate, adminOnly, getUserById);
-router.put('/:id', authenticate, adminOnly, updateUserById);
-router.delete('/:id', authenticate, adminOnly, deleteUser);
+router.get("/", authenticate, adminOnly, getAllUsers);
+router.get("/stats", authenticate, adminOnly, getUserStats);
+router.get("/:id", authenticate, adminOnly, getUserById);
+router.put("/:id", authenticate, adminOnly, updateUserById);
+router.delete("/:id", authenticate, adminOnly, deleteUser);
 
 export default router;

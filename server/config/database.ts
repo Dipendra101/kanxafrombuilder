@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 // Use MongoDB Atlas connection string for cloud deployment
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -6,13 +6,17 @@ const MONGODB_URI = process.env.MONGODB_URI;
 let cached = (global as any).mongoose;
 
 if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null, isConnected: false };
+  cached = (global as any).mongoose = {
+    conn: null,
+    promise: null,
+    isConnected: false,
+  };
 }
 
 async function connectDB() {
   // If no MongoDB URI is provided, run in mock mode
-  if (!MONGODB_URI || MONGODB_URI.trim() === '') {
-    console.log('ℹ️  No MongoDB URI provided, running in mock mode');
+  if (!MONGODB_URI || MONGODB_URI.trim() === "") {
+    console.log("ℹ️  No MongoDB URI provided, running in mock mode");
     cached.isConnected = false;
     return null;
   }
@@ -31,19 +35,24 @@ async function connectDB() {
       minPoolSize: 5,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      console.log('✅ MongoDB Connected Successfully');
-      console.log(`📊 Database: ${mongoose.connection.name}`);
-      console.log(`🌐 Host: ${mongoose.connection.host}:${mongoose.connection.port}`);
-      cached.isConnected = true;
-      return mongoose;
-    }).catch((error) => {
-      console.error('❌ MongoDB connection error:', error.message);
-      cached.promise = null;
-      cached.isConnected = false;
-      // Don't throw error, return null to allow app to run in mock mode
-      return null;
-    });
+    cached.promise = mongoose
+      .connect(MONGODB_URI, opts)
+      .then((mongoose) => {
+        console.log("✅ MongoDB Connected Successfully");
+        console.log(`📊 Database: ${mongoose.connection.name}`);
+        console.log(
+          `🌐 Host: ${mongoose.connection.host}:${mongoose.connection.port}`,
+        );
+        cached.isConnected = true;
+        return mongoose;
+      })
+      .catch((error) => {
+        console.error("❌ MongoDB connection error:", error.message);
+        cached.promise = null;
+        cached.isConnected = false;
+        // Don't throw error, return null to allow app to run in mock mode
+        return null;
+      });
   }
 
   try {
@@ -52,7 +61,7 @@ async function connectDB() {
   } catch (e) {
     cached.promise = null;
     cached.isConnected = false;
-    console.error('❌ MongoDB connection failed:', e);
+    console.error("❌ MongoDB connection failed:", e);
     // Return null instead of throwing to allow graceful degradation
     return null;
   }
@@ -68,12 +77,12 @@ async function withDB<T>(operation: () => Promise<T>, fallback: T): Promise<T> {
   try {
     const db = await connectDB();
     if (!db || !isDBConnected()) {
-      console.log('⚠️  Database not available, using fallback data');
+      console.log("⚠️  Database not available, using fallback data");
       return fallback;
     }
     return await operation();
   } catch (error) {
-    console.error('Database operation failed:', error);
+    console.error("Database operation failed:", error);
     return fallback;
   }
 }

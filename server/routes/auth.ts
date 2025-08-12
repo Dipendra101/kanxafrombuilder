@@ -5,69 +5,68 @@ import User, { IUser } from "../models/User";
 import { withDB, isDBConnected } from "../config/database";
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'kanxasafari_jwt_secret_key_super_secure_2024';
+const JWT_SECRET =
+  process.env.JWT_SECRET || "kanxasafari_jwt_secret_key_super_secure_2024";
 
 // Mock users for when database is unavailable
 const mockUsers = [
   {
-    _id: 'mock_user_1',
-    name: 'Demo User',
-    email: 'user@demo.com',
-    phone: '1234567890',
-    password: '$2b$12$DEMO_HASH_PASSWORD',
-    role: 'user',
+    _id: "mock_user_1",
+    name: "Demo User",
+    email: "user@demo.com",
+    phone: "1234567890",
+    password: "$2b$12$DEMO_HASH_PASSWORD",
+    role: "user",
     isActive: true,
     toJSON: () => ({
-      _id: 'mock_user_1',
-      name: 'Demo User',
-      email: 'user@demo.com',
-      phone: '1234567890',
-      role: 'user',
+      _id: "mock_user_1",
+      name: "Demo User",
+      email: "user@demo.com",
+      phone: "1234567890",
+      role: "user",
       isActive: true,
       createdAt: new Date(),
-      updatedAt: new Date()
-    })
+      updatedAt: new Date(),
+    }),
   },
   {
-    _id: 'mock_admin_1',
-    name: 'Demo Admin',
-    email: 'admin@demo.com',
-    phone: '0987654321',
-    password: '$2b$12$DEMO_HASH_PASSWORD',
-    role: 'admin',
+    _id: "mock_admin_1",
+    name: "Demo Admin",
+    email: "admin@demo.com",
+    phone: "0987654321",
+    password: "$2b$12$DEMO_HASH_PASSWORD",
+    role: "admin",
     isActive: true,
     toJSON: () => ({
-      _id: 'mock_admin_1',
-      name: 'Demo Admin',
-      email: 'admin@demo.com',
-      phone: '0987654321',
-      role: 'admin',
+      _id: "mock_admin_1",
+      name: "Demo Admin",
+      email: "admin@demo.com",
+      phone: "0987654321",
+      role: "admin",
       isActive: true,
       createdAt: new Date(),
-      updatedAt: new Date()
-    })
-  }
+      updatedAt: new Date(),
+    }),
+  },
 ];
 
 // Utility functions
 const generateToken = (user: IUser) => {
   return jwt.sign(
-    { 
+    {
       userId: user._id,
       email: user.email,
-      role: user.role 
+      role: user.role,
     },
     JWT_SECRET,
-    { expiresIn: '7d' }
+    { expiresIn: "7d" },
   );
 };
 
 const generateRefreshToken = (user: IUser) => {
-  return jwt.sign(
-    { userId: user._id, type: 'refresh' },
-    JWT_SECRET,
-    { expiresIn: '30d' }
-  );
+  return jwt.sign({ userId: user._id, type: "refresh" }, JWT_SECRET, {
+    expiresIn: "30d",
+  });
 };
 
 // @route   POST /api/auth/register
@@ -75,34 +74,35 @@ const generateRefreshToken = (user: IUser) => {
 // @access  Public
 export const register: RequestHandler = async (req, res) => {
   try {
-    const { name, email, phone, password, role = 'user' } = req.body;
+    const { name, email, phone, password, role = "user" } = req.body;
 
     // Comprehensive validation
     if (!name || !email || !phone || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields: name, email, phone, password'
+        message:
+          "Please provide all required fields: name, email, phone, password",
       });
     }
 
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
-        message: 'Password must be at least 6 characters long'
+        message: "Password must be at least 6 characters long",
       });
     }
 
     if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide a valid email address'
+        message: "Please provide a valid email address",
       });
     }
 
     if (!/^[0-9]{10}$/.test(phone)) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide a valid 10-digit phone number'
+        message: "Please provide a valid 10-digit phone number",
       });
     }
 
@@ -111,11 +111,11 @@ export const register: RequestHandler = async (req, res) => {
       async () => {
         // Check if user already exists
         const existingUser = await User.findOne({
-          $or: [{ email }, { phone }]
+          $or: [{ email }, { phone }],
         });
 
         if (existingUser) {
-          const field = existingUser.email === email ? 'email' : 'phone';
+          const field = existingUser.email === email ? "email" : "phone";
           throw new Error(`User already exists with this ${field}`);
         }
 
@@ -125,16 +125,18 @@ export const register: RequestHandler = async (req, res) => {
           email: email.toLowerCase().trim(),
           phone: phone.trim(),
           password,
-          role: role === 'admin' ? 'admin' : 'user',
+          role: role === "admin" ? "admin" : "user",
           verification: {
-            emailToken: crypto.randomBytes(32).toString('hex'),
+            emailToken: crypto.randomBytes(32).toString("hex"),
             phoneToken: Math.floor(100000 + Math.random() * 900000).toString(),
           },
-          loginHistory: [{
-            ip: req.ip,
-            userAgent: req.get('User-Agent') || 'Unknown',
-            timestamp: new Date(),
-          }],
+          loginHistory: [
+            {
+              ip: req.ip,
+              userAgent: req.get("User-Agent") || "Unknown",
+              timestamp: new Date(),
+            },
+          ],
           lastLogin: new Date(),
         });
 
@@ -143,13 +145,13 @@ export const register: RequestHandler = async (req, res) => {
       },
       // Fallback: Create mock user for demo
       (() => {
-        console.log('⚠️  Database unavailable, creating mock user response');
+        console.log("⚠️  Database unavailable, creating mock user response");
         const mockUser = {
           _id: `mock_${Date.now()}`,
           name: name.trim(),
           email: email.toLowerCase().trim(),
           phone: phone.trim(),
-          role: role === 'admin' ? 'admin' : 'user',
+          role: role === "admin" ? "admin" : "user",
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -158,14 +160,14 @@ export const register: RequestHandler = async (req, res) => {
             name: name.trim(),
             email: email.toLowerCase().trim(),
             phone: phone.trim(),
-            role: role === 'admin' ? 'admin' : 'user',
+            role: role === "admin" ? "admin" : "user",
             isActive: true,
             createdAt: new Date(),
-            updatedAt: new Date()
-          })
+            updatedAt: new Date(),
+          }),
         };
         return mockUser;
-      })()
+      })(),
     );
 
     // Generate tokens
@@ -177,26 +179,30 @@ export const register: RequestHandler = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'User registered successfully' + (!isDBConnected() ? ' (demo mode)' : ''),
+      message:
+        "User registered successfully" +
+        (!isDBConnected() ? " (demo mode)" : ""),
       user: userResponse,
       token: accessToken, // Frontend expects 'token', not 'tokens'
-      refreshToken
+      refreshToken,
     });
-
   } catch (error: any) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
 
-    if (error.message.includes('User already exists')) {
+    if (error.message.includes("User already exists")) {
       return res.status(409).json({
         success: false,
-        message: error.message
+        message: error.message,
       });
     }
 
     res.status(500).json({
       success: false,
-      message: 'Registration failed',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      message: "Registration failed",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
@@ -212,7 +218,7 @@ export const login: RequestHandler = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide email and password'
+        message: "Please provide email and password",
       });
     }
 
@@ -221,27 +227,27 @@ export const login: RequestHandler = async (req, res) => {
       async () => {
         // Find user and include password for comparison
         const foundUser = await User.findOne({ email: email.toLowerCase() })
-          .select('+password')
+          .select("+password")
           .exec();
         return foundUser;
       },
       // Fallback: Check mock users
       (() => {
-        console.log('⚠️  Database unavailable, checking mock users');
-        const mockUser = mockUsers.find(u => u.email === email.toLowerCase());
+        console.log("⚠️  Database unavailable, checking mock users");
+        const mockUser = mockUsers.find((u) => u.email === email.toLowerCase());
 
         // Simple demo authentication - accept any password for demo users
-        if (mockUser && (password === 'demo123' || email.includes('demo'))) {
+        if (mockUser && (password === "demo123" || email.includes("demo"))) {
           return mockUser;
         }
         return null;
-      })()
+      })(),
     );
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: "Invalid email or password",
       });
     }
 
@@ -249,7 +255,7 @@ export const login: RequestHandler = async (req, res) => {
     if (!user.isActive) {
       return res.status(403).json({
         success: false,
-        message: 'Your account has been deactivated. Please contact support.'
+        message: "Your account has been deactivated. Please contact support.",
       });
     }
 
@@ -259,7 +265,7 @@ export const login: RequestHandler = async (req, res) => {
       if (!isPasswordValid) {
         return res.status(401).json({
           success: false,
-          message: 'Invalid email or password'
+          message: "Invalid email or password",
         });
       }
     }
@@ -269,7 +275,7 @@ export const login: RequestHandler = async (req, res) => {
       user.loginHistory = user.loginHistory || [];
       user.loginHistory.push({
         ip: req.ip,
-        userAgent: req.get('User-Agent') || 'Unknown',
+        userAgent: req.get("User-Agent") || "Unknown",
         timestamp: new Date(),
       } as any);
 
@@ -284,15 +290,15 @@ export const login: RequestHandler = async (req, res) => {
     }
 
     // Generate tokens
-    const accessTokenExpiry = rememberMe ? '30d' : '7d';
+    const accessTokenExpiry = rememberMe ? "30d" : "7d";
     const accessToken = jwt.sign(
       {
         userId: user._id,
         email: user.email,
-        role: user.role
+        role: user.role,
       },
       JWT_SECRET,
-      { expiresIn: accessTokenExpiry }
+      { expiresIn: accessTokenExpiry },
     );
     const refreshToken = generateRefreshToken(user as any);
 
@@ -301,18 +307,20 @@ export const login: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Login successful' + (!isDBConnected() ? ' (demo mode)' : ''),
+      message: "Login successful" + (!isDBConnected() ? " (demo mode)" : ""),
       user: userResponse,
       token: accessToken, // Frontend expects 'token', not 'tokens'
-      refreshToken
+      refreshToken,
     });
-
   } catch (error: any) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      message: 'Login failed',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      message: "Login failed",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
@@ -327,7 +335,7 @@ export const verifyToken: RequestHandler = async (req, res) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'No token provided'
+        message: "No token provided",
       });
     }
 
@@ -341,23 +349,25 @@ export const verifyToken: RequestHandler = async (req, res) => {
       },
       // Fallback: Check mock users
       (() => {
-        console.log('⚠️  Database unavailable, checking mock users for token verification');
-        const mockUser = mockUsers.find(u => u._id === decoded.userId);
+        console.log(
+          "⚠️  Database unavailable, checking mock users for token verification",
+        );
+        const mockUser = mockUsers.find((u) => u._id === decoded.userId);
         return mockUser || null;
-      })()
+      })(),
     );
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid token - user not found'
+        message: "Invalid token - user not found",
       });
     }
 
     if (!user.isActive) {
       return res.status(403).json({
         success: false,
-        message: 'Account deactivated'
+        message: "Account deactivated",
       });
     }
 
@@ -370,23 +380,22 @@ export const verifyToken: RequestHandler = async (req, res) => {
     res.json({
       success: true,
       user: user.toJSON ? user.toJSON() : user,
-      tokenValid: true
+      tokenValid: true,
     });
-
   } catch (error: any) {
-    console.error('Token verification error:', error);
+    console.error("Token verification error:", error);
 
-    if (error.name === 'TokenExpiredError') {
+    if (error.name === "TokenExpiredError") {
       return res.status(401).json({
         success: false,
-        message: 'Token expired',
-        tokenExpired: true
+        message: "Token expired",
+        tokenExpired: true,
       });
     }
 
     res.status(401).json({
       success: false,
-      message: 'Invalid token'
+      message: "Invalid token",
     });
   }
 };
@@ -401,16 +410,16 @@ export const refreshToken: RequestHandler = async (req, res) => {
     if (!refreshToken) {
       return res.status(401).json({
         success: false,
-        message: 'Refresh token required'
+        message: "Refresh token required",
       });
     }
 
     const decoded = jwt.verify(refreshToken, JWT_SECRET) as any;
-    
-    if (decoded.type !== 'refresh') {
+
+    if (decoded.type !== "refresh") {
       return res.status(401).json({
         success: false,
-        message: 'Invalid refresh token'
+        message: "Invalid refresh token",
       });
     }
 
@@ -419,7 +428,7 @@ export const refreshToken: RequestHandler = async (req, res) => {
     if (!user || !user.isActive) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid refresh token'
+        message: "Invalid refresh token",
       });
     }
 
@@ -428,14 +437,13 @@ export const refreshToken: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      accessToken: newAccessToken
+      accessToken: newAccessToken,
     });
-
   } catch (error: any) {
-    console.error('Refresh token error:', error);
+    console.error("Refresh token error:", error);
     res.status(401).json({
       success: false,
-      message: 'Invalid refresh token'
+      message: "Invalid refresh token",
     });
   }
 };
@@ -449,13 +457,13 @@ export const logout: RequestHandler = async (req, res) => {
     // For now, we'll just return success
     res.json({
       success: true,
-      message: 'Logged out successfully'
+      message: "Logged out successfully",
     });
   } catch (error: any) {
-    console.error('Logout error:', error);
+    console.error("Logout error:", error);
     res.status(500).json({
       success: false,
-      message: 'Logout failed'
+      message: "Logout failed",
     });
   }
 };
@@ -470,7 +478,7 @@ export const forgotPassword: RequestHandler = async (req, res) => {
     if (!email) {
       return res.status(400).json({
         success: false,
-        message: 'Email address is required'
+        message: "Email address is required",
       });
     }
 
@@ -480,14 +488,17 @@ export const forgotPassword: RequestHandler = async (req, res) => {
       // Don't reveal if email exists for security
       return res.json({
         success: true,
-        message: 'If an account with that email exists, password reset instructions have been sent'
+        message:
+          "If an account with that email exists, password reset instructions have been sent",
       });
     }
 
     // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
     user.verification.resetPasswordToken = resetToken;
-    user.verification.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    user.verification.resetPasswordExpires = new Date(
+      Date.now() + 15 * 60 * 1000,
+    ); // 15 minutes
 
     await user.save();
 
@@ -496,16 +507,15 @@ export const forgotPassword: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Password reset instructions sent to your email',
+      message: "Password reset instructions sent to your email",
       // Include token in response for testing (remove in production)
-      ...(process.env.NODE_ENV === 'development' && { resetToken })
+      ...(process.env.NODE_ENV === "development" && { resetToken }),
     });
-
   } catch (error: any) {
-    console.error('Forgot password error:', error);
+    console.error("Forgot password error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to process password reset request'
+      message: "Failed to process password reset request",
     });
   }
 };
@@ -520,26 +530,26 @@ export const resetPassword: RequestHandler = async (req, res) => {
     if (!token || !newPassword) {
       return res.status(400).json({
         success: false,
-        message: 'Token and new password are required'
+        message: "Token and new password are required",
       });
     }
 
     if (newPassword.length < 6) {
       return res.status(400).json({
         success: false,
-        message: 'Password must be at least 6 characters long'
+        message: "Password must be at least 6 characters long",
       });
     }
 
     const user = await User.findOne({
-      'verification.resetPasswordToken': token,
-      'verification.resetPasswordExpires': { $gt: new Date() }
+      "verification.resetPasswordToken": token,
+      "verification.resetPasswordExpires": { $gt: new Date() },
     });
 
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid or expired reset token'
+        message: "Invalid or expired reset token",
       });
     }
 
@@ -547,19 +557,18 @@ export const resetPassword: RequestHandler = async (req, res) => {
     user.password = newPassword;
     user.verification.resetPasswordToken = undefined;
     user.verification.resetPasswordExpires = undefined;
-    
+
     await user.save();
 
     res.json({
       success: true,
-      message: 'Password reset successfully'
+      message: "Password reset successfully",
     });
-
   } catch (error: any) {
-    console.error('Reset password error:', error);
+    console.error("Reset password error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to reset password'
+      message: "Failed to reset password",
     });
   }
 };
@@ -575,23 +584,23 @@ export const changePassword: RequestHandler = async (req, res) => {
     if (!currentPassword || !newPassword) {
       return res.status(400).json({
         success: false,
-        message: 'Current password and new password are required'
+        message: "Current password and new password are required",
       });
     }
 
     if (newPassword.length < 6) {
       return res.status(400).json({
         success: false,
-        message: 'New password must be at least 6 characters long'
+        message: "New password must be at least 6 characters long",
       });
     }
 
-    const user = await User.findById(userId).select('+password');
+    const user = await User.findById(userId).select("+password");
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
@@ -601,7 +610,7 @@ export const changePassword: RequestHandler = async (req, res) => {
     if (!isCurrentPasswordValid) {
       return res.status(400).json({
         success: false,
-        message: 'Current password is incorrect'
+        message: "Current password is incorrect",
       });
     }
 
@@ -611,26 +620,25 @@ export const changePassword: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Password changed successfully'
+      message: "Password changed successfully",
     });
-
   } catch (error: any) {
-    console.error('Change password error:', error);
+    console.error("Change password error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to change password'
+      message: "Failed to change password",
     });
   }
 };
 
 // Set up routes
-router.post('/register', register);
-router.post('/login', login);
-router.post('/verify-token', verifyToken);
-router.post('/refresh-token', refreshToken);
-router.post('/logout', logout);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
-router.post('/change-password', changePassword);
+router.post("/register", register);
+router.post("/login", login);
+router.post("/verify-token", verifyToken);
+router.post("/refresh-token", refreshToken);
+router.post("/logout", logout);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
+router.post("/change-password", changePassword);
 
 export default router;
