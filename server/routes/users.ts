@@ -5,15 +5,49 @@ import { withDB, isDBConnected } from "../config/database";
 
 const router = Router();
 
+// Mock user data for when database is unavailable
+const getMockUser = (userId: string) => ({
+  _id: userId,
+  name: "Demo User",
+  email: "demo@example.com",
+  phone: "+977-980-123456",
+  role: "user",
+  isActive: true,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  toJSON: function() {
+    return {
+      _id: this._id,
+      name: this.name,
+      email: this.email,
+      phone: this.phone,
+      role: this.role,
+      isActive: this.isActive,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+  },
+});
+
 // @route   GET /api/users/profile
 // @desc    Get current user's profile
 // @access  Private
 export const getProfile: RequestHandler = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).populate({
-      path: "loginHistory",
-      options: { sort: { timestamp: -1 }, limit: 5 },
-    });
+    const user = await withDB(
+      async () => {
+        const foundUser = await User.findById(req.user.userId).populate({
+          path: "loginHistory",
+          options: { sort: { timestamp: -1 }, limit: 5 },
+        });
+        return foundUser;
+      },
+      // Fallback: Return mock user
+      (() => {
+        console.log("⚠️  Database unavailable, returning mock user profile");
+        return getMockUser(req.user.userId);
+      })()
+    );
 
     if (!user) {
       return res.status(404).json({
@@ -24,7 +58,8 @@ export const getProfile: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      user: user.toJSON(),
+      user: user.toJSON ? user.toJSON() : user,
+      demo: !isDBConnected(),
     });
   } catch (error: any) {
     console.error("Get profile error:", error);
@@ -53,7 +88,7 @@ export const updateProfile: RequestHandler = async (req, res) => {
       "gender",
       "preferences",
       "profile",
-      "avatar",
+      "profilePicture",
     ];
 
     const updates: any = {};
@@ -64,32 +99,50 @@ export const updateProfile: RequestHandler = async (req, res) => {
     });
 
     // Validate phone if being updated
-    if (updates.phone && !/^[0-9]{10}$/.test(updates.phone)) {
+    if (updates.phone && !/^\+977[0-9]{10}$/.test(updates.phone) && !/^[0-9]{10}$/.test(updates.phone)) {
       return res.status(400).json({
         success: false,
-        message: "Please provide a valid 10-digit phone number",
+        message: "Please provide a valid phone number",
       });
     }
 
-    // Check if phone is already taken by another user
-    if (updates.phone) {
-      const existingUser = await User.findOne({
-        phone: updates.phone,
-        _id: { $ne: userId },
-      });
+    // Format phone number if needed
+    if (updates.phone && !updates.phone.startsWith("+977")) {
+      updates.phone = `+977${updates.phone.replace(/^0+/, "")}`;
+    }
 
-      if (existingUser) {
-        return res.status(409).json({
-          success: false,
-          message: "Phone number already exists",
+    const user = await withDB(
+      async () => {
+        // Check if phone is already taken by another user
+        if (updates.phone) {
+          const existingUser = await User.findOne({
+            phone: updates.phone,
+            _id: { $ne: userId },
+          });
+
+          if (existingUser) {
+            throw new Error("Phone number already exists");
+          }
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { $set: updates },
+          { new: true, runValidators: true },
+        );
+
+        return updatedUser;
+      },
+      // Fallback: Return updated mock user
+      (() => {
+        console.log("⚠️  Database unavailable, returning mock updated profile");
+        const mockUser = getMockUser(userId);
+        // Apply updates to mock user
+        Object.keys(updates).forEach(key => {
+          (mockUser as any)[key] = updates[key];
         });
-      }
-    }
-
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { $set: updates },
-      { new: true, runValidators: true },
+        return mockUser;
+      })()
     );
 
     if (!user) {
@@ -101,11 +154,19 @@ export const updateProfile: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Profile updated successfully",
-      user: user.toJSON(),
+      message: "Profile updated successfully" + (!isDBConnected() ? " (demo mode)" : ""),
+      user: user.toJSON ? user.toJSON() : user,
+      demo: !isDBConnected(),
     });
   } catch (error: any) {
     console.error("Update profile error:", error);
+
+    if (error.message === "Phone number already exists") {
+      return res.status(409).json({
+        success: false,
+        message: error.message,
+      });
+    }
 
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
