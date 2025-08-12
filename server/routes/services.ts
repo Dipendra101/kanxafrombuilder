@@ -95,70 +95,106 @@ export const getAllServices: RequestHandler = async (req, res) => {
       to
     } = req.query;
 
-    const query: any = {};
+    // Use safe database operation
+    const result = await withDB(
+      async () => {
+        const query: any = {};
 
-    // Base filters
-    if (isActive !== '') {
-      query.isActive = isActive === 'true';
-    }
+        // Base filters
+        if (isActive !== '') {
+          query.isActive = isActive === 'true';
+        }
 
-    if (type) {
-      query.type = type;
-    }
+        if (type) {
+          query.type = type;
+        }
 
-    if (category) {
-      query.category = { $regex: category, $options: 'i' };
-    }
+        if (category) {
+          query.category = { $regex: category, $options: 'i' };
+        }
 
-    if (isFeatured !== undefined) {
-      query.isFeatured = isFeatured === 'true';
-    }
+        if (isFeatured !== undefined) {
+          query.isFeatured = isFeatured === 'true';
+        }
 
-    // Search functionality
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { shortDescription: { $regex: search, $options: 'i' } },
-        { features: { $in: [new RegExp(search as string, 'i')] } }
-      ];
-    }
+        // Search functionality
+        if (search) {
+          query.$or = [
+            { name: { $regex: search, $options: 'i' } },
+            { description: { $regex: search, $options: 'i' } },
+            { shortDescription: { $regex: search, $options: 'i' } },
+            { features: { $in: [new RegExp(search as string, 'i')] } }
+          ];
+        }
 
-    // Price range filtering
-    if (minPrice || maxPrice) {
-      query['pricing.basePrice'] = {};
-      if (minPrice) query['pricing.basePrice'].$gte = Number(minPrice);
-      if (maxPrice) query['pricing.basePrice'].$lte = Number(maxPrice);
-    }
+        // Price range filtering
+        if (minPrice || maxPrice) {
+          query['pricing.basePrice'] = {};
+          if (minPrice) query['pricing.basePrice'].$gte = Number(minPrice);
+          if (maxPrice) query['pricing.basePrice'].$lte = Number(maxPrice);
+        }
 
-    // Bus route filtering
-    if (from || to) {
-      if (from) query['busService.route.from'] = { $regex: from, $options: 'i' };
-      if (to) query['busService.route.to'] = { $regex: to, $options: 'i' };
-    }
+        // Bus route filtering
+        if (from || to) {
+          if (from) query['busService.route.from'] = { $regex: from, $options: 'i' };
+          if (to) query['busService.route.to'] = { $regex: to, $options: 'i' };
+        }
 
-    // Sorting
-    const sort: any = {};
-    sort[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
+        // Sorting
+        const sort: any = {};
+        sort[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
 
-    const services = await Service.find(query)
-      .populate('createdBy', 'name email')
-      .sort(sort)
-      .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit))
-      .exec();
+        const services = await Service.find(query)
+          .populate('createdBy', 'name email')
+          .sort(sort)
+          .limit(Number(limit))
+          .skip((Number(page) - 1) * Number(limit))
+          .exec();
 
-    const total = await Service.countDocuments(query);
+        const total = await Service.countDocuments(query);
+
+        return { services, total };
+      },
+      // Fallback: Use mock services
+      (() => {
+        console.log('⚠️  Database unavailable, using mock services');
+        let filteredServices = [...mockServices];
+
+        // Apply basic filters to mock data
+        if (type) {
+          filteredServices = filteredServices.filter(s => s.type === type);
+        }
+        if (isActive === 'true') {
+          filteredServices = filteredServices.filter(s => s.isActive);
+        }
+        if (isFeatured === 'true') {
+          filteredServices = filteredServices.filter(s => s.isFeatured);
+        }
+        if (search) {
+          const searchLower = (search as string).toLowerCase();
+          filteredServices = filteredServices.filter(s =>
+            s.name.toLowerCase().includes(searchLower) ||
+            s.description.toLowerCase().includes(searchLower)
+          );
+        }
+
+        const startIndex = (Number(page) - 1) * Number(limit);
+        const paginatedServices = filteredServices.slice(startIndex, startIndex + Number(limit));
+
+        return { services: paginatedServices, total: filteredServices.length };
+      })()
+    );
 
     res.json({
       success: true,
-      services,
+      services: result.services,
       pagination: {
         page: Number(page),
         limit: Number(limit),
-        total,
-        pages: Math.ceil(total / Number(limit))
-      }
+        total: result.total,
+        pages: Math.ceil(result.total / Number(limit))
+      },
+      ...((!isDBConnected()) && { mode: 'demo' })
     });
   } catch (error: any) {
     console.error('Get all services error:', error);
