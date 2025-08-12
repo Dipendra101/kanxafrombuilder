@@ -62,21 +62,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (storedToken && storedUser) {
           // Verify token with backend
-          const response = await authAPI.verifyToken(storedToken);
-          
-          if (response.success) {
-            setToken(storedToken);
-            setUser(response.user);
-          } else {
-          // Token is invalid, clear storage
-          console.log('Token verification failed, clearing storage');
-          localStorage.removeItem('kanxa_token');
-          localStorage.removeItem('kanxa_user');
-        }
+          try {
+            const response = await authAPI.verifyToken(storedToken);
+
+            if (response.success && response.user) {
+              setToken(storedToken);
+              setUser(response.user);
+              console.log('✅ Auth initialized successfully');
+            } else {
+              // Token is invalid, clear storage
+              console.log('❌ Token verification failed, clearing storage');
+              localStorage.removeItem('kanxa_token');
+              localStorage.removeItem('kanxa_user');
+            }
+          } catch (tokenError: any) {
+            console.log('❌ Token verification error:', tokenError.message);
+            // Clear invalid token data
+            localStorage.removeItem('kanxa_token');
+            localStorage.removeItem('kanxa_user');
+          }
+        } else {
+          console.log('ℹ️  No stored auth data found');
         }
       } catch (error) {
         console.error('Failed to initialize auth:', error);
-        // Clear invalid data
+        // Clear any potentially corrupted data
         localStorage.removeItem('kanxa_token');
         localStorage.removeItem('kanxa_user');
       } finally {
