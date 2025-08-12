@@ -41,6 +41,25 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
   const occupiedSeats = [2, 5, 8, 12, 15, 23, 28, 31, 37, 42];
 
+  // Safety check to ensure we have bus data
+  if (!bus) {
+    return (
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-kanxa-navy">
+            Select Your Seats
+          </DialogTitle>
+          <DialogDescription>
+            Loading bus information...
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kanxa-blue"></div>
+        </div>
+      </DialogContent>
+    );
+  }
+
   const toggleSeat = (seatNumber: number) => {
     if (occupiedSeats.includes(seatNumber)) return;
     setSelectedSeats((prev) =>
@@ -66,7 +85,7 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
           Select Your Seats
         </DialogTitle>
         <DialogDescription>
-          {bus.name} | {bus.route}
+          {bus.operator || bus.name || 'Bus Service'} | {bus.from} → {bus.to}
         </DialogDescription>
       </DialogHeader>
 
@@ -198,5 +217,3 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
     </DialogContent>
   );
 };
-
-
