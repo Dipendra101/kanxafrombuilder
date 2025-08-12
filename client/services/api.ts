@@ -307,6 +307,7 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
 
 // --- Authentication API ---
 export const authAPI = {
+  // --- Existing Methods ---
   register: async (userData: { name: string; email: string; phone: string; password: string }) => {
     return apiRequest('/auth/register', {
       method: 'POST',
@@ -329,6 +330,27 @@ export const authAPI = {
     return apiRequest('/auth/forgot-password', {
       method: 'POST',
       body: JSON.stringify({ email }),
+    });
+  },
+
+  // --- NEW Methods ---
+  changePassword: async (passwordData: { currentPassword: string; newPassword: string; }) => {
+    return apiRequest('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(passwordData),
+    });
+  },
+
+  sendVerificationEmail: async () => {
+    return apiRequest('/auth/send-verification-email', {
+      method: 'POST',
+    });
+  },
+
+  verifyEmailCode: async (code: string) => {
+    return apiRequest('/auth/verify-email-code', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
     });
   },
 };

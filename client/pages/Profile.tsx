@@ -3,11 +3,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { userAPI } from "@/services/api";
+import { userAPI, authAPI } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,9 +17,10 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  User, Mail, Phone, MapPin, Calendar, Edit, Save, Bell, Shield, CreditCard, Settings, LogOut, Camera, Upload, X
+  User, Mail, Phone, MapPin, Calendar, Edit, Save, Bell, Shield, CreditCard, Settings, LogOut, Camera, Upload, X, CheckCircle, KeyRound, Loader2
 } from "lucide-react";
 
+// Schemas for form validation
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email(),
@@ -28,12 +29,29 @@ const profileSchema = z.object({
   company: z.string().optional(),
   bio: z.string().optional(),
 });
+
+const passwordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required."),
+  newPassword: z.string().min(6, "New password must be at least 6 characters."),
+  confirmPassword: z.string().min(1, "Please confirm your password."),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+const emailVerificationSchema = z.object({
+  email: z.string().email("Please enter a valid email address."),
+});
+
 type ProfileFormData = z.infer<typeof profileSchema>;
+type PasswordFormData = z.infer<typeof passwordSchema>;
+type EmailVerificationFormData = z.infer<typeof emailVerificationSchema>;
 
 export default function Profile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // --- Data Fetching with React Query ---
@@ -71,6 +89,30 @@ export default function Profile() {
     onError: (error) => toast({ title: "Error", description: error.message, variant: "destructive" }),
   });
 
+  const passwordMutation = useMutation({
+    mutationFn: authAPI.changePassword,
+    onSuccess: () => {
+      toast({ title: "Success", description: "Your password has been changed." });
+      resetPassword();
+    },
+    onError: (error: any) => toast({ title: "Error", description: error.message, variant: "destructive" })
+  });
+
+  const sendVerificationMutation = useMutation({
+    mutationFn: authAPI.sendVerificationEmail,
+    onSuccess: (data) => toast({ title: "Code Sent", description: data.message }),
+    onError: (error: any) => toast({ title: "Error", description: error.message, variant: "destructive" })
+  });
+
+  const verifyCodeMutation = useMutation({
+    mutationFn: authAPI.verifyEmailCode,
+    onSuccess: (data) => {
+      toast({ title: "Success!", description: data.message });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
+    onError: (error: any) => toast({ title: "Error", description: error.message, variant: "destructive" })
+  });
+
   const updateNotificationsMutation = useMutation({
     mutationFn: userAPI.updateNotifications,
     onSuccess: (data) => {
@@ -79,7 +121,6 @@ export default function Profile() {
     },
     onError: (error) => toast({ title: "Error", description: error.message, variant: "destructive" }),
   });
-
 
   // --- Form Handling ---
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ProfileFormData>({
@@ -94,14 +135,71 @@ export default function Profile() {
     },
   });
 
+  // Fixed password form hook with proper typing
+  const {
+    register: registerPassword, 
+    handleSubmit: handlePasswordSubmit, 
+    formState: { errors: passwordErrors }, 
+    reset: resetPassword
+  } = useForm<PasswordFormData>({
+    resolver: zodResolver(passwordSchema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+    mode: "onChange"
+  });
+
+  // Email verification form
+  const {
+    register: registerEmail,
+    handleSubmit: handleEmailSubmit,
+    formState: { errors: emailErrors },
+    reset: resetEmail
+  } = useForm<EmailVerificationFormData>({
+    resolver: zodResolver(emailVerificationSchema),
+    defaultValues: {
+      email: profileData?.email || "",
+    }
+  });
+
   const onProfileSubmit = (data: ProfileFormData) => {
     updateProfileMutation.mutate(data);
+  };
+
+  // Fixed password change handler with proper typing
+  const onPasswordChange = (data: PasswordFormData) => {
+    passwordMutation.mutate({
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword,
+    });
+  };
+
+  // Email verification handler
+  const onEmailVerificationSubmit = (data: EmailVerificationFormData) => {
+    // Update the email in profile first if changed, then send verification
+    if (data.email !== profileData?.email) {
+      updateProfileMutation.mutate({ 
+        ...profileData, 
+        email: data.email 
+      }, {
+        onSuccess: () => {
+          sendVerificationMutation.mutate();
+        }
+      });
+    } else {
+      sendVerificationMutation.mutate();
+    }
   };
 
   const handleNotificationChange = (key: string, value: boolean) => {
     const updatedNotifications = { ...notifications, [key]: value };
     updateNotificationsMutation.mutate(updatedNotifications);
   };
+
+  const handleSendVerification = () => sendVerificationMutation.mutate();
+  const handleVerifyCode = () => verifyCodeMutation.mutate(verificationCode);
 
   // --- UI and Render Logic ---
   const getInitials = (name: string = "") => name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -116,7 +214,11 @@ export default function Profile() {
     <Layout>
       <section className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy text-white py-12">
         <div className="container text-center">
-            <img src={profileData?.avatarUrl || `https://ui-avatars.com/api/?name=${profileData?.name}&background=random`} alt="Profile" className="w-24 h-24 object-cover rounded-full mx-auto mb-4 border-2 border-white/30"/>
+            <img 
+              src={profileData?.avatarUrl || `https://ui-avatars.com/api/?name=${profileData?.name}&background=random`} 
+              alt="Profile" 
+              className="w-24 h-24 object-cover rounded-full mx-auto mb-4 border-2 border-white/30"
+            />
             <h1 className="text-4xl font-bold">{profileData?.name}</h1>
             <p className="text-xl text-white/90">Manage your account settings and preferences</p>
         </div>
@@ -154,13 +256,32 @@ export default function Profile() {
                       </CardHeader>
                       <CardContent className="space-y-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <div><Label htmlFor="name">Full Name</Label><Input id="name" {...register("name")} disabled={!isEditing} />{errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}</div>
-                              <div><Label htmlFor="email">Email</Label><Input id="email" type="email" {...register("email")} disabled /></div>
-                              <div><Label htmlFor="phone">Phone Number</Label><Input id="phone" {...register("phone")} disabled={!isEditing} /></div>
-                              <div><Label htmlFor="company">Company</Label><Input id="company" {...register("company")} disabled={!isEditing} /></div>
+                              <div>
+                                <Label htmlFor="name">Full Name</Label>
+                                <Input id="name" {...register("name")} disabled={!isEditing} />
+                                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+                              </div>
+                              <div>
+                                <Label htmlFor="email">Email</Label>
+                                <Input id="email" type="email" {...register("email")} disabled />
+                              </div>
+                              <div>
+                                <Label htmlFor="phone">Phone Number</Label>
+                                <Input id="phone" {...register("phone")} disabled={!isEditing} />
+                              </div>
+                              <div>
+                                <Label htmlFor="company">Company</Label>
+                                <Input id="company" {...register("company")} disabled={!isEditing} />
+                              </div>
                           </div>
-                          <div><Label htmlFor="address">Address</Label><Input id="address" {...register("address")} disabled={!isEditing} /></div>
-                          <div><Label htmlFor="bio">Bio</Label><Textarea id="bio" {...register("bio")} disabled={!isEditing} rows={3} className="resize-none" /></div>
+                          <div>
+                            <Label htmlFor="address">Address</Label>
+                            <Input id="address" {...register("address")} disabled={!isEditing} />
+                          </div>
+                          <div>
+                            <Label htmlFor="bio">Bio</Label>
+                            <Textarea id="bio" {...register("bio")} disabled={!isEditing} rows={3} className="resize-none" />
+                          </div>
                       </CardContent>
                     </Card>
                 </form>
@@ -172,8 +293,25 @@ export default function Profile() {
                     <CardContent className="space-y-4">
                         {activityData.map((activity: any) => (
                           <div key={activity.id} className="flex items-center justify-between p-3 border rounded-lg">
-                              <div className="flex items-center gap-4"><div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100">{activity.type === "booking" ? <Calendar className="h-5 w-5 text-kanxa-blue" /> : <CreditCard className="h-5 w-5 text-kanxa-orange" />}</div><div><p className="font-medium">{activity.description}</p><p className="text-sm text-gray-600">{activity.date}</p></div></div>
-                              <Badge className={`${activity.status === "completed" || activity.status === "delivered" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>{activity.status}</Badge>
+                              <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100">
+                                  {activity.type === "booking" ? 
+                                    <Calendar className="h-5 w-5 text-kanxa-blue" /> : 
+                                    <CreditCard className="h-5 w-5 text-kanxa-orange" />
+                                  }
+                                </div>
+                                <div>
+                                  <p className="font-medium">{activity.description}</p>
+                                  <p className="text-sm text-gray-600">{activity.date}</p>
+                                </div>
+                              </div>
+                              <Badge className={`${
+                                activity.status === "completed" || activity.status === "delivered" 
+                                  ? "bg-green-100 text-green-800" 
+                                  : "bg-yellow-100 text-yellow-800"
+                              }`}>
+                                {activity.status}
+                              </Badge>
                           </div>
                         ))}
                     </CardContent>
@@ -182,28 +320,212 @@ export default function Profile() {
 
               <TabsContent value="loyalty" className="space-y-6 mt-6">
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                      <Card className="text-center"><CardContent className="p-6"><div className="text-3xl font-bold text-kanxa-blue mb-2">{loyaltyData.totalBookings}</div><div className="text-sm text-gray-600">Total Bookings</div></CardContent></Card>
-                      <Card className="text-center"><CardContent className="p-6"><div className="text-3xl font-bold text-kanxa-orange mb-2">{loyaltyData.totalOrders}</div><div className="text-sm text-gray-600">Total Orders</div></CardContent></Card>
-                      <Card className="text-center"><CardContent className="p-6"><div className="text-3xl font-bold text-kanxa-green mb-2">NPR {loyaltyData.totalSpent.toLocaleString()}</div><div className="text-sm text-gray-600">Total Spent</div></CardContent></Card>
-                      <Card className="text-center"><CardContent className="p-6"><div className="text-3xl font-bold text-kanxa-navy mb-2">{loyaltyData.loyaltyPoints}</div><div className="text-sm text-gray-600">Loyalty Points</div></CardContent></Card>
+                      <Card className="text-center">
+                        <CardContent className="p-6">
+                          <div className="text-3xl font-bold text-kanxa-blue mb-2">{loyaltyData.totalBookings}</div>
+                          <div className="text-sm text-gray-600">Total Bookings</div>
+                        </CardContent>
+                      </Card>
+                      <Card className="text-center">
+                        <CardContent className="p-6">
+                          <div className="text-3xl font-bold text-kanxa-orange mb-2">{loyaltyData.totalOrders}</div>
+                          <div className="text-sm text-gray-600">Total Orders</div>
+                        </CardContent>
+                      </Card>
+                      <Card className="text-center">
+                        <CardContent className="p-6">
+                          <div className="text-3xl font-bold text-kanxa-green mb-2">NPR {loyaltyData.totalSpent.toLocaleString()}</div>
+                          <div className="text-sm text-gray-600">Total Spent</div>
+                        </CardContent>
+                      </Card>
+                      <Card className="text-center">
+                        <CardContent className="p-6">
+                          <div className="text-3xl font-bold text-kanxa-navy mb-2">{loyaltyData.loyaltyPoints}</div>
+                          <div className="text-sm text-gray-600">Loyalty Points</div>
+                        </CardContent>
+                      </Card>
                   </div>
                   <Card>
-                      <CardHeader><CardTitle className="flex items-center gap-2">Membership Status <Badge className="bg-yellow-100 text-yellow-800">{loyaltyData.membershipLevel}</Badge></CardTitle></CardHeader>
-                      <CardContent><p className="text-sm text-gray-600">You are making great progress towards the next level!</p></CardContent>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          Membership Status 
+                          <Badge className="bg-yellow-100 text-yellow-800">{loyaltyData.membershipLevel}</Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-gray-600">You are making great progress towards the next level!</p>
+                      </CardContent>
                   </Card>
               </TabsContent>
 
               <TabsContent value="settings" className="space-y-6 mt-6">
                   <Card>
+                      <CardHeader>
+                        <CardTitle>Email Verification</CardTitle>
+                        <CardDescription>Verify your email address to secure your account.</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        {profileData?.isEmailVerified ? (
+                          <div className="flex items-center gap-2 text-green-600 font-medium mb-4">
+                            <CheckCircle className="h-5 w-5" />
+                            <span>Your email is verified.</span>
+                          </div>
+                        ) : (
+                          <form onSubmit={handleEmailSubmit(onEmailVerificationSubmit)} className="space-y-4 mb-6">
+                            <div>
+                              <Label htmlFor="verificationEmail">Email Address</Label>
+                              <Input 
+                                id="verificationEmail" 
+                                type="email"
+                                {...registerEmail("email")}
+                                disabled={sendVerificationMutation.isPending}
+                              />
+                              {emailErrors.email && (
+                                <p className="text-red-500 text-sm mt-1">{emailErrors.email.message}</p>
+                              )}
+                            </div>
+                            <Button 
+                              type="submit" 
+                              disabled={sendVerificationMutation.isPending}
+                              className="w-full sm:w-auto"
+                            >
+                              {sendVerificationMutation.isPending ? (
+                                <>
+                                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                                  Sending...
+                                </>
+                              ) : (
+                                <>
+                                  <Mail className="mr-2 h-4 w-4" />
+                                  Send Verification Code
+                                </>
+                              )}
+                            </Button>
+                          </form>
+                        )}
+                        
+                        {!profileData?.isEmailVerified && (
+                          <div className="space-y-4 pt-4 border-t">
+                            <Label htmlFor="verificationCode">Verification Code</Label>
+                            <div className="flex items-center gap-4">
+                              <Input 
+                                id="verificationCode"
+                                placeholder="Enter 6-digit code" 
+                                value={verificationCode} 
+                                onChange={(e) => setVerificationCode(e.target.value)} 
+                                maxLength={6} 
+                                disabled={verifyCodeMutation.isPending}
+                              />
+                              <Button 
+                                onClick={handleVerifyCode} 
+                                disabled={verifyCodeMutation.isPending || verificationCode.length < 6}
+                              >
+                                {verifyCodeMutation.isPending ? <Loader2 className="animate-spin" /> : "Verify"}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Change Password</CardTitle>
+                      <CardDescription>For your security, we recommend choosing a strong password.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <form onSubmit={handlePasswordSubmit(onPasswordChange)} className="space-y-4">
+                        <div>
+                          <Label htmlFor="currentPassword">Current Password</Label>
+                          <Input 
+                            id="currentPassword" 
+                            type="password" 
+                            {...registerPassword("currentPassword")} 
+                          />
+                          {passwordErrors.currentPassword && (
+                            <p className="text-red-500 text-sm mt-1">{passwordErrors.currentPassword.message}</p>
+                          )}
+                        </div>
+                        <div>
+                          <Label htmlFor="newPassword">New Password</Label>
+                          <Input 
+                            id="newPassword" 
+                            type="password" 
+                            {...registerPassword("newPassword")} 
+                          />
+                          {passwordErrors.newPassword && (
+                            <p className="text-red-500 text-sm mt-1">{passwordErrors.newPassword.message}</p>
+                          )}
+                        </div>
+                        <div>
+                          <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                          <Input 
+                            id="confirmPassword" 
+                            type="password" 
+                            {...registerPassword("confirmPassword")} 
+                          />
+                          {passwordErrors.confirmPassword && (
+                            <p className="text-red-500 text-sm mt-1">{passwordErrors.confirmPassword.message}</p>
+                          )}
+                        </div>
+                        <Button type="submit" disabled={passwordMutation.isPending}>
+                          {passwordMutation.isPending ? (
+                            <Loader2 className="animate-spin mr-2" />
+                          ) : (
+                            <KeyRound className="mr-2 h-4 w-4" />
+                          )}
+                          Update Password
+                        </Button>
+                      </form>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
                       <CardHeader><CardTitle>Notification Preferences</CardTitle></CardHeader>
                       <CardContent className="space-y-4">
-                          <div className="flex items-center justify-between"><div className="flex-1"><p className="font-medium">Booking Updates</p><p className="text-sm text-gray-600">Receive notifications about your bookings</p></div><Switch checked={notifications.bookingUpdates} onCheckedChange={(checked) => handleNotificationChange('bookingUpdates', checked)} /></div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="font-medium">Booking Updates</p>
+                              <p className="text-sm text-gray-600">Receive notifications about your bookings</p>
+                            </div>
+                            <Switch 
+                              checked={notifications.bookingUpdates} 
+                              onCheckedChange={(checked) => handleNotificationChange('bookingUpdates', checked)} 
+                            />
+                          </div>
                           <Separator />
-                          <div className="flex items-center justify-between"><div className="flex-1"><p className="font-medium">Promotional Offers</p><p className="text-sm text-gray-600">Get notified about special deals</p></div><Switch checked={notifications.promotions} onCheckedChange={(checked) => handleNotificationChange('promotions', checked)} /></div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="font-medium">Promotional Offers</p>
+                              <p className="text-sm text-gray-600">Get notified about special deals</p>
+                            </div>
+                            <Switch 
+                              checked={notifications.promotions} 
+                              onCheckedChange={(checked) => handleNotificationChange('promotions', checked)} 
+                            />
+                          </div>
                           <Separator />
-                          <div className="flex items-center justify-between"><div className="flex-1"><p className="font-medium">Service Reminders</p><p className="text-sm text-gray-600">Reminders for scheduled services</p></div><Switch checked={notifications.serviceReminders} onCheckedChange={(checked) => handleNotificationChange('serviceReminders', checked)} /></div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="font-medium">Service Reminders</p>
+                              <p className="text-sm text-gray-600">Reminders for scheduled services</p>
+                            </div>
+                            <Switch 
+                              checked={notifications.serviceReminders} 
+                              onCheckedChange={(checked) => handleNotificationChange('serviceReminders', checked)} 
+                            />
+                          </div>
                           <Separator />
-                          <div className="flex items-center justify-between"><div className="flex-1"><p className="font-medium">Newsletter</p><p className="text-sm text-gray-600">Monthly newsletter with updates</p></div><Switch checked={notifications.newsletter} onCheckedChange={(checked) => handleNotificationChange('newsletter', checked)} /></div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="font-medium">Newsletter</p>
+                              <p className="text-sm text-gray-600">Monthly newsletter with updates</p>
+                            </div>
+                            <Switch 
+                              checked={notifications.newsletter} 
+                              onCheckedChange={(checked) => handleNotificationChange('newsletter', checked)} 
+                            />
+                          </div>
                       </CardContent>
                   </Card>
               </TabsContent>
