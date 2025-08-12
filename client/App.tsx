@@ -29,6 +29,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Chat from "./pages/Chat";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminTest from "./pages/AdminTest";
 import EnhancedBooking from "./pages/EnhancedBooking";
 import { AuthProvider } from "./contexts/AuthContext";
 
