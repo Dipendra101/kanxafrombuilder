@@ -314,7 +314,7 @@ export default function AdminDashboard() {
 
   // Check admin access - allow demo mode for UI preview
   const isDemoMode = !isAuthenticated || !user;
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === "admin";
 
   useEffect(() => {
     // Only redirect if user is authenticated but not admin (allow demo mode)
@@ -610,7 +610,8 @@ export default function AdminDashboard() {
                   Demo Mode - Admin Dashboard Preview
                 </h3>
                 <p className="text-blue-600 mt-1">
-                  You're viewing the admin dashboard in demo mode. Login with admin@demo.com / demo123 for full functionality.
+                  You're viewing the admin dashboard in demo mode. Login with
+                  admin@demo.com / demo123 for full functionality.
                 </p>
               </div>
             </div>
@@ -624,7 +625,8 @@ export default function AdminDashboard() {
               Admin Dashboard
             </h1>
             <p className="text-gray-600">
-              Welcome{user?.name ? `, ${user.name}` : ' to the admin panel'}! Here's what's happening with Kanxa Safari.
+              Welcome{user?.name ? `, ${user.name}` : " to the admin panel"}!
+              Here's what's happening with Kanxa Safari.
             </p>
           </div>
           <div className="flex items-center space-x-4 mt-4 sm:mt-0">

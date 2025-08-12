@@ -155,18 +155,24 @@ export default function Transportation() {
     try {
       setIsLoading(true);
       const filters = {
-        from: selectedRoute && selectedRoute !== 'all' ? selectedRoute.split(' → ')[0] : undefined,
-        to: selectedRoute && selectedRoute !== 'all' ? selectedRoute.split(' → ')[1] : undefined,
-        type
+        from:
+          selectedRoute && selectedRoute !== "all"
+            ? selectedRoute.split(" → ")[0]
+            : undefined,
+        to:
+          selectedRoute && selectedRoute !== "all"
+            ? selectedRoute.split(" → ")[1]
+            : undefined,
+        type,
       };
 
       let response;
       switch (type) {
-        case 'bus':
+        case "bus":
           response = await servicesAPI.getBuses(filters);
           setServices(response.buses || []);
           break;
-        case 'cargo':
+        case "cargo":
           response = await servicesAPI.getCargo(filters);
           setServices(response.cargo || []);
           break;
@@ -175,11 +181,11 @@ export default function Transportation() {
           setServices(response.services || []);
       }
     } catch (error: any) {
-      console.error('Failed to fetch services:', error);
+      console.error("Failed to fetch services:", error);
       toast({
         title: "Error",
         description: "Failed to load services. Showing sample data.",
-        variant: "destructive"
+        variant: "destructive",
       });
       // Fallback to sample data
       loadSampleData(type);
@@ -189,42 +195,42 @@ export default function Transportation() {
   };
 
   const loadSampleData = (type: string) => {
-    if (type === 'bus') {
+    if (type === "bus") {
       setServices([
         {
-          id: '1',
-          name: 'Kanxa Express',
-          from: 'Lamjung',
-          to: 'Kathmandu',
-          departureTime: '06:00 AM',
-          arrivalTime: '12:00 PM',
-          duration: '6h 0m',
+          id: "1",
+          name: "Kanxa Express",
+          from: "Lamjung",
+          to: "Kathmandu",
+          departureTime: "06:00 AM",
+          arrivalTime: "12:00 PM",
+          duration: "6h 0m",
           pricing: { basePrice: 800 },
           vehicle: {
-            busType: 'Deluxe AC',
+            busType: "Deluxe AC",
             totalSeats: 45,
-            amenities: ['AC', 'WiFi', 'Charging Port', 'Entertainment']
+            amenities: ["AC", "WiFi", "Charging Port", "Entertainment"],
           },
           rating: { average: 4.8, count: 156 },
-          operator: { name: 'Kanxa Express' }
+          operator: { name: "Kanxa Express" },
         },
         {
-          id: '2',
-          name: 'Mountain Express',
-          from: 'Lamjung',
-          to: 'Pokhara',
-          departureTime: '08:30 AM',
-          arrivalTime: '11:00 AM',
-          duration: '2h 30m',
+          id: "2",
+          name: "Mountain Express",
+          from: "Lamjung",
+          to: "Pokhara",
+          departureTime: "08:30 AM",
+          arrivalTime: "11:00 AM",
+          duration: "2h 30m",
           pricing: { basePrice: 500 },
           vehicle: {
-            busType: 'Standard',
+            busType: "Standard",
             totalSeats: 35,
-            amenities: ['Comfortable Seats', 'Music System']
+            amenities: ["Comfortable Seats", "Music System"],
           },
           rating: { average: 4.6, count: 89 },
-          operator: { name: 'Mountain Express' }
-        }
+          operator: { name: "Mountain Express" },
+        },
       ]);
     }
   };
@@ -232,14 +238,18 @@ export default function Transportation() {
   useEffect(() => {
     // Use a timeout to debounce rapid tab changes
     const timeoutId = setTimeout(() => {
-      fetchServices(selectedTab === 'buses' ? 'bus' : selectedTab);
+      fetchServices(selectedTab === "buses" ? "bus" : selectedTab);
     }, 100);
 
     return () => clearTimeout(timeoutId);
   }, [selectedTab, isLoading]);
 
   const filteredBuses = busRoutes.filter((bus) => {
-    if (selectedRoute && selectedRoute !== "all" && !`${bus.from} → ${bus.to}`.includes(selectedRoute)) {
+    if (
+      selectedRoute &&
+      selectedRoute !== "all" &&
+      !`${bus.from} → ${bus.to}`.includes(selectedRoute)
+    ) {
       return false;
     }
     return true;
@@ -247,11 +257,13 @@ export default function Transportation() {
 
   const filteredServices = services.filter((service) => {
     if (selectedRoute && service.from && service.to) {
-      const routeMatch = `${service.from} → ${service.to}`.toLowerCase().includes(selectedRoute.toLowerCase());
+      const routeMatch = `${service.from} → ${service.to}`
+        .toLowerCase()
+        .includes(selectedRoute.toLowerCase());
       if (!routeMatch) return false;
     }
     if (searchQuery) {
-      const searchMatch = 
+      const searchMatch =
         service.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         service.from?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         service.to?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -270,7 +282,7 @@ export default function Transportation() {
               Transportation Services
             </h1>
             <p className="text-xl text-white/90 mb-8">
-              Reliable, comfortable, and affordable transportation solutions 
+              Reliable, comfortable, and affordable transportation solutions
               connecting Lamjung to major cities across Nepal
             </p>
           </div>
@@ -281,7 +293,11 @@ export default function Transportation() {
       <section className="py-12 bg-white">
         <div className="container px-4">
           <div className="max-w-6xl mx-auto">
-            <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+            <Tabs
+              value={selectedTab}
+              onValueChange={setSelectedTab}
+              className="w-full"
+            >
               <TabsList className="grid w-full grid-cols-3 mb-8">
                 <TabsTrigger value="buses" className="flex items-center gap-2">
                   <Bus className="w-4 h-4" />
@@ -319,16 +335,27 @@ export default function Transportation() {
                       </div>
                       <div>
                         <Label htmlFor="route">Select Route</Label>
-                        <Select value={selectedRoute} onValueChange={setSelectedRoute}>
+                        <Select
+                          value={selectedRoute}
+                          onValueChange={setSelectedRoute}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Choose route" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">All Routes</SelectItem>
-                            <SelectItem value="Lamjung → Kathmandu">Lamjung → Kathmandu</SelectItem>
-                            <SelectItem value="Lamjung → Pokhara">Lamjung → Pokhara</SelectItem>
-                            <SelectItem value="Kathmandu → Lamjung">Kathmandu → Lamjung</SelectItem>
-                            <SelectItem value="Pokhara → Lamjung">Pokhara → Lamjung</SelectItem>
+                            <SelectItem value="Lamjung → Kathmandu">
+                              Lamjung → Kathmandu
+                            </SelectItem>
+                            <SelectItem value="Lamjung → Pokhara">
+                              Lamjung → Pokhara
+                            </SelectItem>
+                            <SelectItem value="Kathmandu → Lamjung">
+                              Kathmandu → Lamjung
+                            </SelectItem>
+                            <SelectItem value="Pokhara → Lamjung">
+                              Pokhara → Lamjung
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -339,16 +366,16 @@ export default function Transportation() {
                           type="date"
                           value={selectedDate}
                           onChange={(e) => setSelectedDate(e.target.value)}
-                          min={new Date().toISOString().split('T')[0]}
+                          min={new Date().toISOString().split("T")[0]}
                         />
                       </div>
                       <div className="flex items-end">
-                        <Button 
+                        <Button
                           className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90"
-                          onClick={() => fetchServices('bus')}
+                          onClick={() => fetchServices("bus")}
                           disabled={isLoading}
                         >
-                          {isLoading ? 'Searching...' : 'Search Buses'}
+                          {isLoading ? "Searching..." : "Search Buses"}
                         </Button>
                       </div>
                     </div>
@@ -357,7 +384,9 @@ export default function Transportation() {
 
                 {/* Available Buses */}
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-kanxa-navy">Available Buses</h3>
+                  <h3 className="text-2xl font-bold text-kanxa-navy">
+                    Available Buses
+                  </h3>
                   {isLoading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kanxa-blue mx-auto"></div>
@@ -367,14 +396,16 @@ export default function Transportation() {
                     <Card>
                       <CardContent className="text-center py-8">
                         <Bus className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-600">No buses found for your search criteria.</p>
-                        <Button 
-                          variant="outline" 
+                        <p className="text-gray-600">
+                          No buses found for your search criteria.
+                        </p>
+                        <Button
+                          variant="outline"
                           className="mt-4"
                           onClick={() => {
-                            setSearchQuery('');
-                            setSelectedRoute('');
-                            fetchServices('bus');
+                            setSearchQuery("");
+                            setSelectedRoute("");
+                            fetchServices("bus");
                           }}
                         >
                           Clear Filters
@@ -383,18 +414,25 @@ export default function Transportation() {
                     </Card>
                   ) : (
                     filteredBuses.map((bus) => (
-                      <Card key={bus.id} className="hover:shadow-lg transition-shadow">
+                      <Card
+                        key={bus.id}
+                        className="hover:shadow-lg transition-shadow"
+                      >
                         <CardContent className="p-6">
                           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
                                 <Bus className="w-5 h-5 text-kanxa-blue" />
-                                <span className="font-medium text-kanxa-navy">{bus.operator}</span>
+                                <span className="font-medium text-kanxa-navy">
+                                  {bus.operator}
+                                </span>
                                 <Badge variant="outline">{bus.busType}</Badge>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                <span className="text-sm text-gray-600">{bus.rating}</span>
+                                <span className="text-sm text-gray-600">
+                                  {bus.rating}
+                                </span>
                               </div>
                             </div>
 
@@ -420,13 +458,22 @@ export default function Transportation() {
                                 </span>
                               </div>
                               <div className="flex flex-wrap gap-1">
-                                {bus.amenities.slice(0, 3).map((amenity: string, index: number) => (
-                                  <Badge key={index} variant="secondary" className="text-xs">
-                                    {amenity}
-                                  </Badge>
-                                ))}
+                                {bus.amenities
+                                  .slice(0, 3)
+                                  .map((amenity: string, index: number) => (
+                                    <Badge
+                                      key={index}
+                                      variant="secondary"
+                                      className="text-xs"
+                                    >
+                                      {amenity}
+                                    </Badge>
+                                  ))}
                                 {bus.amenities.length > 3 && (
-                                  <Badge variant="secondary" className="text-xs">
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
                                     +{bus.amenities.length - 3} more
                                   </Badge>
                                 )}
@@ -437,7 +484,11 @@ export default function Transportation() {
                               <div className="text-2xl font-bold text-kanxa-navy">
                                 NPR {bus.price.toLocaleString()}
                               </div>
-                              <Dialog onOpenChange={(open) => !open && setSelectedBus(null)}>
+                              <Dialog
+                                onOpenChange={(open) =>
+                                  !open && setSelectedBus(null)
+                                }
+                              >
                                 <DialogTrigger asChild>
                                   <Button
                                     className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90"
@@ -458,14 +509,21 @@ export default function Transportation() {
               </TabsContent>
 
               <TabsContent value="cargo" className="space-y-6">
-                <h3 className="text-2xl font-bold text-kanxa-navy">Cargo Services</h3>
+                <h3 className="text-2xl font-bold text-kanxa-navy">
+                  Cargo Services
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {cargoServices.map((cargo) => (
-                    <Card key={cargo.id} className="hover:shadow-lg transition-shadow">
+                    <Card
+                      key={cargo.id}
+                      className="hover:shadow-lg transition-shadow"
+                    >
                       <CardHeader>
                         <div className="flex items-center gap-2">
                           <Truck className="w-6 h-6 text-kanxa-orange" />
-                          <CardTitle className="text-kanxa-navy">{cargo.type}</CardTitle>
+                          <CardTitle className="text-kanxa-navy">
+                            {cargo.type}
+                          </CardTitle>
                         </div>
                         <Badge className="w-fit bg-kanxa-orange/10 text-kanxa-orange">
                           {cargo.capacity}
@@ -473,7 +531,9 @@ export default function Transportation() {
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div>
-                          <h4 className="font-medium text-kanxa-navy mb-2">Available Routes:</h4>
+                          <h4 className="font-medium text-kanxa-navy mb-2">
+                            Available Routes:
+                          </h4>
                           <ul className="text-sm text-gray-600 space-y-1">
                             {cargo.routes.map((route, index) => (
                               <li key={index}>• {route}</li>
@@ -481,7 +541,9 @@ export default function Transportation() {
                           </ul>
                         </div>
                         <div>
-                          <h4 className="font-medium text-kanxa-navy mb-2">Features:</h4>
+                          <h4 className="font-medium text-kanxa-navy mb-2">
+                            Features:
+                          </h4>
                           <ul className="text-sm text-gray-600 space-y-1">
                             {cargo.features.map((feature, index) => (
                               <li key={index}>• {feature}</li>
@@ -491,12 +553,20 @@ export default function Transportation() {
                         <Separator />
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Base Price:</span>
-                            <span className="font-medium">NPR {cargo.basePrice.toLocaleString()}</span>
+                            <span className="text-sm text-gray-600">
+                              Base Price:
+                            </span>
+                            <span className="font-medium">
+                              NPR {cargo.basePrice.toLocaleString()}
+                            </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Per KM:</span>
-                            <span className="font-medium">NPR {cargo.pricePerKm}</span>
+                            <span className="text-sm text-gray-600">
+                              Per KM:
+                            </span>
+                            <span className="font-medium">
+                              NPR {cargo.pricePerKm}
+                            </span>
                           </div>
                         </div>
                         <Link to={`/book?service=${cargo.id}&type=cargo`}>
@@ -520,13 +590,16 @@ export default function Transportation() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <p className="text-gray-600">
-                      Plan your perfect tour with our custom transportation services. 
-                      We provide flexible routing, comfortable vehicles, and experienced drivers.
+                      Plan your perfect tour with our custom transportation
+                      services. We provide flexible routing, comfortable
+                      vehicles, and experienced drivers.
                     </p>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
-                        <h4 className="font-semibold text-kanxa-navy">Tour Options:</h4>
+                        <h4 className="font-semibold text-kanxa-navy">
+                          Tour Options:
+                        </h4>
                         <ul className="space-y-2 text-sm text-gray-600">
                           <li>• Day trips to popular destinations</li>
                           <li>• Multi-day tour packages</li>
@@ -537,7 +610,9 @@ export default function Transportation() {
                         </ul>
                       </div>
                       <div className="space-y-4">
-                        <h4 className="font-semibold text-kanxa-navy">Included Services:</h4>
+                        <h4 className="font-semibold text-kanxa-navy">
+                          Included Services:
+                        </h4>
                         <ul className="space-y-2 text-sm text-gray-600">
                           <li>• Professional drivers</li>
                           <li>• Fuel and maintenance</li>
@@ -550,9 +625,12 @@ export default function Transportation() {
                     </div>
 
                     <div className="bg-kanxa-light-green p-4 rounded-lg">
-                      <h4 className="font-medium text-kanxa-navy mb-2">Get Custom Quote</h4>
+                      <h4 className="font-medium text-kanxa-navy mb-2">
+                        Get Custom Quote
+                      </h4>
                       <p className="text-sm text-gray-600 mb-4">
-                        Contact us with your requirements for a personalized quote
+                        Contact us with your requirements for a personalized
+                        quote
                       </p>
                       <div className="flex gap-2">
                         <Button className="bg-kanxa-green hover:bg-kanxa-green/90">
@@ -584,22 +662,34 @@ export default function Transportation() {
               <div className="w-12 h-12 bg-kanxa-blue rounded-lg flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-semibold text-kanxa-navy mb-2">Reliable Service</h3>
-              <p className="text-gray-600">On-time departures and arrivals with real-time tracking</p>
+              <h3 className="font-semibold text-kanxa-navy mb-2">
+                Reliable Service
+              </h3>
+              <p className="text-gray-600">
+                On-time departures and arrivals with real-time tracking
+              </p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-kanxa-orange rounded-lg flex items-center justify-center mx-auto mb-4">
                 <CreditCard className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-semibold text-kanxa-navy mb-2">Secure Payments</h3>
-              <p className="text-gray-600">Multiple payment options with full security</p>
+              <h3 className="font-semibold text-kanxa-navy mb-2">
+                Secure Payments
+              </h3>
+              <p className="text-gray-600">
+                Multiple payment options with full security
+              </p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-kanxa-green rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Users className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-semibold text-kanxa-navy mb-2">24/7 Support</h3>
-              <p className="text-gray-600">Round-the-clock customer assistance</p>
+              <h3 className="font-semibold text-kanxa-navy mb-2">
+                24/7 Support
+              </h3>
+              <p className="text-gray-600">
+                Round-the-clock customer assistance
+              </p>
             </div>
           </div>
         </div>

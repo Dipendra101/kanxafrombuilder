@@ -1,8 +1,20 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Users, FileText, Calendar, DollarSign, AlertTriangle } from "lucide-react";
+import {
+  Users,
+  FileText,
+  Calendar,
+  DollarSign,
+  AlertTriangle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -19,7 +31,7 @@ export default function AdminDashboardSimple() {
   }, []);
 
   // Check admin access - but don't redirect for testing
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === "admin";
 
   if (isLoading) {
     return (
@@ -42,7 +54,9 @@ export default function AdminDashboardSimple() {
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="max-w-md mx-auto">
             <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-yellow-600 mb-4">Authentication Required</h1>
+            <h1 className="text-2xl font-bold text-yellow-600 mb-4">
+              Authentication Required
+            </h1>
             <p className="text-gray-600 mb-8">
               Please log in to access the admin dashboard.
             </p>
@@ -51,13 +65,18 @@ export default function AdminDashboardSimple() {
                 <Button className="w-full">Login</Button>
               </Link>
               <Link to="/">
-                <Button variant="outline" className="w-full">Go Home</Button>
+                <Button variant="outline" className="w-full">
+                  Go Home
+                </Button>
               </Link>
             </div>
             <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-semibold text-blue-800 mb-2">Demo Admin Access</h3>
+              <h3 className="font-semibold text-blue-800 mb-2">
+                Demo Admin Access
+              </h3>
               <p className="text-sm text-blue-600">
-                Email: admin@demo.com<br />
+                Email: admin@demo.com
+                <br />
                 Password: demo123
               </p>
             </div>
@@ -73,7 +92,9 @@ export default function AdminDashboardSimple() {
         <div className="container mx-auto px-4 py-16 text-center">
           <div className="max-w-md mx-auto">
             <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+            <h1 className="text-2xl font-bold text-red-600 mb-4">
+              Access Denied
+            </h1>
             <p className="text-gray-600 mb-8">
               Admin privileges required to access this dashboard.
             </p>
@@ -82,13 +103,18 @@ export default function AdminDashboardSimple() {
                 Current user: {user?.name} ({user?.role})
               </p>
               <Link to="/">
-                <Button variant="outline" className="w-full">Go Home</Button>
+                <Button variant="outline" className="w-full">
+                  Go Home
+                </Button>
               </Link>
             </div>
             <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-semibold text-blue-800 mb-2">Demo Admin Access</h3>
+              <h3 className="font-semibold text-blue-800 mb-2">
+                Demo Admin Access
+              </h3>
               <p className="text-sm text-blue-600">
-                Email: admin@demo.com<br />
+                Email: admin@demo.com
+                <br />
                 Password: demo123
               </p>
             </div>
@@ -105,7 +131,7 @@ export default function AdminDashboardSimple() {
       change: "+12%",
       icon: Users,
       color: "text-blue-600",
-      bgColor: "bg-blue-50"
+      bgColor: "bg-blue-50",
     },
     {
       title: "Active Services",
@@ -113,7 +139,7 @@ export default function AdminDashboardSimple() {
       change: "+3%",
       icon: FileText,
       color: "text-green-600",
-      bgColor: "bg-green-50"
+      bgColor: "bg-green-50",
     },
     {
       title: "Total Bookings",
@@ -121,7 +147,7 @@ export default function AdminDashboardSimple() {
       change: "+8%",
       icon: Calendar,
       color: "text-purple-600",
-      bgColor: "bg-purple-50"
+      bgColor: "bg-purple-50",
     },
     {
       title: "Total Revenue",
@@ -129,8 +155,8 @@ export default function AdminDashboardSimple() {
       change: "+15%",
       icon: DollarSign,
       color: "text-orange-600",
-      bgColor: "bg-orange-50"
-    }
+      bgColor: "bg-orange-50",
+    },
   ];
 
   return (
@@ -139,9 +165,12 @@ export default function AdminDashboardSimple() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Admin Dashboard
+            </h1>
             <p className="text-gray-600">
-              Welcome back, {user?.name}! Here's what's happening with Kanxa Safari.
+              Welcome back, {user?.name}! Here's what's happening with Kanxa
+              Safari.
             </p>
           </div>
           <div className="flex items-center space-x-4 mt-4 sm:mt-0">
@@ -190,7 +219,9 @@ export default function AdminDashboardSimple() {
           <Card>
             <CardHeader>
               <CardTitle>User Management</CardTitle>
-              <CardDescription>Manage users and their permissions</CardDescription>
+              <CardDescription>
+                Manage users and their permissions
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Button className="w-full">Manage Users</Button>
@@ -200,7 +231,9 @@ export default function AdminDashboardSimple() {
           <Card>
             <CardHeader>
               <CardTitle>Service Management</CardTitle>
-              <CardDescription>Add and manage available services</CardDescription>
+              <CardDescription>
+                Add and manage available services
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Button className="w-full">Manage Services</Button>
@@ -210,7 +243,9 @@ export default function AdminDashboardSimple() {
           <Card>
             <CardHeader>
               <CardTitle>Booking Management</CardTitle>
-              <CardDescription>View and manage customer bookings</CardDescription>
+              <CardDescription>
+                View and manage customer bookings
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Button className="w-full">View Bookings</Button>
@@ -231,7 +266,8 @@ export default function AdminDashboardSimple() {
                 Admin Dashboard Loaded Successfully!
               </h3>
               <p className="text-green-600 mt-1">
-                The admin panel is working correctly. All routes and authentication are functional.
+                The admin panel is working correctly. All routes and
+                authentication are functional.
               </p>
             </div>
           </div>

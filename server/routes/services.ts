@@ -233,7 +233,7 @@ export const getFeaturedServices: RequestHandler = async (req, res) => {
           .exec();
       },
       // Fallback mock data
-      mockServices.filter(s => s.isFeatured).slice(0, Number(limit))
+      mockServices.filter((s) => s.isFeatured).slice(0, Number(limit)),
     );
 
     res.json({
@@ -277,7 +277,7 @@ export const getBusServices: RequestHandler = async (req, res) => {
         return buses;
       },
       // Fallback mock data
-      mockServices.filter(s => s.type === 'bus')
+      mockServices.filter((s) => s.type === "bus"),
     );
 
     const buses = Array.isArray(result) ? result : [result];
@@ -346,10 +346,12 @@ export const getCargoServices: RequestHandler = async (req, res) => {
           .sort({ "rating.average": -1 });
       },
       // Fallback mock data
-      mockServices.filter(s => s.type === 'cargo')
+      mockServices.filter((s) => s.type === "cargo"),
     );
 
-    const cargoArray = Array.isArray(cargoServices) ? cargoServices : [cargoServices];
+    const cargoArray = Array.isArray(cargoServices)
+      ? cargoServices
+      : [cargoServices];
 
     const transformedCargo = cargoArray.map((cargo) => ({
       id: cargo._id,
@@ -414,10 +416,12 @@ export const getConstructionServices: RequestHandler = async (req, res) => {
           .sort({ "rating.average": -1 });
       },
       // Fallback mock data
-      mockServices.filter(s => s.type === 'construction')
+      mockServices.filter((s) => s.type === "construction"),
     );
 
-    const itemsArray = Array.isArray(constructionItems) ? constructionItems : [constructionItems];
+    const itemsArray = Array.isArray(constructionItems)
+      ? constructionItems
+      : [constructionItems];
     const transformedItems = itemsArray.map((item) => ({
       id: item._id,
       name: item.name,
@@ -479,10 +483,12 @@ export const getGarageServices: RequestHandler = async (req, res) => {
           .sort({ "rating.average": -1 });
       },
       // Fallback mock data
-      mockServices.filter(s => s.type === 'garage')
+      mockServices.filter((s) => s.type === "garage"),
     );
 
-    const servicesArray = Array.isArray(garageServices) ? garageServices : [garageServices];
+    const servicesArray = Array.isArray(garageServices)
+      ? garageServices
+      : [garageServices];
     const transformedServices = servicesArray.map((service) => ({
       id: service._id,
       name: service.name,
@@ -535,7 +541,7 @@ export const getServiceById: RequestHandler = async (req, res) => {
         return foundService;
       },
       // Fallback mock data
-      mockServices.find(s => s._id === id) || null
+      mockServices.find((s) => s._id === id) || null,
     );
 
     if (!service) {

@@ -46,47 +46,47 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
 
-          {/* Authentication Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+            {/* Authentication Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          {/* Main Service Routes */}
-          <Route path="/transportation" element={<Transportation />} />
-          <Route path="/construction" element={<Construction />} />
-          <Route path="/garage" element={<Garage />} />
-          <Route path="/about" element={<About />} />
+            {/* Main Service Routes */}
+            <Route path="/transportation" element={<Transportation />} />
+            <Route path="/construction" element={<Construction />} />
+            <Route path="/garage" element={<Garage />} />
+            <Route path="/about" element={<About />} />
 
-          {/* Transportation Sub-routes */}
-          <Route path="/buses" element={<Buses />} />
-          <Route path="/cargo" element={<Cargo />} />
-          <Route path="/tours" element={<Tours />} />
+            {/* Transportation Sub-routes */}
+            <Route path="/buses" element={<Buses />} />
+            <Route path="/cargo" element={<Cargo />} />
+            <Route path="/tours" element={<Tours />} />
 
-          {/* Construction Sub-routes */}
-          <Route path="/materials" element={<Materials />} />
-          <Route path="/machinery" element={<Machinery />} />
+            {/* Construction Sub-routes */}
+            <Route path="/materials" element={<Materials />} />
+            <Route path="/machinery" element={<Machinery />} />
 
-          {/* User Account Routes */}
-          <Route path="/booking" element={<Booking />} />
-          <Route path="/bookings" element={<Booking />} />
-          <Route path="/book" element={<EnhancedBooking />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/chat" element={<Chat />} />
+            {/* User Account Routes */}
+            <Route path="/booking" element={<Booking />} />
+            <Route path="/bookings" element={<Booking />} />
+            <Route path="/book" element={<EnhancedBooking />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/chat" element={<Chat />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin-simple" element={<AdminDashboardSimple />} />
-          <Route path="/admin-test" element={<AdminTest />} />
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin-simple" element={<AdminDashboardSimple />} />
+            <Route path="/admin-test" element={<AdminTest />} />
 
-          {/* Information & Support Routes */}
-          <Route path="/routes" element={<RoutesPage />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
+            {/* Information & Support Routes */}
+            <Route path="/routes" element={<RoutesPage />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
 
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

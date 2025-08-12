@@ -4,7 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 const Seat = ({
@@ -17,7 +22,8 @@ const Seat = ({
   onClick: () => void;
 }) => {
   const statusClasses = {
-    available: "bg-gray-200 hover:bg-kanxa-blue hover:text-white hover:scale-105",
+    available:
+      "bg-gray-200 hover:bg-kanxa-blue hover:text-white hover:scale-105",
     selected: "bg-kanxa-orange text-white scale-105",
     occupied: "bg-gray-400 text-white cursor-not-allowed",
   };
@@ -28,7 +34,7 @@ const Seat = ({
       disabled={status === "occupied"}
       className={cn(
         "relative w-10 h-10 rounded flex items-center justify-center transition-transform duration-200 text-xs font-semibold shadow-sm",
-        statusClasses[status]
+        statusClasses[status],
       )}
       aria-label={`Seat ${seatNumber}`}
     >
@@ -49,9 +55,7 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
           <DialogTitle className="text-2xl font-bold text-kanxa-navy">
             Select Your Seats
           </DialogTitle>
-          <DialogDescription>
-            Loading bus information...
-          </DialogDescription>
+          <DialogDescription>Loading bus information...</DialogDescription>
         </DialogHeader>
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kanxa-blue"></div>
@@ -65,7 +69,7 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
     setSelectedSeats((prev) =>
       prev.includes(seatNumber)
         ? prev.filter((s) => s !== seatNumber)
-        : [...prev, seatNumber]
+        : [...prev, seatNumber],
     );
   };
 
@@ -76,7 +80,10 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
   };
 
   const totalSeats = 44;
-  const seatRows = Array.from({ length: Math.ceil(totalSeats / 4) }, (_, i) => i);
+  const seatRows = Array.from(
+    { length: Math.ceil(totalSeats / 4) },
+    (_, i) => i,
+  );
 
   return (
     <DialogContent className="max-w-4xl">
@@ -85,7 +92,7 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
           Select Your Seats
         </DialogTitle>
         <DialogDescription>
-          {bus.operator || bus.name || 'Bus Service'} | {bus.from} → {bus.to}
+          {bus.operator || bus.name || "Bus Service"} | {bus.from} → {bus.to}
         </DialogDescription>
       </DialogHeader>
 
@@ -171,14 +178,22 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
               <p className="font-medium text-kanxa-navy">Selected Seats:</p>
               {selectedSeats.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
-                  {selectedSeats.sort((a, b) => a - b).map((seat) => (
-                    <Badge key={seat} variant="secondary" className="text-base">
-                      {seat}
-                    </Badge>
-                  ))}
+                  {selectedSeats
+                    .sort((a, b) => a - b)
+                    .map((seat) => (
+                      <Badge
+                        key={seat}
+                        variant="secondary"
+                        className="text-base"
+                      >
+                        {seat}
+                      </Badge>
+                    ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-500">Please select one or more seats.</p>
+                <p className="text-sm text-gray-500">
+                  Please select one or more seats.
+                </p>
               )}
 
               <Separator />
@@ -186,7 +201,9 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span>Seat(s) ({selectedSeats.length})</span>
-                  <span>NPR {(bus.price * selectedSeats.length).toLocaleString()}</span>
+                  <span>
+                    NPR {(bus.price * selectedSeats.length).toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Service Fee</span>
@@ -196,7 +213,8 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
                   <span className="text-kanxa-blue">
-                    NPR {(bus.price * selectedSeats.length + 50 > 50
+                    NPR{" "}
+                    {(bus.price * selectedSeats.length + 50 > 50
                       ? bus.price * selectedSeats.length + 50
                       : 0
                     ).toLocaleString()}

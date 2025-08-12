@@ -8,7 +8,8 @@ import {
   VisuallyHidden,
 } from "@/components/ui/dialog";
 
-interface AccessibleDialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogContent> {
+interface AccessibleDialogContentProps
+  extends React.ComponentPropsWithoutRef<typeof DialogContent> {
   title: string;
   description?: string;
   hideTitle?: boolean;
