@@ -11,9 +11,13 @@ import connectDB from "./config/database";
 export function createServer() {
   const app = express();
 
-  // Connect to MongoDB with proper error handling
-  connectDB().then(() => {
-    console.log('✅ Database connected successfully');
+  // Connect to MongoDB with graceful fallback
+  connectDB().then((db) => {
+    if (db) {
+      console.log('✅ Database connected successfully');
+    } else {
+      console.log('ℹ️  Running in mock mode without database');
+    }
   }).catch((error) => {
     console.error('❌ Database connection failed:', error);
     console.log('ℹ️  Running in mock mode without database');
