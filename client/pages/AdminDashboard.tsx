@@ -157,6 +157,10 @@ export default function AdminDashboard() {
   const [allServices, setAllServices] = useState<Service[]>([]);
   const [allBookings, setAllBookings] = useState<RecentBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Check admin access - allow demo mode for UI preview
+  const isDemoMode = !isAuthenticated || !user;
+  const isAdmin = user?.role === "admin";
   const [activeTab, setActiveTab] = useState("overview");
 
   // Modal states
