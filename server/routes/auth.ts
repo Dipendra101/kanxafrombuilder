@@ -106,50 +106,78 @@ export const register: RequestHandler = async (req, res) => {
       });
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ 
-      $or: [{ email }, { phone }] 
-    });
+    // Use safe database operation
+    const result = await withDB(
+      async () => {
+        // Check if user already exists
+        const existingUser = await User.findOne({
+          $or: [{ email }, { phone }]
+        });
 
-    if (existingUser) {
-      const field = existingUser.email === email ? 'email' : 'phone';
-      return res.status(409).json({
-        success: false,
-        message: `User already exists with this ${field}`
-      });
-    }
+        if (existingUser) {
+          const field = existingUser.email === email ? 'email' : 'phone';
+          throw new Error(`User already exists with this ${field}`);
+        }
 
-    // Create new user
-    const user = new User({
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
-      phone: phone.trim(),
-      password,
-      role: role === 'admin' ? 'admin' : 'user', // Only allow admin if explicitly set
-      verification: {
-        emailToken: crypto.randomBytes(32).toString('hex'),
-        phoneToken: Math.floor(100000 + Math.random() * 900000).toString(),
+        // Create new user
+        const user = new User({
+          name: name.trim(),
+          email: email.toLowerCase().trim(),
+          phone: phone.trim(),
+          password,
+          role: role === 'admin' ? 'admin' : 'user',
+          verification: {
+            emailToken: crypto.randomBytes(32).toString('hex'),
+            phoneToken: Math.floor(100000 + Math.random() * 900000).toString(),
+          },
+          loginHistory: [{
+            ip: req.ip,
+            userAgent: req.get('User-Agent') || 'Unknown',
+            timestamp: new Date(),
+          }],
+          lastLogin: new Date(),
+        });
+
+        await user.save();
+        return user;
       },
-      loginHistory: [{
-        ip: req.ip,
-        userAgent: req.get('User-Agent') || 'Unknown',
-        timestamp: new Date(),
-      }],
-      lastLogin: new Date(),
-    });
-
-    await user.save();
+      // Fallback: Create mock user for demo
+      (() => {
+        console.log('⚠️  Database unavailable, creating mock user response');
+        const mockUser = {
+          _id: `mock_${Date.now()}`,
+          name: name.trim(),
+          email: email.toLowerCase().trim(),
+          phone: phone.trim(),
+          role: role === 'admin' ? 'admin' : 'user',
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          toJSON: () => ({
+            _id: `mock_${Date.now()}`,
+            name: name.trim(),
+            email: email.toLowerCase().trim(),
+            phone: phone.trim(),
+            role: role === 'admin' ? 'admin' : 'user',
+            isActive: true,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          })
+        };
+        return mockUser;
+      })()
+    );
 
     // Generate tokens
-    const accessToken = generateToken(user);
-    const refreshToken = generateRefreshToken(user);
+    const accessToken = generateToken(result as any);
+    const refreshToken = generateRefreshToken(result as any);
 
     // Remove sensitive information
-    const userResponse = user.toJSON();
+    const userResponse = result.toJSON ? result.toJSON() : result;
 
     res.status(201).json({
       success: true,
-      message: 'User registered successfully',
+      message: 'User registered successfully' + (!isDBConnected() ? ' (demo mode)' : ''),
       user: userResponse,
       tokens: {
         accessToken,
@@ -159,15 +187,14 @@ export const register: RequestHandler = async (req, res) => {
 
   } catch (error: any) {
     console.error('Registration error:', error);
-    
-    if (error.code === 11000) {
-      const field = Object.keys(error.keyPattern)[0];
+
+    if (error.message.includes('User already exists')) {
       return res.status(409).json({
         success: false,
-        message: `User already exists with this ${field}`
+        message: error.message
       });
     }
-    
+
     res.status(500).json({
       success: false,
       message: 'Registration failed',
