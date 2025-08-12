@@ -472,11 +472,18 @@ export const getGarageServices: RequestHandler = async (req, res) => {
       };
     }
 
-    const garageServices = await Service.find(query)
-      .populate("createdBy", "name email")
-      .sort({ "rating.average": -1 });
+    const garageServices = await withDB(
+      async () => {
+        return await Service.find(query)
+          .populate("createdBy", "name email")
+          .sort({ "rating.average": -1 });
+      },
+      // Fallback mock data
+      mockServices.filter(s => s.type === 'garage')
+    );
 
-    const transformedServices = garageServices.map((service) => ({
+    const servicesArray = Array.isArray(garageServices) ? garageServices : [garageServices];
+    const transformedServices = servicesArray.map((service) => ({
       id: service._id,
       name: service.name,
       serviceTypes: service.garageService?.serviceTypes,
