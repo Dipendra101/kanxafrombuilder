@@ -33,7 +33,6 @@ import { authAPI } from "@/services/api";
 export default function Signup() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { register } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
