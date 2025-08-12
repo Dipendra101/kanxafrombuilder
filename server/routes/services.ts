@@ -221,14 +221,20 @@ export const getFeaturedServices: RequestHandler = async (req, res) => {
   try {
     const { limit = 6 } = req.query;
 
-    const services = await Service.find({
-      isActive: true,
-      isFeatured: true,
-    })
-      .populate("createdBy", "name email")
-      .sort({ "rating.average": -1, createdAt: -1 })
-      .limit(Number(limit))
-      .exec();
+    const services = await withDB(
+      async () => {
+        return await Service.find({
+          isActive: true,
+          isFeatured: true,
+        })
+          .populate("createdBy", "name email")
+          .sort({ "rating.average": -1, createdAt: -1 })
+          .limit(Number(limit))
+          .exec();
+      },
+      // Fallback mock data
+      mockServices.filter(s => s.isFeatured).slice(0, Number(limit))
+    );
 
     res.json({
       success: true,
