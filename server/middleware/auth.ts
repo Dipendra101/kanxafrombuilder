@@ -28,7 +28,34 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     }
 
     const decoded = jwt.verify(token, JWT_SECRET) as any;
-    const user = await User.findById(decoded.userId);
+
+    const user = await withDB(
+      async () => {
+        const foundUser = await User.findById(decoded.userId);
+        return foundUser;
+      },
+      // Fallback: Check mock users
+      (() => {
+        // Mock users for demo mode
+        const mockUsers = [
+          {
+            _id: 'mock_user_1',
+            email: 'user@demo.com',
+            role: 'user',
+            name: 'Demo User',
+            isActive: true
+          },
+          {
+            _id: 'mock_admin_1',
+            email: 'admin@demo.com',
+            role: 'admin',
+            name: 'Demo Admin',
+            isActive: true
+          }
+        ];
+        return mockUsers.find(u => u._id === decoded.userId) || null;
+      })()
+    );
 
     if (!user) {
       return res.status(401).json({
@@ -44,9 +71,11 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
       });
     }
 
-    // Update last activity
-    user.lastActivity = new Date();
-    await user.save();
+    // Update last activity (only for real users)
+    if (isDBConnected() && user.save) {
+      user.lastActivity = new Date();
+      await user.save();
+    }
 
     req.user = {
       userId: user._id,
