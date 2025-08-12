@@ -62,6 +62,7 @@ export function createServer() {
   app.use('/api/users', userRoutes);
   app.use('/api/services', serviceRoutes);
   app.use('/api/bookings', bookingRoutes);
+  app.use('/api/admin', adminRoutes);
 
   // Admin routes
   app.get('/api/admin/dashboard', async (req, res) => {
