@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import GuestRestriction from "@/components/auth/GuestRestriction";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Calendar,
@@ -73,8 +74,18 @@ interface ServiceData {
 export default function EnhancedBooking() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isGuest } = useAuth();
   const { toast } = useToast();
+
+  // Show guest restriction if user is in guest mode
+  if (isGuest || !isAuthenticated) {
+    return (
+      <GuestRestriction
+        action="make a booking"
+        description="You need to be logged in to make bookings. Create an account to book transportation services, tours, and more."
+      />
+    );
+  }
 
   const serviceId = searchParams.get('service');
   const serviceType = searchParams.get('type') || 'bus';
