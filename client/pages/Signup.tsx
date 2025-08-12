@@ -172,11 +172,13 @@ export default function Signup() {
       // Redirect to login page
       navigate("/login");
     } catch (error: any) {
-    toast({
-      title: "Registration Failed",
-      description: error.message || "Unable to create your account. Please try again later.",
-      variant: "destructive",
-    });
+      toast({
+        title: "Registration Failed",
+        description:
+          error.message ||
+          "Unable to create your account. Please try again later.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }

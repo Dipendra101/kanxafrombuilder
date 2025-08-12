@@ -80,7 +80,7 @@ export default function Login() {
       // Use real backend authentication
       const loginResponse = await authAPI.login({
         email: formData.email,
-        password: formData.password
+        password: formData.password,
       });
 
       // Update auth context
@@ -113,7 +113,9 @@ export default function Login() {
     } catch (error: any) {
       toast({
         title: "Login Failed",
-        description: error.message || "Invalid email or password. Please check your credentials and try again.",
+        description:
+          error.message ||
+          "Invalid email or password. Please check your credentials and try again.",
         variant: "destructive",
       });
     } finally {

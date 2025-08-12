@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { 
-  Phone, 
-  Send, 
-  Settings, 
-  CheckCircle, 
+import {
+  Phone,
+  Send,
+  Settings,
+  CheckCircle,
   AlertCircle,
   Loader2,
   Copy,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,10 +27,11 @@ export default function SmsTest() {
   const formatPhoneNumber = (value: string) => {
     // Remove all non-digits
     const numbers = value.replace(/\D/g, "");
-    
+
     // Format as +977-XXX-XXXXXX for Nepal
     if (numbers.length <= 3) return numbers;
-    if (numbers.length <= 6) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+    if (numbers.length <= 6)
+      return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
     return `${numbers.slice(0, 3)}-${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
   };
 
@@ -41,25 +42,26 @@ export default function SmsTest() {
 
   const handleSendTestSMS = async () => {
     const cleanPhone = phoneNumber.replace(/\D/g, "");
-    
+
     if (!validatePhoneNumber(phoneNumber)) {
       toast({
         title: "Invalid Phone Number",
-        description: "Please enter a valid 10-digit Nepali phone number starting with 98",
+        description:
+          "Please enter a valid 10-digit Nepali phone number starting with 98",
         variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
       const response = await smsAPI.sendCode(`+977${cleanPhone}`);
-      
+
       if (response.code) {
         setLastCode(response.code);
       }
-      
+
       toast({
         title: "SMS Test Sent",
         description: response.message || "Test SMS has been sent successfully",
@@ -112,7 +114,6 @@ export default function SmsTest() {
       <section className="py-6 sm:py-8 lg:py-12">
         <div className="container px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto space-y-6">
-            
             {/* Twilio Setup Instructions */}
             <Card>
               <CardHeader>
@@ -123,12 +124,14 @@ export default function SmsTest() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-blue-900 mb-2">Step 1: Create Twilio Account</h4>
+                  <h4 className="font-semibold text-blue-900 mb-2">
+                    Step 1: Create Twilio Account
+                  </h4>
                   <p className="text-blue-800 text-sm mb-2">
                     Sign up for a free Twilio account at{" "}
-                    <a 
-                      href="https://console.twilio.com/" 
-                      target="_blank" 
+                    <a
+                      href="https://console.twilio.com/"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="underline hover:text-blue-600 inline-flex items-center gap-1"
                     >
@@ -139,21 +142,36 @@ export default function SmsTest() {
                 </div>
 
                 <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                  <h4 className="font-semibold text-green-900 mb-2">Step 2: Get Your Credentials</h4>
+                  <h4 className="font-semibold text-green-900 mb-2">
+                    Step 2: Get Your Credentials
+                  </h4>
                   <div className="space-y-2 text-sm text-green-800">
                     <p>From your Twilio Console, copy these values:</p>
                     <ul className="list-disc list-inside space-y-1 ml-4">
-                      <li><strong>Account SID</strong> - Found on your dashboard</li>
-                      <li><strong>Auth Token</strong> - Found on your dashboard</li>
-                      <li><strong>Phone Number</strong> - Get a trial number or purchase one</li>
+                      <li>
+                        <strong>Account SID</strong> - Found on your dashboard
+                      </li>
+                      <li>
+                        <strong>Auth Token</strong> - Found on your dashboard
+                      </li>
+                      <li>
+                        <strong>Phone Number</strong> - Get a trial number or
+                        purchase one
+                      </li>
                     </ul>
                   </div>
                 </div>
 
                 <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <h4 className="font-semibold text-yellow-900 mb-2">Step 3: Update Environment Variables</h4>
+                  <h4 className="font-semibold text-yellow-900 mb-2">
+                    Step 3: Update Environment Variables
+                  </h4>
                   <p className="text-yellow-800 text-sm mb-2">
-                    Update your <code className="bg-yellow-200 px-1 rounded">server/.env</code> file:
+                    Update your{" "}
+                    <code className="bg-yellow-200 px-1 rounded">
+                      server/.env
+                    </code>{" "}
+                    file:
                   </p>
                   <div className="bg-gray-900 text-green-400 p-3 rounded text-xs font-mono overflow-x-auto">
                     <div>TWILIO_ACCOUNT_SID=your_account_sid_here</div>
@@ -164,7 +182,11 @@ export default function SmsTest() {
                     variant="outline"
                     size="sm"
                     className="mt-2"
-                    onClick={() => copyToClipboard("TWILIO_ACCOUNT_SID=your_account_sid_here\nTWILIO_AUTH_TOKEN=your_auth_token_here\nTWILIO_PHONE_NUMBER=+1234567890")}
+                    onClick={() =>
+                      copyToClipboard(
+                        "TWILIO_ACCOUNT_SID=your_account_sid_here\nTWILIO_AUTH_TOKEN=your_auth_token_here\nTWILIO_PHONE_NUMBER=+1234567890",
+                      )
+                    }
                   >
                     <Copy className="h-3 w-3 mr-1" />
                     Copy Template
@@ -172,9 +194,12 @@ export default function SmsTest() {
                 </div>
 
                 <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-purple-900 mb-2">Step 4: Restart Server</h4>
+                  <h4 className="font-semibold text-purple-900 mb-2">
+                    Step 4: Restart Server
+                  </h4>
                   <p className="text-purple-800 text-sm">
-                    After updating the environment variables, restart your development server for changes to take effect.
+                    After updating the environment variables, restart your
+                    development server for changes to take effect.
                   </p>
                 </div>
               </CardContent>
@@ -203,7 +228,9 @@ export default function SmsTest() {
                       type="tel"
                       placeholder="98X-XXX-XXXX"
                       value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
+                      onChange={(e) =>
+                        setPhoneNumber(formatPhoneNumber(e.target.value))
+                      }
                       className="pl-16"
                       maxLength={12}
                       disabled={isLoading}
@@ -236,7 +263,9 @@ export default function SmsTest() {
                   <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
                     <div className="flex items-center gap-2 mb-2">
                       <AlertCircle className="h-4 w-4 text-orange-600" />
-                      <h4 className="font-semibold text-orange-900">Development Mode</h4>
+                      <h4 className="font-semibold text-orange-900">
+                        Development Mode
+                      </h4>
                     </div>
                     <p className="text-orange-800 text-sm mb-2">
                       Since Twilio is not configured, here's the generated code:
@@ -259,7 +288,10 @@ export default function SmsTest() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                  <Badge
+                    variant="secondary"
+                    className="bg-yellow-100 text-yellow-800"
+                  >
                     <AlertCircle className="h-3 w-3 mr-1" />
                     Development Mode
                   </Badge>
@@ -268,7 +300,8 @@ export default function SmsTest() {
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
-                  When properly configured, SMS messages will be sent through Twilio instead of console logging.
+                  When properly configured, SMS messages will be sent through
+                  Twilio instead of console logging.
                 </p>
               </CardContent>
             </Card>
