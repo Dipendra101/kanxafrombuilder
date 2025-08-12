@@ -519,9 +519,24 @@ export const getServiceById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const service = await Service.findById(id)
-      .populate("createdBy", "name email")
-      .populate("updatedBy", "name email");
+    const service = await withDB(
+      async () => {
+        const foundService = await Service.findById(id)
+          .populate("createdBy", "name email")
+          .populate("updatedBy", "name email");
+
+        if (!foundService) {
+          return null;
+        }
+
+        // Increment view count
+        foundService.analytics.views += 1;
+        await foundService.save();
+        return foundService;
+      },
+      // Fallback mock data
+      mockServices.find(s => s._id === id) || null
+    );
 
     if (!service) {
       return res.status(404).json({
@@ -529,10 +544,6 @@ export const getServiceById: RequestHandler = async (req, res) => {
         message: "Service not found",
       });
     }
-
-    // Increment view count
-    service.analytics.views += 1;
-    await service.save();
 
     res.json({
       success: true,
