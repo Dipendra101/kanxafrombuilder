@@ -315,7 +315,7 @@ export const bookingsAPI = {
         params.append(key, value.toString());
       }
     });
-    
+
     return apiRequest(`/bookings?${params.toString()}`);
   },
 
@@ -334,6 +334,24 @@ export const bookingsAPI = {
     return apiRequest(`/bookings/${id}/cancel`, {
       method: 'PUT',
     });
+  },
+
+  // Admin functions
+  getAllBookings: async (filters: {
+    status?: string;
+    userId?: string;
+    serviceId?: string;
+    page?: number;
+    limit?: number;
+  } = {}) => {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined) {
+        params.append(key, value.toString());
+      }
+    });
+
+    return apiRequest(`/admin/bookings?${params.toString()}`);
   },
 
   updatePayment: async (id: string, paymentData: {
