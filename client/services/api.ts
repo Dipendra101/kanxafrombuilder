@@ -65,6 +65,30 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
   }
 };
 
+// SMS Authentication API
+export const smsAPI = {
+  sendCode: async (phoneNumber: string) => {
+    return apiRequest("/sms/send-code", {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber }),
+    });
+  },
+
+  verifyCode: async (phoneNumber: string, code: string) => {
+    return apiRequest("/sms/verify-code", {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber, code }),
+    });
+  },
+
+  resendCode: async (phoneNumber: string) => {
+    return apiRequest("/sms/resend-code", {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber }),
+    });
+  },
+};
+
 // Authentication API
 export const authAPI = {
   register: async (userData: {
