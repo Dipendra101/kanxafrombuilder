@@ -1,7 +1,7 @@
 import "./global.css";
 
 import { Toaster } from "@/components/ui/toaster";
-import { createRoot } from "react-dom/client";
+import { createRoot, Root } from "react-dom/client"; // 1. Import the 'Root' type
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -28,8 +28,6 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Chat from "./pages/Chat";
-import AdminDashboard from "./pages/AdminDashboard";
-import EnhancedBooking from "./pages/EnhancedBooking";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -44,46 +42,41 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
 
-          {/* Authentication Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+            {/* Authentication Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          {/* Main Service Routes */}
-          <Route path="/transportation" element={<Transportation />} />
-          <Route path="/construction" element={<Construction />} />
-          <Route path="/garage" element={<Garage />} />
-          <Route path="/about" element={<About />} />
+            {/* Main Service Routes */}
+            <Route path="/transportation" element={<Transportation />} />
+            <Route path="/construction" element={<Construction />} />
+            <Route path="/garage" element={<Garage />} />
+            <Route path="/about" element={<About />} />
 
-          {/* Transportation Sub-routes */}
-          <Route path="/buses" element={<Buses />} />
-          <Route path="/cargo" element={<Cargo />} />
-          <Route path="/tours" element={<Tours />} />
+            {/* Transportation Sub-routes */}
+            <Route path="/buses" element={<Buses />} />
+            <Route path="/cargo" element={<Cargo />} />
+            <Route path="/tours" element={<Tours />} />
 
-          {/* Construction Sub-routes */}
-          <Route path="/materials" element={<Materials />} />
-          <Route path="/machinery" element={<Machinery />} />
+            {/* Construction Sub-routes */}
+            <Route path="/materials" element={<Materials />} />
+            <Route path="/machinery" element={<Machinery />} />
 
-          {/* User Account Routes */}
-          <Route path="/booking" element={<Booking />} />
-          <Route path="/bookings" element={<Booking />} />
-          <Route path="/book" element={<EnhancedBooking />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/chat" element={<Chat />} />
+            {/* User Account Routes */}
+            <Route path="/booking" element={<Booking />} />
+            <Route path="/bookings" element={<Booking />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/chat" element={<Chat />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            {/* Information & Support Routes */}
+            <Route path="/routes" element={<RoutesPage />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
 
-          {/* Information & Support Routes */}
-          <Route path="/routes" element={<RoutesPage />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
@@ -91,9 +84,14 @@ const App = () => (
   </QueryClientProvider>
 );
 
-const container = document.getElementById("root")!;
+// 2. Define a custom interface for our root container
+interface RootContainer extends HTMLElement {
+  _reactRootContainer?: Root;
+}
 
-// Prevent multiple root creation during hot reloading
+const container = document.getElementById("root")! as RootContainer; // 3. Cast the container to our new type
+
+// This block will now work without TypeScript errors
 if (!container._reactRootContainer) {
   const root = createRoot(container);
   container._reactRootContainer = root;
