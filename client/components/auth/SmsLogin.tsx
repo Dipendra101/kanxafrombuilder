@@ -146,7 +146,8 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
     
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const cleanPhone = phoneNumber.replace(/\D/g, "");
+      await smsAPI.resendCode(`+977${cleanPhone}`);
       setCountdown(60);
       
       const timer = setInterval(() => {
