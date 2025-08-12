@@ -24,22 +24,36 @@ const createHeaders = (includeAuth = true) => {
 // Generic API request function
 const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
-  
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...createHeaders(),
-      ...options.headers,
-    },
-  });
 
-  const data = await response.json();
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...createHeaders(),
+        ...options.headers,
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(data.message || 'API request failed');
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Handle specific auth errors
+      if (response.status === 401 && data.message?.includes('token')) {
+        // Clear invalid token from storage
+        localStorage.removeItem('kanxa_token');
+        localStorage.removeItem('kanxa_user');
+      }
+      throw new Error(data.message || `HTTP ${response.status}: Request failed`);
+    }
+
+    return data;
+  } catch (error) {
+    // Network or parsing errors
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error('Network error: Unable to connect to server');
+    }
+    throw error;
   }
-
-  return data;
 };
 
 // Authentication API
