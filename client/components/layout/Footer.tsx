@@ -20,7 +20,7 @@ export default function Footer() {
               <div className="h-8 w-8 bg-gradient-to-br from-kanxa-blue to-kanxa-orange rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">KS</span>
               </div>
-              <span className="text-xl font-bold">Kanxa Safari</span>
+              <span className="text-xl font-bold">कान्छा सफारी</span>
             </div>
             <p className="text-white/80 text-sm leading-relaxed">
               Your trusted partner for transportation, construction materials,
@@ -167,7 +167,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-white/20 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-white/60 text-sm">
-            © 2024 Kanxa Safari. All rights reserved.
+            © 2024 कान्छा सफारी. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center sm:justify-end space-x-6">
             <Link

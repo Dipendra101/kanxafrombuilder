@@ -356,12 +356,12 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Why Choose Kanxa Safari */}
+      {/* Why Choose कान्छा सफारी */}
       <section className="py-16">
         <div className="container px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-kanxa-navy mb-4">
-              Why Choose Kanxa Safari?
+              Why Choose कान्छा सफारी?
             </h2>
             <p className="text-lg text-kanxa-gray max-w-2xl mx-auto">
               Experience the difference with our premium, technology-driven
@@ -432,7 +432,7 @@ export default function Index() {
                 name: "Raj Kumar Sharma",
                 role: "Construction Business Owner",
                 content:
-                  "Kanxa Safari has been our go-to partner for construction materials. Their quality is unmatched and delivery is always on time.",
+                  "कान्छा सफारी has been our go-to partner for construction materials. Their quality is unmatched and delivery is always on time.",
                 rating: 5,
               },
               {
@@ -483,7 +483,7 @@ export default function Index() {
             Ready to Experience Premium Service?
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers who trust Kanxa Safari for
+            Join thousands of satisfied customers who trust कान्छा सफारी for
             their transportation and construction needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

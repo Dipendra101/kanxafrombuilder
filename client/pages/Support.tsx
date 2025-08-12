@@ -39,7 +39,7 @@ export default function Support() {
       icon: <Phone className="h-8 w-8 text-kanxa-blue" />,
       title: "Call Us",
       description: "Speak directly with our support team",
-      info: "+977-XXX-XXXXXX",
+      info: "+977-9856056782",
       hours: "24/7 Available",
       response: "Immediate",
     },
@@ -498,7 +498,7 @@ export default function Support() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-red-600 hover:bg-red-700">
                 <Phone className="mr-2 h-5 w-5" />
-                Call Emergency: +977-XXX-XXXXXX
+                Call Emergency: +977-9846156782
               </Button>
               <Button
                 size="lg"

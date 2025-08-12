@@ -33,7 +33,7 @@ export default function Header() {
             <span className="text-white font-bold text-sm">KS</span>
           </div>
           <span className="text-xl font-bold text-kanxa-navy">
-            Kanxa Safari
+            कान्छा सफारी
           </span>
         </Link>
 

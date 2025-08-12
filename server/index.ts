@@ -6,6 +6,7 @@ import fetch from "node-fetch";
 import authRoutes from "./routes/auth.js";
 import connectDB from "./config/database.js";
 import userRoutes from "./routes/user.js";
+import path from "path";
 
 
 // Immediately connect to the database
@@ -24,6 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 // --- API Routes ---
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Kanxa Safari API is running' });
