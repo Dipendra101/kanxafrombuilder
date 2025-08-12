@@ -34,7 +34,14 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
       },
     });
 
-    const data = await response.json();
+    // Parse response body once
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      // If JSON parsing fails, provide fallback
+      data = { message: `Response parsing failed: ${parseError}` };
+    }
 
     if (!response.ok) {
       // Handle specific auth errors
