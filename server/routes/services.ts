@@ -339,9 +339,17 @@ export const getCargoServices: RequestHandler = async (req, res) => {
       };
     }
 
-    const cargoServices = await Service.find(query)
-      .populate("createdBy", "name email")
-      .sort({ "rating.average": -1 });
+    const cargoServices = await withDB(
+      async () => {
+        return await Service.find(query)
+          .populate("createdBy", "name email")
+          .sort({ "rating.average": -1 });
+      },
+      // Fallback mock data
+      mockServices.filter(s => s.type === 'cargo')
+    );
+
+    const cargoArray = Array.isArray(cargoServices) ? cargoServices : [cargoServices];
 
     const transformedCargo = cargoServices.map((cargo) => ({
       id: cargo._id,
