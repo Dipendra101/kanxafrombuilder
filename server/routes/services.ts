@@ -1,12 +1,78 @@
 import { Router, RequestHandler } from "express";
 import Service, { IService } from "../models/Service";
 import { authenticate, adminOnly, optionalAuth } from "../middleware/auth";
-import connectDB from "../config/database";
+import { withDB, isDBConnected } from "../config/database";
 
 const router = Router();
 
-// Connect to database
-connectDB();
+// Mock services for when database is unavailable
+const mockServices = [
+  {
+    _id: 'mock_service_1',
+    name: 'Kathmandu to Pokhara Bus',
+    description: 'Comfortable AC bus service from Kathmandu to Pokhara',
+    type: 'bus',
+    category: 'Transportation',
+    pricing: { basePrice: 800, currency: 'NPR' },
+    isActive: true,
+    isFeatured: true,
+    rating: { average: 4.5, count: 120 },
+    busDetails: {
+      busNumber: 'BA-1234',
+      capacity: 45,
+      busType: 'AC',
+      amenities: ['AC', 'WiFi', 'Entertainment'],
+      route: { from: 'Kathmandu', to: 'Pokhara', duration: '6 hours' }
+    },
+    images: ['/placeholder.svg'],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    _id: 'mock_service_2',
+    name: 'Cargo Delivery Service',
+    description: 'Fast and reliable cargo delivery across Nepal',
+    type: 'cargo',
+    category: 'Logistics',
+    pricing: { basePrice: 50, currency: 'NPR' },
+    isActive: true,
+    isFeatured: false,
+    rating: { average: 4.2, count: 85 },
+    cargoDetails: {
+      maxWeight: 1000,
+      maxDimensions: { length: 200, width: 150, height: 100 },
+      deliveryTypes: ['standard', 'express', 'overnight'],
+      coverage: ['valley', 'nationwide']
+    },
+    images: ['/placeholder.svg'],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    _id: 'mock_service_3',
+    name: 'Everest Base Camp Tour',
+    description: 'Guided tour to Everest Base Camp with accommodation',
+    type: 'tour',
+    category: 'Adventure',
+    pricing: { basePrice: 50000, currency: 'NPR' },
+    isActive: true,
+    isFeatured: true,
+    rating: { average: 4.8, count: 45 },
+    tourDetails: {
+      duration: '14 days',
+      difficulty: 'moderate',
+      groupSize: { min: 4, max: 12 },
+      includes: ['Guide', 'Accommodation', 'Meals', 'Permits'],
+      itinerary: [
+        { day: 1, activity: 'Fly to Lukla' },
+        { day: 2, activity: 'Trek to Namche Bazaar' }
+      ]
+    },
+    images: ['/placeholder.svg'],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+];
 
 // @route   GET /api/services
 // @desc    Get all services with filters and pagination
