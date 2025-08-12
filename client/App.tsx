@@ -1,7 +1,7 @@
 import "./global.css";
 
 import { Toaster } from "@/components/ui/toaster";
-import { createRoot } from "react-dom/client";
+import { createRoot, Root } from "react-dom/client"; // 1. Import the 'Root' type
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -28,10 +28,13 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Chat from "./pages/Chat";
+<<<<<<< HEAD
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminDashboardSimple from "./pages/AdminDashboardSimple";
 import AdminTest from "./pages/AdminTest";
 import EnhancedBooking from "./pages/EnhancedBooking";
+=======
+>>>>>>> 4bf009e156f105a0fba0673c070a70297f0a19b1
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -69,11 +72,15 @@ const App = () => (
             {/* User Account Routes */}
             <Route path="/booking" element={<Booking />} />
             <Route path="/bookings" element={<Booking />} />
+<<<<<<< HEAD
             <Route path="/book" element={<EnhancedBooking />} />
+=======
+>>>>>>> 4bf009e156f105a0fba0673c070a70297f0a19b1
             <Route path="/orders" element={<Orders />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/chat" element={<Chat />} />
 
+<<<<<<< HEAD
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -88,6 +95,16 @@ const App = () => (
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
+=======
+            {/* Information & Support Routes */}
+            <Route path="/routes" element={<RoutesPage />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+>>>>>>> 4bf009e156f105a0fba0673c070a70297f0a19b1
           </Routes>
         </AuthProvider>
       </BrowserRouter>
@@ -95,9 +112,14 @@ const App = () => (
   </QueryClientProvider>
 );
 
-const container = document.getElementById("root")!;
+// 2. Define a custom interface for our root container
+interface RootContainer extends HTMLElement {
+  _reactRootContainer?: Root;
+}
 
-// Prevent multiple root creation during hot reloading
+const container = document.getElementById("root")! as RootContainer; // 3. Cast the container to our new type
+
+// This block will now work without TypeScript errors
 if (!container._reactRootContainer) {
   const root = createRoot(container);
   container._reactRootContainer = root;
