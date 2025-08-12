@@ -596,6 +596,27 @@ export default function AdminDashboard() {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
+        {/* Demo Mode Banner */}
+        {isDemoMode && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">i</span>
+                </div>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-lg font-medium text-blue-800">
+                  Demo Mode - Admin Dashboard Preview
+                </h3>
+                <p className="text-blue-600 mt-1">
+                  You're viewing the admin dashboard in demo mode. Login with admin@demo.com / demo123 for full functionality.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
           <div>
@@ -603,8 +624,7 @@ export default function AdminDashboard() {
               Admin Dashboard
             </h1>
             <p className="text-gray-600">
-              Welcome back, {user?.name}! Here's what's happening with Kanxa
-              Safari.
+              Welcome{user?.name ? `, ${user.name}` : ' to the admin panel'}! Here's what's happening with Kanxa Safari.
             </p>
           </div>
           <div className="flex items-center space-x-4 mt-4 sm:mt-0">
