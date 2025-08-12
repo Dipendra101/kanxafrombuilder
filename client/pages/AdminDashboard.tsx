@@ -425,11 +425,7 @@ export default function AdminDashboard() {
     };
 
     loadDashboardData();
-  }, [toast]);
-
-  // Check admin access - allow demo mode for UI preview
-  const isDemoMode = !isAuthenticated || !user;
-  const isAdmin = user?.role === "admin";
+  }, [toast, isDemoMode]);
 
   useEffect(() => {
     // Only redirect if user is authenticated but not admin (allow demo mode)
