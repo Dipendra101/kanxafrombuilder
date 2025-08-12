@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import GuestRestriction from "@/components/auth/GuestRestriction";
 import {
   Calendar,
   Clock,
@@ -43,7 +45,18 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Layout from "@/components/layout/Layout";
 
 export default function Booking() {
+  const { isGuest, isAuthenticated } = useAuth();
   const [bookingFilter, setBookingFilter] = useState("all");
+
+  // Show guest restriction if user is in guest mode
+  if (isGuest || !isAuthenticated) {
+    return (
+      <GuestRestriction
+        action="view your bookings"
+        description="You need to be logged in to view and manage your bookings. Create an account to track your transportation and service bookings."
+      />
+    );
+  }
 
   const bookings = [
     {
