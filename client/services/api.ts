@@ -53,41 +53,37 @@ const apiRequest = async (
 
         clearTimeout(timeoutId);
 
-        // Parse response body once, regardless of status
+        // Clone the response immediately to avoid stream consumption issues
+        const responseClone = response.clone();
+
+        // Parse response body safely using the cloned response
         let data;
         let parseSuccess = false;
 
         try {
-          // First, try to read the response body as text to avoid stream issues
-          const responseText = await response.text();
+          // Use the cloned response to read as JSON
+          data = await responseClone.json();
+          parseSuccess = true;
+        } catch (jsonError) {
+          console.warn(`⚠️ JSON parse failed for ${url}, trying as text:`, jsonError.message);
 
-          // Then try to parse as JSON
-          if (responseText) {
-            try {
-              data = JSON.parse(responseText);
-              parseSuccess = true;
-            } catch (jsonError) {
-              console.warn(`⚠️ JSON parse failed, treating as plain text response`);
-              data = {
-                success: false,
-                message: responseText || `HTTP ${response.status}: Request failed`,
-                error: "JSON_PARSE_ERROR",
-              };
-            }
-          } else {
+          // If JSON parsing fails, try to read as text using original response
+          try {
+            const responseText = await response.text();
             data = {
               success: false,
-              message: `HTTP ${response.status}: Empty response`,
-              error: "EMPTY_RESPONSE",
+              message: responseText || `HTTP ${response.status}: Request failed`,
+              error: "JSON_PARSE_ERROR",
+              rawResponse: responseText
+            };
+          } catch (textError) {
+            console.error(`❌ Text reading also failed for ${url}:`, textError);
+            data = {
+              success: false,
+              message: `HTTP ${response.status}: Unable to read response`,
+              error: "READ_ERROR",
             };
           }
-        } catch (readError) {
-          console.error(`❌ Response reading failed for ${url}:`, readError);
-          data = {
-            success: false,
-            message: `HTTP ${response.status}: Failed to read response`,
-            error: "READ_ERROR",
-          };
         }
 
         console.log(`📡 API Response: ${response.status} ${url}`, {
