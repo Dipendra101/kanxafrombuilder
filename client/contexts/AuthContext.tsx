@@ -298,11 +298,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.success) {
         setUser(response.user);
         localStorage.setItem("kanxa_user", JSON.stringify(response.user));
+        setNetworkError(false); // Clear network error on successful request
       }
     } catch (error) {
       console.error("Refresh user error:", error);
-      // If profile fetch fails, user might be logged out
-      logout();
+      // Check if it's a network error
+      if (error instanceof Error && error.message.includes("Network")) {
+        setNetworkError(true);
+      } else {
+        // If profile fetch fails for other reasons, user might be logged out
+        logout();
+      }
+    }
+  };
+
+  const retryConnection = async () => {
+    console.log("🔄 Retrying connection...");
+    setNetworkError(false);
+
+    const storedToken = localStorage.getItem("kanxa_token");
+    if (storedToken) {
+      try {
+        const response = await authAPI.verifyToken(storedToken);
+        if (response.success && response.user) {
+          setToken(storedToken);
+          setUser(response.user);
+          console.log("✅ Connection retry successful");
+        }
+      } catch (error) {
+        console.error("❌ Connection retry failed:", error);
+        setNetworkError(true);
+      }
     }
   };
 
@@ -312,6 +338,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading,
     isAuthenticated,
     isGuest,
+    networkError,
     login,
     smsLogin,
     guestLogin,
@@ -319,6 +346,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     updateUser,
     refreshUser,
+    retryConnection,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
