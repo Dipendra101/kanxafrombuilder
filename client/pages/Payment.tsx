@@ -21,6 +21,18 @@ interface ServiceDetails {
   route?: string;
 }
 
+// Generate Nepalese vehicle plate number
+const generateVehiclePlate = (serviceType: string, serviceId: string) => {
+  const provinces = ['BAGMATI', 'KOSHI', 'GANDAKI', 'LUMBINI', 'KARNALI', 'SUDURPASHCHIM', 'MADHESH'];
+  const letters = ['GA', 'KA', 'BA', 'JA', 'NA', 'PA', 'RA', 'LA', 'SA', 'HA'];
+
+  const province = provinces[Math.floor(Math.random() * provinces.length)];
+  const letterCode = letters[Math.floor(Math.random() * letters.length)];
+  const numbers = String(parseInt(serviceId) * 123 + 1000).slice(-4); // Generate consistent number based on service ID
+
+  return `${province} ${letterCode} ${numbers}`;
+};
+
 export default function Payment() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
