@@ -29,10 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import Layout from "@/components/layout/Layout";
 import { SeatSelectionDialog } from "@/components/bus/SeatSelectionDialog";
@@ -365,7 +362,9 @@ export default function Buses() {
                           Rs {bus.price.toLocaleString()}
                         </p>
                         <p className="text-xs text-gray-500">per person</p>
-                        <Dialog onOpenChange={(open) => !open && setSelectedBus(null)}>
+                        <Dialog
+                          onOpenChange={(open) => !open && setSelectedBus(null)}
+                        >
                           <DialogTrigger asChild>
                             <Button
                               className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90"

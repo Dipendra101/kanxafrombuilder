@@ -86,8 +86,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const response = await Promise.race([
               authAPI.verifyToken(storedToken),
               new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("Token verification timeout")), 8000)
-              )
+                setTimeout(
+                  () => reject(new Error("Token verification timeout")),
+                  8000,
+                ),
+              ),
             ]);
 
             if (response.success && response.user) {
@@ -106,11 +109,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log("⚠️ Auth initialization error:", tokenError.message);
 
             // Better network error detection
-            const isNetworkError = tokenError.message.includes("fetch") ||
-                                   tokenError.message.includes("Network") ||
-                                   tokenError.message.includes("timeout") ||
-                                   tokenError.name === "TypeError" ||
-                                   tokenError.message.includes("Unable to connect");
+            const isNetworkError =
+              tokenError.message.includes("fetch") ||
+              tokenError.message.includes("Network") ||
+              tokenError.message.includes("timeout") ||
+              tokenError.name === "TypeError" ||
+              tokenError.message.includes("Unable to connect");
 
             if (isNetworkError) {
               console.log("🌐 Network issue detected - preserving auth state");
@@ -340,8 +344,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const response = await Promise.race([
           authAPI.verifyToken(storedToken),
           new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("Retry timeout")), 5000)
-          )
+            setTimeout(() => reject(new Error("Retry timeout")), 5000),
+          ),
         ]);
 
         if (response.success && response.user) {

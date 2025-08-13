@@ -291,7 +291,10 @@ export function PremiumAnalytics() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={350}>
-                  <AreaChart data={data.timeSeriesData} margin={{ bottom: 20, left: 20, right: 20, top: 20 }}>
+                  <AreaChart
+                    data={data.timeSeriesData}
+                    margin={{ bottom: 20, left: 20, right: 20, top: 20 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis
                       dataKey="date"
@@ -560,7 +563,10 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={data.services.popular} margin={{ bottom: 80, left: 20, right: 20, top: 20 }}>
+            <BarChart
+              data={data.services.popular}
+              margin={{ bottom: 80, left: 20, right: 20, top: 20 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="name"
@@ -606,7 +612,10 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
-            <LineChart data={data.timeSeriesData} margin={{ bottom: 20, left: 20, right: 20, top: 20 }}>
+            <LineChart
+              data={data.timeSeriesData}
+              margin={{ bottom: 20, left: 20, right: 20, top: 20 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="date"
@@ -658,7 +667,10 @@ function UserAnalytics({ data }: { data: AnalyticsData }) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
-            <AreaChart data={data.timeSeriesData} margin={{ bottom: 20, left: 20, right: 20, top: 20 }}>
+            <AreaChart
+              data={data.timeSeriesData}
+              margin={{ bottom: 20, left: 20, right: 20, top: 20 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="date"
@@ -744,7 +756,10 @@ function ServiceAnalytics({ data }: { data: AnalyticsData }) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={data.services.performance} margin={{ bottom: 20, left: 20, right: 20, top: 20 }}>
+            <BarChart
+              data={data.services.performance}
+              margin={{ bottom: 20, left: 20, right: 20, top: 20 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="name"

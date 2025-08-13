@@ -191,7 +191,8 @@ export default function Tours() {
           Custom Tour Request
         </DialogTitle>
         <DialogDescription>
-          Fill out this form to request a customized tour package tailored to your preferences
+          Fill out this form to request a customized tour package tailored to
+          your preferences
         </DialogDescription>
       </DialogHeader>
 

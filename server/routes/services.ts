@@ -10,7 +10,8 @@ const mockServices = [
   {
     _id: "1",
     name: "Kathmandu to Pokhara Express",
-    description: "Premium AC bus service from Kathmandu to Pokhara with comfort and reliability",
+    description:
+      "Premium AC bus service from Kathmandu to Pokhara with comfort and reliability",
     type: "bus",
     category: "Transportation",
     pricing: { basePrice: 950, currency: "Rs" },

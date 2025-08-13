@@ -73,13 +73,18 @@ const apiRequest = async (
               data = JSON.parse(responseText);
               parseSuccess = true;
             } catch (jsonError) {
-              console.warn(`⚠️ Non-JSON response from ${url}:`, responseText.slice(0, 100));
+              console.warn(
+                `⚠️ Non-JSON response from ${url}:`,
+                responseText.slice(0, 100),
+              );
               // Create structured response for non-JSON data
               data = {
                 success: false,
-                message: responseText || `HTTP ${responseStatus}: ${responseStatusText}`,
+                message:
+                  responseText ||
+                  `HTTP ${responseStatus}: ${responseStatusText}`,
                 error: "NON_JSON_RESPONSE",
-                rawResponse: responseText
+                rawResponse: responseText,
               };
             }
           } else {
@@ -157,11 +162,20 @@ const apiRequest = async (
       // Provide better error messages based on error type
       if (isRetryableError) {
         if (error.message.includes("Failed to fetch")) {
-          throw new Error("Network error: Unable to connect to server. Please check your internet connection and try again.");
-        } else if (error.name === 'AbortError' || error.message.includes("timeout")) {
-          throw new Error("Request timeout: The server is taking too long to respond. Please try again.");
+          throw new Error(
+            "Network error: Unable to connect to server. Please check your internet connection and try again.",
+          );
+        } else if (
+          error.name === "AbortError" ||
+          error.message.includes("timeout")
+        ) {
+          throw new Error(
+            "Request timeout: The server is taking too long to respond. Please try again.",
+          );
         } else {
-          throw new Error("Network error: Unable to connect to server. Please check your internet connection and try again.");
+          throw new Error(
+            "Network error: Unable to connect to server. Please check your internet connection and try again.",
+          );
         }
       }
       throw error;
