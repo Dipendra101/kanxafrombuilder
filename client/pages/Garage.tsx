@@ -71,7 +71,7 @@ export default function Garage() {
       category: "major-repair",
       description: "Complete engine diagnostics, repair, and overhaul services",
       estimatedTime: "3-7 days",
-      priceRange: "NPR 25,000 - 150,000",
+      priceRange: "Rs 25,000 - 150,000",
       icon: "⚙️",
       features: [
         "Engine diagnostics",
@@ -86,7 +86,7 @@ export default function Garage() {
       category: "major-repair",
       description: "Hydraulic pump, cylinder, and system maintenance",
       estimatedTime: "1-3 days",
-      priceRange: "NPR 15,000 - 80,000",
+      priceRange: "Rs 15,000 - 80,000",
       icon: "🔧",
       features: [
         "Hydraulic diagnostics",
@@ -101,7 +101,7 @@ export default function Garage() {
       category: "major-repair",
       description: "Gearbox repair and transmission maintenance",
       estimatedTime: "2-5 days",
-      priceRange: "NPR 20,000 - 100,000",
+      priceRange: "Rs 20,000 - 100,000",
       icon: "⚙️",
       features: [
         "Transmission diagnostics",
@@ -116,7 +116,7 @@ export default function Garage() {
       category: "electrical",
       description: "Complete electrical diagnostics and wiring services",
       estimatedTime: "1-2 days",
-      priceRange: "NPR 5,000 - 35,000",
+      priceRange: "Rs 5,000 - 35,000",
       icon: "⚡",
       features: [
         "Electrical diagnostics",
@@ -131,7 +131,7 @@ export default function Garage() {
       category: "maintenance",
       description: "Regular maintenance to prevent major breakdowns",
       estimatedTime: "4-8 hours",
-      priceRange: "NPR 3,000 - 15,000",
+      priceRange: "Rs 3,000 - 15,000",
       icon: "🛠️",
       features: [
         "Oil change",
@@ -146,7 +146,7 @@ export default function Garage() {
       category: "safety",
       description: "Brake inspection, repair, and replacement",
       estimatedTime: "2-6 hours",
-      priceRange: "NPR 8,000 - 25,000",
+      priceRange: "Rs 8,000 - 25,000",
       icon: "🛑",
       features: [
         "Brake inspection",
@@ -161,7 +161,7 @@ export default function Garage() {
       category: "comfort",
       description: "Air conditioning system diagnosis and repair",
       estimatedTime: "2-4 hours",
-      priceRange: "NPR 5,000 - 20,000",
+      priceRange: "Rs 5,000 - 20,000",
       icon: "❄️",
       features: [
         "AC diagnostics",
@@ -176,7 +176,7 @@ export default function Garage() {
       category: "bodywork",
       description: "Dent repair, painting, and body restoration",
       estimatedTime: "1-5 days",
-      priceRange: "NPR 10,000 - 80,000",
+      priceRange: "Rs 10,000 - 80,000",
       icon: "🎨",
       features: [
         "Dent repair",
@@ -502,7 +502,7 @@ export default function Garage() {
                 }
               />
               <Label htmlFor="pickup">
-                Vehicle pickup and delivery service needed (+NPR 2,000)
+                Vehicle pickup and delivery service needed (+Rs 2,000)
               </Label>
             </div>
           </CardContent>
