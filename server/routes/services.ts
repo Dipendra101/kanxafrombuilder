@@ -308,18 +308,31 @@ export const getBusServices: RequestHandler = async (req, res) => {
     const transformedBuses = buses.map((bus) => ({
       id: bus._id,
       name: bus.name,
-      from: bus.busService?.route.from,
-      to: bus.busService?.route.to,
-      distance: bus.busService?.route.distance,
-      duration: bus.busService?.route.duration,
+      from: bus.busDetails?.route?.from || bus.busService?.route?.from,
+      to: bus.busDetails?.route?.to || bus.busService?.route?.to,
+      distance: bus.busDetails?.route?.distance || bus.busService?.route?.distance,
+      duration: bus.busDetails?.route?.duration || bus.busService?.route?.duration,
+      departureTime: bus.busDetails?.schedule?.[0]?.departureTime || "06:00 AM",
+      arrivalTime: bus.busDetails?.schedule?.[0]?.arrivalTime || "12:00 PM",
+      availableSeats: bus.busDetails?.availableSeats || Math.floor((bus.busDetails?.capacity || 45) * 0.3),
+      totalSeats: bus.busDetails?.capacity || 45,
+      busType: bus.busDetails?.busType || "AC",
+      busNumber: bus.busDetails?.busNumber,
+      amenities: bus.busDetails?.amenities || [],
+      price: bus.pricing?.basePrice || 800,
+      currency: bus.pricing?.currency || "Rs",
+      operator: bus.busDetails?.operator || { name: bus.name?.split(' ')[0] || "Kanxa" },
+      vehicle: {
+        busType: bus.busDetails?.busType || "AC",
+        totalSeats: bus.busDetails?.capacity || 45,
+        amenities: bus.busDetails?.amenities || []
+      },
       schedule: bus.busService?.schedule || [],
-      vehicle: bus.busService?.vehicle,
-      operator: bus.busService?.operator,
       pricing: bus.pricing,
       rating: bus.rating,
       images: bus.images,
       features: bus.features,
-      description: bus.shortDescription,
+      description: bus.description,
     }));
 
     res.json({
