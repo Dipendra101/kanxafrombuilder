@@ -474,7 +474,7 @@ export default function Cargo() {
                         Starting from:
                       </span>
                       <span className="text-lg font-bold text-kanxa-orange">
-                        NPR {route.price.toLocaleString()}
+                        Rs {route.price.toLocaleString()}
                       </span>
                     </div>
 
