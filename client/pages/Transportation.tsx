@@ -455,7 +455,7 @@ export default function Transportation() {
                               <div className="flex items-center gap-2">
                                 <Users className="w-4 h-4 text-kanxa-green" />
                                 <span className="text-sm">
-                                  {bus.availableSeats} seats available
+                                  {bus.availableSeats || (bus.vehicle?.totalSeats ? Math.floor(bus.vehicle.totalSeats * 0.3) : 12)} seats available
                                 </span>
                               </div>
                               <div className="flex flex-wrap gap-1">
