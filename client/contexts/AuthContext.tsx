@@ -78,51 +78,60 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setIsGuest(true);
           console.log("ℹ️  Guest mode restored");
         } else if (storedToken && storedUser) {
-          // First check if the API is reachable
+          // Try to verify token with graceful fallback
           try {
-            console.log("🔄 Checking API connectivity...");
+            console.log("🔄 Verifying stored authentication...");
 
-            // Simple connectivity check first
-            const healthCheck = await fetch("/api/health", {
-              method: "GET",
-              headers: { "Content-Type": "application/json" },
-            });
-
-            if (!healthCheck.ok) {
-              throw new Error("API server not responding");
-            }
-
-            console.log("✅ API connectivity confirmed");
-
-            // Now verify the token
-            const response = await authAPI.verifyToken(storedToken);
+            // Add timeout to verification to prevent hanging
+            const response = await Promise.race([
+              authAPI.verifyToken(storedToken),
+              new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("Token verification timeout")), 8000)
+              )
+            ]);
 
             if (response.success && response.user) {
               setToken(storedToken);
               setUser(response.user);
+              setNetworkError(false);
               console.log("✅ Auth initialized successfully");
             } else {
               // Token is invalid, clear storage
               console.log("❌ Token verification failed, clearing storage");
               localStorage.removeItem("kanxa_token");
               localStorage.removeItem("kanxa_user");
+              setNetworkError(false);
             }
           } catch (tokenError: any) {
-            console.log("❌ Auth initialization error:", tokenError.message);
+            console.log("⚠️ Auth initialization error:", tokenError.message);
 
-            // Check if it's a network error
-            if (
-              tokenError.message.includes("fetch") ||
-              tokenError.message.includes("Network")
-            ) {
-              console.log(
-                "🌐 Network error detected - keeping stored auth for retry",
-              );
+            // Better network error detection
+            const isNetworkError = tokenError.message.includes("fetch") ||
+                                   tokenError.message.includes("Network") ||
+                                   tokenError.message.includes("timeout") ||
+                                   tokenError.name === "TypeError" ||
+                                   tokenError.message.includes("Unable to connect");
+
+            if (isNetworkError) {
+              console.log("🌐 Network issue detected - preserving auth state");
               setNetworkError(true);
-              // Keep the stored data for potential retry, but continue without auth for now
-              // This prevents clearing valid credentials due to temporary network issues
+
+              // Use cached user data during network issues
+              try {
+                const userData = JSON.parse(storedUser);
+                setToken(storedToken);
+                setUser(userData);
+                console.log("💾 Using cached auth data during network issues");
+              } catch (parseError) {
+                console.log("❌ Failed to parse cached user data");
+                // Only clear if we can't parse the data
+                localStorage.removeItem("kanxa_token");
+                localStorage.removeItem("kanxa_user");
+                setNetworkError(false);
+              }
             } else {
-              // Clear invalid token data only if it's not a network error
+              // Clear invalid token data for non-network errors
+              console.log("🗑️ Clearing invalid auth data");
               localStorage.removeItem("kanxa_token");
               localStorage.removeItem("kanxa_user");
               setNetworkError(false);
