@@ -254,6 +254,35 @@ export default function Profile() {
 
   const [activityLoading, setActivityLoading] = useState(false);
 
+  // Load recent activity from backend
+  useEffect(() => {
+    const loadRecentActivity = async () => {
+      if (!user) return;
+
+      setActivityLoading(true);
+      try {
+        const response = await bookingsAPI.getUserBookings();
+        if (response.success && response.bookings) {
+          const activities = response.bookings.slice(0, 5).map((booking: any, index: number) => ({
+            id: booking.id || index + 1,
+            type: booking.type || "booking",
+            description: booking.service?.name || booking.serviceName || 'Service booking',
+            date: new Date(booking.createdAt || booking.date).toISOString().split('T')[0],
+            status: booking.status || "completed",
+          }));
+          setRecentActivity(activities);
+        }
+      } catch (error) {
+        console.error('Failed to load recent activity:', error);
+        // Keep the mock data if API fails
+      } finally {
+        setActivityLoading(false);
+      }
+    };
+
+    loadRecentActivity();
+  }, [user]);
+
   return (
     <Layout>
       {/* Hero Section */}
