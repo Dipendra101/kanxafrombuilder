@@ -559,18 +559,19 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
           <CardTitle>Revenue by Service</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data.services.popular}>
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart data={data.services.popular} margin={{ bottom: 80, left: 20, right: 20, top: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="name"
                 angle={-45}
                 textAnchor="end"
-                height={60}
+                height={80}
                 type="category"
                 axisLine={true}
                 tickLine={true}
-                tick={true}
+                tick={{ fontSize: 12 }}
+                interval={0}
               />
               <YAxis
                 type="number"
