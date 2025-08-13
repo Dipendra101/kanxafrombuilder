@@ -638,7 +638,7 @@ function ServiceAnalytics({ data }: { data: AnalyticsData }) {
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data.services.performance}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="name"
                 type="category"
@@ -652,8 +652,8 @@ function ServiceAnalytics({ data }: { data: AnalyticsData }) {
                 tickLine={true}
                 tick={true}
               />
-              <Tooltip />
-              <Bar dataKey="rating" fill="#f59e0b" />
+              <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }} />
+              <Bar dataKey="rating" fill="#f59e0b" stroke="#f59e0b" strokeWidth={0} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -712,7 +712,10 @@ function GeographicAnalytics({ data }: { data: AnalyticsData }) {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => [`₨ ${value.toLocaleString()}`, 'Revenue']} />
+              <Tooltip
+                formatter={(value: number) => [`₨ ${value.toLocaleString()}`, 'Revenue']}
+                contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </CardContent>
