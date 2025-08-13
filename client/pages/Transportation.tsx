@@ -413,7 +413,8 @@ export default function Transportation() {
                       </CardContent>
                     </Card>
                   ) : (
-                    filteredBuses.map((bus) => (
+                    // Show API results first, fallback to sample data
+                    (filteredServices.length > 0 ? filteredServices : filteredBuses).map((bus) => (
                       <Card
                         key={bus.id}
                         className="hover:shadow-lg transition-shadow"
