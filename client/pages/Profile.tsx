@@ -127,6 +127,28 @@ export default function Profile() {
     newsletter: true,
   });
 
+  // Save notification settings to backend
+  const saveNotificationSettings = async (newSettings: typeof notifications) => {
+    try {
+      await updateUser({
+        preferences: {
+          notifications: newSettings,
+        },
+      });
+
+      toast({
+        title: "Settings Updated",
+        description: "Your notification preferences have been saved.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to save notification settings.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSave = async () => {
     setIsLoading(true);
     try {
