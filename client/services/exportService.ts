@@ -73,6 +73,15 @@ export class ExportService {
   // Main export function
   static async exportData(data: ExportData[], options: ExportOptions): Promise<void> {
     try {
+      if (!data || data.length === 0) {
+        toast({
+          title: "No Data",
+          description: "No data available to export.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const filename = options.filename || `export_${new Date().toISOString().split('T')[0]}`;
       let content: string | Blob;
       let mimeType: string;
