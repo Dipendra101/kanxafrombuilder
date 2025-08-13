@@ -77,7 +77,10 @@ export default function Payment() {
           name: customServiceName || getBusServiceName(serviceId),
           amount,
           description: 'Comfortable bus transportation',
-          icon: <Bus className="w-6 h-6 text-kanxa-blue" />
+          icon: <Bus className="w-6 h-6 text-kanxa-blue" />,
+          seatNumbers: seatNumbers.length > 0 ? seatNumbers : undefined,
+          vehiclePlate: generateVehiclePlate('bus', serviceId),
+          route: getRouteFromServiceName(customServiceName || getBusServiceName(serviceId))
         };
         break;
       case 'tour':
