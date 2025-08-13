@@ -587,8 +587,8 @@ function ServiceAnalytics({ data }: { data: AnalyticsData }) {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data.services.performance}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
+              <XAxis dataKey="name" type="category" />
+              <YAxis type="number" />
               <Tooltip />
               <Bar dataKey="rating" fill="#f59e0b" />
             </BarChart>
