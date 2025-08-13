@@ -33,15 +33,21 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}, retries =
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          ...createHeaders(),
-          ...options.headers,
-        },
-        // Add timeout to prevent hanging requests
-        signal: AbortSignal.timeout(10000) // 10 second timeout
-      });
+      // Create a timeout controller for better browser compatibility
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+      try {
+        const response = await fetch(url, {
+          ...options,
+          headers: {
+            ...createHeaders(),
+            ...options.headers,
+          },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
 
       // Parse response body once
       let data;
@@ -78,7 +84,11 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}, retries =
         throw new Error(errorMessage);
       }
 
-      return data;
+        return data;
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
+      }
     } catch (error) {
       const isLastAttempt = attempt === retries;
 
@@ -86,7 +96,8 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}, retries =
       const isRetryableError = error instanceof TypeError ||
                                error.name === 'TimeoutError' ||
                                error.name === 'AbortError' ||
-                               (error instanceof Error && error.message.includes("fetch"));
+                               (error instanceof Error && error.message.includes("fetch")) ||
+                               (error instanceof Error && error.message.includes("aborted"));
 
       if (isRetryableError && !isLastAttempt) {
         const delay = Math.pow(2, attempt) * 1000; // Exponential backoff: 1s, 2s, 4s
