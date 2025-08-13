@@ -362,7 +362,7 @@ export default function Buses() {
                     <div className="lg:col-span-2">
                       <div className="text-center space-y-2">
                         <p className="text-2xl font-bold text-kanxa-blue">
-                          NPR {bus.price.toLocaleString()}
+                          Rs {bus.price.toLocaleString()}
                         </p>
                         <p className="text-xs text-gray-500">per person</p>
                         <Dialog onOpenChange={(open) => !open && setSelectedBus(null)}>

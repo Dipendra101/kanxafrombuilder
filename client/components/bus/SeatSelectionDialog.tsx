@@ -202,18 +202,18 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
                 <div className="flex justify-between">
                   <span>Seat(s) ({selectedSeats.length})</span>
                   <span>
-                    NPR {(bus.price * selectedSeats.length).toLocaleString()}
+                    Rs {(bus.price * selectedSeats.length).toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Service Fee</span>
-                  <span>NPR 50</span>
+                  <span>Rs 50</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
                   <span className="text-kanxa-blue">
-                    NPR{" "}
+                    Rs{" "}
                     {(bus.price * selectedSeats.length + 50 > 50
                       ? bus.price * selectedSeats.length + 50
                       : 0
