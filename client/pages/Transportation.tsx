@@ -566,7 +566,7 @@ export default function Transportation() {
                               Per KM:
                             </span>
                             <span className="font-medium">
-                              NPR {cargo.pricePerKm}
+                              ₨ {cargo.pricePerKm}
                             </span>
                           </div>
                         </div>
