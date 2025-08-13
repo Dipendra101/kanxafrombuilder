@@ -772,12 +772,14 @@ export default function Profile() {
                       </div>
                       <Switch
                         checked={notifications.bookingUpdates}
-                        onCheckedChange={(checked) =>
-                          setNotifications({
+                        onCheckedChange={(checked) => {
+                          const newSettings = {
                             ...notifications,
                             bookingUpdates: checked,
-                          })
-                        }
+                          };
+                          setNotifications(newSettings);
+                          saveNotificationSettings(newSettings);
+                        }}
                         className="flex-shrink-0"
                       />
                     </div>
