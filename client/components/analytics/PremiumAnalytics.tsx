@@ -199,10 +199,10 @@ export function PremiumAnalytics() {
       {/* Header with controls */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
             Premium Analytics
           </h2>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Advanced insights and performance metrics
           </p>
         </div>
