@@ -863,7 +863,7 @@ export default function AdminDashboard() {
                       >
                         <div className="space-y-1">
                           <p className="text-sm font-medium">
-                            {booking.user.name}
+                            {booking.user?.name || 'User not available'}
                           </p>
                           <p className="text-sm text-gray-600">
                             {booking.service?.name || 'Service not available'}
