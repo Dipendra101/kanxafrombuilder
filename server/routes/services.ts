@@ -8,6 +8,27 @@ const router = Router();
 // Mock services for when database is unavailable
 const mockServices = [
   {
+    _id: "1",
+    name: "Kathmandu to Pokhara Express",
+    description: "Premium AC bus service from Kathmandu to Pokhara with comfort and reliability",
+    type: "bus",
+    category: "Transportation",
+    pricing: { basePrice: 950, currency: "Rs" },
+    isActive: true,
+    isFeatured: true,
+    rating: { average: 4.8, count: 200 },
+    busDetails: {
+      busNumber: "KP-1001",
+      capacity: 45,
+      busType: "AC Deluxe",
+      amenities: ["AC", "WiFi", "Entertainment", "Snacks"],
+      route: { from: "Kathmandu", to: "Pokhara", duration: "6 hours" },
+    },
+    images: ["/placeholder.svg"],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
     _id: "mock_service_1",
     name: "Kathmandu to Pokhara Bus",
     description: "Comfortable AC bus service from Kathmandu to Pokhara",
