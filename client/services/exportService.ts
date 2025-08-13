@@ -131,6 +131,15 @@ export class ExportService {
 
   // Export bookings data
   static async exportBookings(bookings: any[]): Promise<void> {
+    if (!bookings || bookings.length === 0) {
+      toast({
+        title: "No Data",
+        description: "No bookings data available to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const exportData = bookings.map(booking => ({
       id: booking._id,
       customer_name: booking.user?.name || 'N/A',
