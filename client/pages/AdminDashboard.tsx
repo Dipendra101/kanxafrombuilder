@@ -1213,9 +1213,9 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium">{booking.user.name}</p>
+                            <p className="font-medium">{booking.user?.name || 'User not available'}</p>
                             <p className="text-sm text-gray-600">
-                              {booking.user.email}
+                              {booking.user?.email || 'Email not available'}
                             </p>
                           </div>
                         </TableCell>
