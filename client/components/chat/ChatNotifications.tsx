@@ -72,7 +72,7 @@ export default function ChatNotifications() {
         priority: "medium" as const,
       },
     ];
-    
+
     // This would normally come from your notification service
   }, []);
 
@@ -234,7 +234,8 @@ export default function ChatNotifications() {
             </div>
 
             <div className="text-xs text-gray-500 mb-2">
-              All your notifications from bookings, orders, chat messages, and system updates
+              All your notifications from bookings, orders, chat messages, and
+              system updates
             </div>
 
             {/* Tabs for different notification types */}
@@ -271,10 +272,14 @@ export default function ChatNotifications() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-900">Booking Confirmed</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        Booking Confirmed
+                      </p>
                       <span className="text-xs text-gray-500">5m</span>
                     </div>
-                    <p className="text-sm text-gray-700 mt-1">Your bus seat has been reserved for Lamjung → Kathmandu</p>
+                    <p className="text-sm text-gray-700 mt-1">
+                      Your bus seat has been reserved for Lamjung → Kathmandu
+                    </p>
                   </div>
                 </div>
 
@@ -286,10 +291,14 @@ export default function ChatNotifications() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-700">Payment Received</p>
+                      <p className="text-sm font-medium text-gray-700">
+                        Payment Received
+                      </p>
                       <span className="text-xs text-gray-500">1h</span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">Tour request payment processed successfully</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Tour request payment processed successfully
+                    </p>
                   </div>
                 </div>
               </div>
@@ -329,10 +338,7 @@ export default function ChatNotifications() {
             )}
           </TabsContent>
 
-          <TabsContent
-            value="system"
-            className="max-h-80 overflow-y-auto p-0"
-          >
+          <TabsContent value="system" className="max-h-80 overflow-y-auto p-0">
             <div className="space-y-1 p-2">
               {/* Sample system notifications */}
               <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-blue hover:bg-blue-100 cursor-pointer">
@@ -343,10 +349,14 @@ export default function ChatNotifications() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-900">Booking Confirmed</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Booking Confirmed
+                    </p>
                     <span className="text-xs text-gray-500">2h</span>
                   </div>
-                  <p className="text-sm text-gray-700 mt-1">Your bus seat to Kathmandu has been reserved</p>
+                  <p className="text-sm text-gray-700 mt-1">
+                    Your bus seat to Kathmandu has been reserved
+                  </p>
                 </div>
               </div>
 
@@ -358,10 +368,14 @@ export default function ChatNotifications() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-900">Payment Received</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Payment Received
+                    </p>
                     <span className="text-xs text-gray-500">1d</span>
                   </div>
-                  <p className="text-sm text-gray-700 mt-1">Tour request payment processed successfully</p>
+                  <p className="text-sm text-gray-700 mt-1">
+                    Tour request payment processed successfully
+                  </p>
                 </div>
               </div>
 
@@ -373,10 +387,14 @@ export default function ChatNotifications() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-900">Service Complete</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Service Complete
+                    </p>
                     <span className="text-xs text-gray-500">2d</span>
                   </div>
-                  <p className="text-sm text-gray-700 mt-1">Your tractor maintenance has been completed</p>
+                  <p className="text-sm text-gray-700 mt-1">
+                    Your tractor maintenance has been completed
+                  </p>
                 </div>
               </div>
             </div>

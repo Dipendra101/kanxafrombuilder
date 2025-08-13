@@ -194,15 +194,15 @@ export default function Payment() {
               variant="ghost"
               className="text-white hover:bg-white/20 mb-4"
               onClick={() => {
-                const serviceType = searchParams.get('type');
-                if (serviceType === 'bus') {
-                  navigate('/transportation');
-                } else if (serviceType === 'cargo') {
-                  navigate('/transportation');
-                } else if (serviceType === 'tour') {
-                  navigate('/transportation');
+                const serviceType = searchParams.get("type");
+                if (serviceType === "bus") {
+                  navigate("/transportation");
+                } else if (serviceType === "cargo") {
+                  navigate("/transportation");
+                } else if (serviceType === "tour") {
+                  navigate("/transportation");
                 } else {
-                  navigate('/transportation');
+                  navigate("/transportation");
                 }
               }}
             >

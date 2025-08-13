@@ -56,7 +56,9 @@ export default function Profile() {
     phone: user?.phone || "",
     address: user?.address || "",
     company: "",
-    dateJoined: user?.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    dateJoined: user?.createdAt
+      ? new Date(user.createdAt).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0],
     bio: "",
   });
 
@@ -70,21 +72,22 @@ export default function Profile() {
       // Fetch user's recent bookings as activity
       const bookingsResponse = await bookingsAPI.getBookings({ limit: 5 });
       if (bookingsResponse.success && bookingsResponse.bookings) {
-        const activities = bookingsResponse.bookings.map((booking: any, index: number) => ({
-          id: booking._id || index,
-          type: "booking",
-          description: `${booking.service?.name || 'Service'} booking${booking.status === 'confirmed' ? ' confirmed' : ''} - ${booking.serviceDetails?.route || booking.contactInfo?.name || 'Service'}`,
-          date: new Date(booking.createdAt).toLocaleDateString(),
-          status: booking.status || 'unknown',
-        }));
+        const activities = bookingsResponse.bookings.map(
+          (booking: any, index: number) => ({
+            id: booking._id || index,
+            type: "booking",
+            description: `${booking.service?.name || "Service"} booking${booking.status === "confirmed" ? " confirmed" : ""} - ${booking.serviceDetails?.route || booking.contactInfo?.name || "Service"}`,
+            date: new Date(booking.createdAt).toLocaleDateString(),
+            status: booking.status || "unknown",
+          }),
+        );
         setRecentActivity(activities);
       }
 
       // You could also fetch actual loyalty/stats data here
       // const statsResponse = await userAPI.getStats();
-
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      console.error("Failed to fetch user data:", error);
       // Keep default data on error
     } finally {
       setActivityLoading(false);
@@ -100,7 +103,9 @@ export default function Profile() {
         phone: user.phone || "",
         address: user.address || "",
         company: "",
-        dateJoined: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        dateJoined: user.createdAt
+          ? new Date(user.createdAt).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
         bio: "",
       });
       setProfilePicture(user.profilePicture || null);
@@ -118,7 +123,9 @@ export default function Profile() {
   });
 
   // Save notification settings to backend
-  const saveNotificationSettings = async (newSettings: typeof notifications) => {
+  const saveNotificationSettings = async (
+    newSettings: typeof notifications,
+  ) => {
     try {
       await updateUser({
         preferences: {
@@ -158,7 +165,8 @@ export default function Profile() {
     } catch (error: any) {
       toast({
         title: "Update Failed",
-        description: error.message || "Failed to update profile. Please try again.",
+        description:
+          error.message || "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -253,17 +261,24 @@ export default function Profile() {
       try {
         const response = await bookingsAPI.getUserBookings();
         if (response.success && response.bookings) {
-          const activities = response.bookings.slice(0, 5).map((booking: any, index: number) => ({
-            id: booking.id || index + 1,
-            type: booking.type || "booking",
-            description: booking.service?.name || booking.serviceName || 'Service booking',
-            date: new Date(booking.createdAt || booking.date).toISOString().split('T')[0],
-            status: booking.status || "completed",
-          }));
+          const activities = response.bookings
+            .slice(0, 5)
+            .map((booking: any, index: number) => ({
+              id: booking.id || index + 1,
+              type: booking.type || "booking",
+              description:
+                booking.service?.name ||
+                booking.serviceName ||
+                "Service booking",
+              date: new Date(booking.createdAt || booking.date)
+                .toISOString()
+                .split("T")[0],
+              status: booking.status || "completed",
+            }));
           setRecentActivity(activities);
         }
       } catch (error) {
-        console.error('Failed to load recent activity:', error);
+        console.error("Failed to load recent activity:", error);
         // Keep the mock data if API fails
       } finally {
         setActivityLoading(false);
@@ -445,7 +460,11 @@ export default function Profile() {
                           ) : (
                             <Edit className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           )}
-                          {isLoading ? "Saving..." : isEditing ? "Save" : "Edit"}
+                          {isLoading
+                            ? "Saving..."
+                            : isEditing
+                              ? "Save"
+                              : "Edit"}
                         </Button>
                       </CardHeader>
                       <CardContent className="space-y-4">
@@ -616,7 +635,8 @@ export default function Profile() {
                           onClick={() => {
                             toast({
                               title: "Coming Soon",
-                              description: "Payment methods management will be available soon.",
+                              description:
+                                "Payment methods management will be available soon.",
                             });
                           }}
                         >
@@ -629,7 +649,8 @@ export default function Profile() {
                           onClick={() => {
                             toast({
                               title: "Coming Soon",
-                              description: "Security settings will be available soon.",
+                              description:
+                                "Security settings will be available soon.",
                             });
                           }}
                         >
@@ -641,13 +662,16 @@ export default function Profile() {
                           variant="outline"
                           onClick={() => {
                             // Switch to settings tab
-                            const tabTrigger = document.querySelector('[value="settings"]') as HTMLElement;
+                            const tabTrigger = document.querySelector(
+                              '[value="settings"]',
+                            ) as HTMLElement;
                             if (tabTrigger) {
                               tabTrigger.click();
                             } else {
                               toast({
                                 title: "Settings",
-                                description: "Navigate to the Settings tab to manage notifications.",
+                                description:
+                                  "Navigate to the Settings tab to manage notifications.",
                               });
                             }
                           }}
