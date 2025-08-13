@@ -613,6 +613,12 @@ export default function Profile() {
                         <Button
                           className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
                           variant="outline"
+                          onClick={() => {
+                            toast({
+                              title: "Coming Soon",
+                              description: "Payment methods management will be available soon.",
+                            });
+                          }}
                         >
                           <CreditCard className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           Payment Methods
@@ -620,6 +626,12 @@ export default function Profile() {
                         <Button
                           className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
                           variant="outline"
+                          onClick={() => {
+                            toast({
+                              title: "Coming Soon",
+                              description: "Security settings will be available soon.",
+                            });
+                          }}
                         >
                           <Shield className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           Security Settings
@@ -627,6 +639,13 @@ export default function Profile() {
                         <Button
                           className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
                           variant="outline"
+                          onClick={() => {
+                            // Scroll to settings tab or switch to it
+                            const settingsTab = document.querySelector('[data-value="settings"]') as HTMLElement;
+                            if (settingsTab) {
+                              settingsTab.click();
+                            }
+                          }}
                         >
                           <Bell className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           Notifications
