@@ -89,19 +89,19 @@ export function PaymentOptions({
           {/* Khalti Option */}
           <Button
             variant="outline"
-            className="h-24 flex flex-col gap-2 hover:bg-purple-50 hover:border-purple-200 transition-colors"
+            className="relative h-24 flex flex-col gap-2 hover:bg-purple-50 hover:border-purple-200 transition-colors border-2"
             onClick={() => handlePaymentMethod("khalti")}
             disabled={isProcessing}
           >
-            <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">K</span>
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="text-white font-bold text-xl tracking-wider">K</div>
             </div>
             <div className="text-center">
-              <div className="font-semibold text-purple-700">Khalti</div>
-              <div className="text-xs text-gray-500">Digital Wallet</div>
+              <div className="font-bold text-purple-700 text-lg">Khalti</div>
+              <div className="text-xs text-purple-600 font-medium">Digital Wallet</div>
             </div>
             {selectedMethod === "khalti" && isProcessing && (
-              <div className="absolute inset-0 bg-purple-50 bg-opacity-75 flex items-center justify-center rounded-lg">
+              <div className="absolute inset-0 bg-purple-50 bg-opacity-90 flex items-center justify-center rounded-lg">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
               </div>
             )}
@@ -110,19 +110,22 @@ export function PaymentOptions({
           {/* Esewa Option */}
           <Button
             variant="outline"
-            className="h-24 flex flex-col gap-2 hover:bg-green-50 hover:border-green-200 transition-colors"
+            className="relative h-24 flex flex-col gap-2 hover:bg-green-50 hover:border-green-200 transition-colors border-2"
             onClick={() => handlePaymentMethod("esewa")}
             disabled={isProcessing}
           >
-            <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">E</span>
+            <div className="w-14 h-14 bg-gradient-to-br from-green-600 to-green-700 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="text-white font-bold text-lg">
+                <span className="text-xl">e</span>
+                <span className="text-sm">SEWA</span>
+              </div>
             </div>
             <div className="text-center">
-              <div className="font-semibold text-green-700">eSewa</div>
-              <div className="text-xs text-gray-500">Digital Payment</div>
+              <div className="font-bold text-green-700 text-lg">eSewa</div>
+              <div className="text-xs text-green-600 font-medium">Digital Payment</div>
             </div>
             {selectedMethod === "esewa" && isProcessing && (
-              <div className="absolute inset-0 bg-green-50 bg-opacity-75 flex items-center justify-center rounded-lg">
+              <div className="absolute inset-0 bg-green-50 bg-opacity-90 flex items-center justify-center rounded-lg">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
               </div>
             )}
