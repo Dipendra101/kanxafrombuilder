@@ -69,15 +69,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const storedToken = localStorage.getItem("kanxa_token");
         const storedUser = localStorage.getItem("kanxa_user");
-
         const storedGuest = localStorage.getItem("kanxa_guest");
 
         if (storedGuest === "true") {
           setIsGuest(true);
           console.log("ℹ️  Guest mode restored");
         } else if (storedToken && storedUser) {
-          // Verify token with backend
+          // First check if the API is reachable
           try {
+            console.log("🔄 Checking API connectivity...");
+
+            // Simple connectivity check first
+            const healthCheck = await fetch("/api/health", {
+              method: "GET",
+              headers: { "Content-Type": "application/json" }
+            });
+
+            if (!healthCheck.ok) {
+              throw new Error("API server not responding");
+            }
+
+            console.log("✅ API connectivity confirmed");
+
+            // Now verify the token
             const response = await authAPI.verifyToken(storedToken);
 
             if (response.success && response.user) {
@@ -91,20 +105,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               localStorage.removeItem("kanxa_user");
             }
           } catch (tokenError: any) {
-            console.log("❌ Token verification error:", tokenError.message);
-            // Clear invalid token data
-            localStorage.removeItem("kanxa_token");
-            localStorage.removeItem("kanxa_user");
+            console.log("❌ Auth initialization error:", tokenError.message);
+
+            // Check if it's a network error
+            if (tokenError.message.includes("fetch") || tokenError.message.includes("Network")) {
+              console.log("🌐 Network error detected - keeping stored auth for retry");
+              // Keep the stored data for potential retry, but continue without auth for now
+              // This prevents clearing valid credentials due to temporary network issues
+            } else {
+              // Clear invalid token data only if it's not a network error
+              localStorage.removeItem("kanxa_token");
+              localStorage.removeItem("kanxa_user");
+            }
           }
         } else {
           console.log("ℹ️  No stored auth data found");
         }
       } catch (error) {
         console.error("Failed to initialize auth:", error);
-        // Clear any potentially corrupted data
-        localStorage.removeItem("kanxa_token");
-        localStorage.removeItem("kanxa_user");
-        localStorage.removeItem("kanxa_guest");
+        // Only clear data if it's not a network-related error
+        if (!(error instanceof TypeError && error.message.includes("fetch"))) {
+          localStorage.removeItem("kanxa_token");
+          localStorage.removeItem("kanxa_user");
+          localStorage.removeItem("kanxa_guest");
+        }
       } finally {
         setIsLoading(false);
       }
