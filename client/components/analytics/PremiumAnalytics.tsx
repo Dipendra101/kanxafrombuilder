@@ -538,7 +538,7 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={data.timeSeriesData}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="date"
                 type="category"
@@ -552,9 +552,9 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
                 tickLine={true}
                 tick={true}
               />
-              <Tooltip />
-              <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} />
-              <Line type="monotone" dataKey="bookings" stroke="#10b981" strokeWidth={2} />
+              <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }} />
+              <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} dot={true} />
+              <Line type="monotone" dataKey="bookings" stroke="#10b981" strokeWidth={2} dot={true} />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
@@ -573,7 +573,7 @@ function UserAnalytics({ data }: { data: AnalyticsData }) {
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={data.timeSeriesData}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="date"
                 type="category"
@@ -587,8 +587,8 @@ function UserAnalytics({ data }: { data: AnalyticsData }) {
                 tickLine={true}
                 tick={true}
               />
-              <Tooltip />
-              <Area type="monotone" dataKey="users" stroke="#8b5cf6" fill="#a78bfa" fillOpacity={0.3} />
+              <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }} />
+              <Area type="monotone" dataKey="users" stroke="#8b5cf6" fill="#a78bfa" fillOpacity={0.3} strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </CardContent>
