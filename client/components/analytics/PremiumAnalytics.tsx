@@ -273,8 +273,19 @@ export function PremiumAnalytics() {
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={data.timeSeriesData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" type="category" />
-                    <YAxis type="number" />
+                    <XAxis
+                      dataKey="date"
+                      type="category"
+                      axisLine={true}
+                      tickLine={true}
+                      tick={true}
+                    />
+                    <YAxis
+                      type="number"
+                      axisLine={true}
+                      tickLine={true}
+                      tick={true}
+                    />
                     <Tooltip 
                       formatter={(value: number) => [`₨ ${value.toLocaleString()}`, 'Revenue']}
                     />
@@ -492,8 +503,22 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data.services.popular}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} type="category" />
-              <YAxis type="number" />
+              <XAxis
+                dataKey="name"
+                angle={-45}
+                textAnchor="end"
+                height={60}
+                type="category"
+                axisLine={true}
+                tickLine={true}
+                tick={true}
+              />
+              <YAxis
+                type="number"
+                axisLine={true}
+                tickLine={true}
+                tick={true}
+              />
               <Tooltip formatter={(value: number) => [`₨ ${value.toLocaleString()}`, 'Revenue']} />
               <Bar dataKey="revenue" fill="#3b82f6" />
             </BarChart>
@@ -509,8 +534,19 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={data.timeSeriesData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" type="category" />
-              <YAxis type="number" />
+              <XAxis
+                dataKey="date"
+                type="category"
+                axisLine={true}
+                tickLine={true}
+                tick={true}
+              />
+              <YAxis
+                type="number"
+                axisLine={true}
+                tickLine={true}
+                tick={true}
+              />
               <Tooltip />
               <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} />
               <Line type="monotone" dataKey="bookings" stroke="#10b981" strokeWidth={2} />
@@ -533,8 +569,19 @@ function UserAnalytics({ data }: { data: AnalyticsData }) {
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={data.timeSeriesData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" type="category" />
-              <YAxis type="number" />
+              <XAxis
+                dataKey="date"
+                type="category"
+                axisLine={true}
+                tickLine={true}
+                tick={true}
+              />
+              <YAxis
+                type="number"
+                axisLine={true}
+                tickLine={true}
+                tick={true}
+              />
               <Tooltip />
               <Area type="monotone" dataKey="users" stroke="#8b5cf6" fill="#a78bfa" fillOpacity={0.3} />
             </AreaChart>
@@ -587,8 +634,19 @@ function ServiceAnalytics({ data }: { data: AnalyticsData }) {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data.services.performance}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" type="category" />
-              <YAxis type="number" />
+              <XAxis
+                dataKey="name"
+                type="category"
+                axisLine={true}
+                tickLine={true}
+                tick={true}
+              />
+              <YAxis
+                type="number"
+                axisLine={true}
+                tickLine={true}
+                tick={true}
+              />
               <Tooltip />
               <Bar dataKey="rating" fill="#f59e0b" />
             </BarChart>
