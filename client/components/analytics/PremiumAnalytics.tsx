@@ -272,7 +272,7 @@ export function PremiumAnalytics() {
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={data.timeSeriesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis
                       dataKey="date"
                       type="category"
@@ -286,15 +286,17 @@ export function PremiumAnalytics() {
                       tickLine={true}
                       tick={true}
                     />
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value: number) => [`₨ ${value.toLocaleString()}`, 'Revenue']}
+                      contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="revenue" 
-                      stroke="#2563eb" 
-                      fill="#3b82f6" 
+                    <Area
+                      type="monotone"
+                      dataKey="revenue"
+                      stroke="#2563eb"
+                      fill="#3b82f6"
                       fillOpacity={0.3}
+                      strokeWidth={2}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -326,7 +328,7 @@ export function PremiumAnalytics() {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -502,7 +504,7 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data.services.popular}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="name"
                 angle={-45}
@@ -519,8 +521,11 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
                 tickLine={true}
                 tick={true}
               />
-              <Tooltip formatter={(value: number) => [`₨ ${value.toLocaleString()}`, 'Revenue']} />
-              <Bar dataKey="revenue" fill="#3b82f6" />
+              <Tooltip
+                formatter={(value: number) => [`₨ ${value.toLocaleString()}`, 'Revenue']}
+                contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }}
+              />
+              <Bar dataKey="revenue" fill="#3b82f6" stroke="#3b82f6" strokeWidth={0} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
