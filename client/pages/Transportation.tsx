@@ -425,9 +425,9 @@ export default function Transportation() {
                               <div className="flex items-center gap-2">
                                 <Bus className="w-5 h-5 text-kanxa-blue" />
                                 <span className="font-medium text-kanxa-navy">
-                                  {bus.operator}
+                                  {bus.operator?.name || bus.operator || bus.name}
                                 </span>
-                                <Badge variant="outline">{bus.busType}</Badge>
+                                <Badge variant="outline">{bus.vehicle?.busType || bus.busType}</Badge>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
