@@ -24,6 +24,15 @@ const mockServices = [
       busType: "AC Deluxe",
       amenities: ["AC", "WiFi", "Entertainment", "Snacks"],
       route: { from: "Kathmandu", to: "Pokhara", duration: "6 hours" },
+      availableSeats: 12,
+      schedule: [
+        {
+          departureTime: "06:00 AM",
+          arrivalTime: "12:00 PM",
+          date: new Date().toISOString().split('T')[0]
+        }
+      ],
+      operator: { name: "Kanxa Express" }
     },
     images: ["/placeholder.svg"],
     createdAt: new Date(),
@@ -45,6 +54,15 @@ const mockServices = [
       busType: "AC",
       amenities: ["AC", "WiFi", "Entertainment"],
       route: { from: "Kathmandu", to: "Pokhara", duration: "6 hours" },
+      availableSeats: 8,
+      schedule: [
+        {
+          departureTime: "08:30 AM",
+          arrivalTime: "2:30 PM",
+          date: new Date().toISOString().split('T')[0]
+        }
+      ],
+      operator: { name: "Safari Deluxe" }
     },
     images: ["/placeholder.svg"],
     createdAt: new Date(),
