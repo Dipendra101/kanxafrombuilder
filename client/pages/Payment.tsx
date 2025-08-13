@@ -218,7 +218,7 @@ export default function Payment() {
                             </div>
                           )}
 
-                          {serviceDetails.seatNumbers && serviceDetails.seatNumbers.length > 0 && (
+                          {serviceDetails.type === 'Bus Ticket' && serviceDetails.seatNumbers && serviceDetails.seatNumbers.length > 0 && (
                             <div className="flex items-center gap-2 text-sm">
                               <span className="text-gray-600">Seat Numbers:</span>
                               <div className="flex gap-1">
