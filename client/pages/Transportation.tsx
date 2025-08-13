@@ -384,9 +384,25 @@ export default function Transportation() {
 
                 {/* Available Buses */}
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-kanxa-navy">
-                    Available Buses
-                  </h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-bold text-kanxa-navy">
+                      Available Buses ({(filteredServices.length > 0 ? filteredServices : filteredBuses).length})
+                    </h3>
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm text-gray-600">Sort by:</span>
+                      <Select defaultValue="departure">
+                        <SelectTrigger className="w-40">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="departure">Departure time</SelectItem>
+                          <SelectItem value="price">Price</SelectItem>
+                          <SelectItem value="duration">Duration</SelectItem>
+                          <SelectItem value="rating">Rating</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                   {isLoading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kanxa-blue mx-auto"></div>
