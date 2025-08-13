@@ -182,21 +182,21 @@ export default function Index() {
                       time: "6:00 AM",
                       seats: "12 available",
                       type: "Bus",
-                      price: "NPR 800",
+                      price: "₨ 800",
                     },
                     {
                       route: "Lamjung → Pokhara",
                       time: "8:30 AM",
                       seats: "8 available",
                       type: "Bus",
-                      price: "NPR 500",
+                      price: "₨ 500",
                     },
                     {
                       route: "Kathmandu → Lamjung",
                       time: "2:00 PM",
                       seats: "15 available",
                       type: "Bus",
-                      price: "NPR 800",
+                      price: "₨ 800",
                     },
                   ].map((trip, index) => (
                     <div
@@ -243,13 +243,13 @@ export default function Index() {
                       route: "Lamjung → Kathmandu",
                       type: "Heavy Truck",
                       capacity: "10 tons",
-                      price: "NPR 15,000",
+                      price: "₨ 15,000",
                     },
                     {
                       route: "Pokhara → Lamjung",
                       type: "Medium Truck",
                       capacity: "5 tons",
-                      price: "NPR 8,000",
+                      price: "₨ 8,000",
                     },
                     {
                       route: "Custom Route",
@@ -327,7 +327,7 @@ export default function Index() {
               {
                 name: "JCB Excavator",
                 description: "Daily rental available",
-                price: "From NPR 8,000/day",
+                price: "From ₨ 8,000/day",
                 icon: "🚜",
               },
             ].map((item, index) => (
