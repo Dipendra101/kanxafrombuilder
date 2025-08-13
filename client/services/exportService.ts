@@ -181,6 +181,15 @@ export class ExportService {
 
   // Export services data
   static async exportServices(services: any[]): Promise<void> {
+    if (!services || services.length === 0) {
+      toast({
+        title: "No Data",
+        description: "No services data available to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const exportData = services.map(service => ({
       id: service._id,
       name: service.name,
