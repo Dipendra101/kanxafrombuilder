@@ -207,8 +207,8 @@ export default function Payment() {
                         {serviceDetails.description}
                       </p>
 
-                      {/* Bus-specific details */}
-                      {serviceDetails.type === 'Bus Ticket' && (
+                      {/* Transportation service details */}
+                      {(serviceDetails.type === 'Bus Ticket' || serviceDetails.type === 'Cargo Service') && (
                         <div className="mt-3 space-y-2">
                           {serviceDetails.route && (
                             <div className="flex items-center gap-2 text-sm">
