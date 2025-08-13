@@ -483,7 +483,7 @@ export default function Transportation() {
 
                             <div className="text-center space-y-2">
                               <div className="text-2xl font-bold text-kanxa-navy">
-                                NPR {bus.price.toLocaleString()}
+                                ₨ {(bus.price || bus.pricing?.basePrice || 0).toLocaleString()}
                               </div>
                               <Dialog
                                 onOpenChange={(open) =>
