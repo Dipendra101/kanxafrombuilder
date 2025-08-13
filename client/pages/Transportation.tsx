@@ -392,7 +392,7 @@ export default function Transportation() {
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kanxa-blue mx-auto"></div>
                       <p className="mt-2 text-gray-600">Loading buses...</p>
                     </div>
-                  ) : filteredBuses.length === 0 ? (
+                  ) : (filteredServices.length === 0 && filteredBuses.length === 0) ? (
                     <Card>
                       <CardContent className="text-center py-8">
                         <Bus className="w-12 h-12 text-gray-300 mx-auto mb-4" />
