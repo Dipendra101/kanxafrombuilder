@@ -346,11 +346,12 @@ export default function Payment() {
                     <Separator />
 
                     <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-blue-900 mb-2">Important Notes</h4>
+                      <h4 className="font-medium text-blue-900 mb-2">Test Environment Notice</h4>
                       <ul className="text-blue-800 text-sm space-y-1">
-                        <li>• Payment will be processed securely through official gateways</li>
-                        <li>• You will receive confirmation via SMS and email</li>
-                        <li>• Refund policy applies as per terms and conditions</li>
+                        <li>• Currently using test payment gateways</li>
+                        <li>• Use Khalti test credentials: 9800000000 / 123456</li>
+                        <li>• eSewa test amount: any amount works in test mode</li>
+                        <li>• No real money will be charged</li>
                         <li>• Customer support available 24/7 for payment issues</li>
                       </ul>
                     </div>
