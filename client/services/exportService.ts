@@ -152,6 +152,15 @@ export class ExportService {
 
   // Export users data
   static async exportUsers(users: any[]): Promise<void> {
+    if (!users || users.length === 0) {
+      toast({
+        title: "No Data",
+        description: "No users data available to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const exportData = users.map(user => ({
       id: user._id,
       name: user.name,
