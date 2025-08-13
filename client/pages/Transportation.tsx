@@ -417,74 +417,87 @@ export default function Transportation() {
                     (filteredServices.length > 0 ? filteredServices : filteredBuses).map((bus) => (
                       <Card
                         key={bus.id}
-                        className="hover:shadow-lg transition-shadow"
+                        className="hover:shadow-lg transition-shadow border-l-4 border-l-kanxa-blue"
                       >
-                        <CardContent className="p-6">
-                          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-center">
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <Bus className="w-5 h-5 text-kanxa-blue" />
-                                <span className="font-medium text-kanxa-navy">
-                                  {bus.operator?.name || bus.operator || bus.name}
-                                </span>
-                                <Badge variant="outline">{bus.vehicle?.busType || bus.busType}</Badge>
+                        <CardContent className="p-0">
+                          <div className="flex items-center">
+                            {/* Company Logo & Info */}
+                            <div className="flex items-center gap-4 p-6 flex-1">
+                              <div className="w-12 h-12 bg-kanxa-blue rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                                {(bus.operator?.name || bus.name || "KS").substring(0, 2).toUpperCase()}
                               </div>
-                              <div className="flex items-center gap-1">
-                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                <span className="text-sm text-gray-600">
-                                  {bus.rating?.average || bus.rating}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2 text-lg font-semibold text-kanxa-navy">
-                                <MapPin className="w-4 h-4" />
-                                {bus.from} → {bus.to}
-                              </div>
-                              <div className="flex items-center gap-4 text-sm text-gray-600">
-                                <div className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
-                                  {bus.departureTime} - {bus.arrivalTime}
+                              <div className="space-y-1">
+                                <div className="font-semibold text-kanxa-navy text-lg">
+                                  {bus.operator?.name || bus.name || "Kanxa Safari"}
                                 </div>
-                                <span>({bus.duration})</span>
+                                <div className="text-sm text-gray-600">
+                                  {bus.busType || bus.vehicle?.busType || "Express"}
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                  <span className="text-sm text-gray-600">
+                                    {bus.rating?.average || bus.rating || "4.5"} ({bus.rating?.count || "150"} reviews)
+                                  </span>
+                                </div>
                               </div>
                             </div>
 
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <Users className="w-4 h-4 text-kanxa-green" />
-                                <span className="text-sm">
-                                  {bus.availableSeats || (bus.vehicle?.totalSeats ? Math.floor(bus.vehicle.totalSeats * 0.3) : 12)} seats available
+                            {/* Route & Time Info */}
+                            <div className="px-6 py-4 border-l border-gray-200 flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <MapPin className="w-4 h-4 text-kanxa-blue" />
+                                <span className="text-lg font-semibold text-kanxa-navy">
+                                  {bus.from || "Kathmandu"} → {bus.to || "Pokhara"}
                                 </span>
                               </div>
-                              <div className="flex flex-wrap gap-1">
-                                {(bus.amenities || bus.vehicle?.amenities || [])
-                                  .slice(0, 3)
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <div className="text-gray-500">Departure</div>
+                                  <div className="font-semibold text-lg">
+                                    {bus.departureTime || "6:00 AM"}
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="text-gray-500">Arrival</div>
+                                  <div className="font-semibold text-lg">
+                                    {bus.arrivalTime || "12:00 PM"}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-sm text-gray-600 mt-2">
+                                {bus.duration || "6h 0m"}
+                              </div>
+                            </div>
+
+                            {/* Amenities */}
+                            <div className="px-6 py-4 border-l border-gray-200 flex-1">
+                              <div className="text-sm font-medium text-gray-700 mb-2">Amenities:</div>
+                              <div className="flex flex-wrap gap-1 mb-3">
+                                {(bus.amenities || bus.vehicle?.amenities || ["AC", "WiFi", "Snacks"])
+                                  .slice(0, 4)
                                   .map((amenity: string, index: number) => (
-                                    <Badge
+                                    <span
                                       key={index}
-                                      variant="secondary"
-                                      className="text-xs"
+                                      className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-50 text-blue-700"
                                     >
                                       {amenity}
-                                    </Badge>
+                                    </span>
                                   ))}
-                                {(bus.amenities || bus.vehicle?.amenities || []).length > 3 && (
-                                  <Badge
-                                    variant="secondary"
-                                    className="text-xs"
-                                  >
-                                    +{(bus.amenities || bus.vehicle?.amenities || []).length - 3} more
-                                  </Badge>
-                                )}
+                              </div>
+                              <div className="text-sm text-kanxa-green font-medium">
+                                Seats Available
+                              </div>
+                              <div className="text-lg font-bold text-kanxa-green">
+                                {bus.availableSeats || Math.floor((bus.totalSeats || 45) * 0.3)}/{bus.totalSeats || 45}
                               </div>
                             </div>
 
-                            <div className="text-center space-y-2">
-                              <div className="text-2xl font-bold text-kanxa-navy">
-                                ₨ {(bus.price || bus.pricing?.basePrice || 0).toLocaleString()}
+                            {/* Pricing & Booking */}
+                            <div className="px-6 py-4 text-right">
+                              <div className="text-2xl font-bold text-kanxa-navy mb-1">
+                                Rs {(bus.price || bus.pricing?.basePrice || 800).toLocaleString()}
                               </div>
+                              <div className="text-sm text-gray-500 mb-4">per person</div>
                               <Dialog
                                 onOpenChange={(open) =>
                                   !open && setSelectedBus(null)
@@ -558,7 +571,7 @@ export default function Transportation() {
                               Base Price:
                             </span>
                             <span className="font-medium">
-                              ₨ {cargo.basePrice.toLocaleString()}
+                              �� {cargo.basePrice.toLocaleString()}
                             </span>
                           </div>
                           <div className="flex justify-between">
