@@ -205,6 +205,40 @@ export default function Payment() {
                       <p className="text-sm text-gray-600">
                         {serviceDetails.description}
                       </p>
+
+                      {/* Bus-specific details */}
+                      {serviceDetails.type === 'Bus Ticket' && (
+                        <div className="mt-3 space-y-2">
+                          {serviceDetails.route && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="text-gray-600">Route:</span>
+                              <span className="font-medium text-kanxa-blue">{serviceDetails.route}</span>
+                            </div>
+                          )}
+
+                          {serviceDetails.seatNumbers && serviceDetails.seatNumbers.length > 0 && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="text-gray-600">Seat Numbers:</span>
+                              <div className="flex gap-1">
+                                {serviceDetails.seatNumbers.map((seat, index) => (
+                                  <Badge key={index} variant="outline" className="text-xs bg-kanxa-light-blue text-kanxa-navy">
+                                    {seat}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {serviceDetails.vehiclePlate && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="text-gray-600">Vehicle:</span>
+                              <div className="bg-white border-2 border-gray-800 px-3 py-1 rounded text-xs font-mono font-bold tracking-wider">
+                                {serviceDetails.vehiclePlate}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <Separator />
