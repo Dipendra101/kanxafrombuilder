@@ -866,7 +866,7 @@ export default function AdminDashboard() {
                             {booking.user.name}
                           </p>
                           <p className="text-sm text-gray-600">
-                            {booking.service.name}
+                            {booking.service?.name || 'Service not available'}
                           </p>
                           <p className="text-xs text-gray-500">
                             {new Date(booking.createdAt).toLocaleDateString()}
