@@ -566,6 +566,40 @@ export const adminAPI = {
   },
 };
 
+// Payment API
+export const paymentAPI = {
+  initiatePayment: async (paymentData: {
+    amount: number;
+    productName: string;
+    transactionId: string;
+    method: 'khalti' | 'esewa';
+    customerInfo?: {
+      name?: string;
+      email?: string;
+      phone?: string;
+    };
+  }) => {
+    return apiRequest("/payments/initiate", {
+      method: "POST",
+      body: JSON.stringify(paymentData),
+    });
+  },
+
+  verifyKhaltiPayment: async (pidx: string) => {
+    return apiRequest("/payments/verify/khalti", {
+      method: "POST",
+      body: JSON.stringify({ pidx }),
+    });
+  },
+
+  verifyEsewaPayment: async (oid: string, amt: string, refId: string) => {
+    return apiRequest("/payments/verify/esewa", {
+      method: "POST",
+      body: JSON.stringify({ oid, amt, refId }),
+    });
+  },
+};
+
 // Health check
 export const healthAPI = {
   check: async () => {
