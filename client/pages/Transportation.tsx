@@ -242,7 +242,7 @@ export default function Transportation() {
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [selectedTab, isLoading]);
+  }, [selectedTab, selectedRoute]);
 
   const filteredBuses = busRoutes.filter((bus) => {
     if (
