@@ -422,7 +422,7 @@ export default function Cargo() {
                   <div className="text-center">
                     <p className="text-sm text-gray-600">Starting from</p>
                     <p className="text-2xl font-bold text-kanxa-orange">
-                      NPR {truck.basePrice.toLocaleString()}
+                      Rs {truck.basePrice.toLocaleString()}
                     </p>
                     <p className="text-xs text-gray-500">per trip</p>
                   </div>
