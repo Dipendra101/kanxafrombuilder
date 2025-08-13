@@ -349,8 +349,8 @@ export default function Payment() {
                       <h4 className="font-medium text-blue-900 mb-2">Test Environment Notice</h4>
                       <ul className="text-blue-800 text-sm space-y-1">
                         <li>• Currently using test payment gateways</li>
-                        <li>• Use Khalti test credentials: 9800000000 / 123456</li>
-                        <li>• eSewa test amount: any amount works in test mode</li>
+                        <li>• Use Khalti test phone: 9800000000, OTP: 123456</li>
+                        <li>• eSewa test: any amount works in test mode</li>
                         <li>• No real money will be charged</li>
                         <li>• Customer support available 24/7 for payment issues</li>
                       </ul>
