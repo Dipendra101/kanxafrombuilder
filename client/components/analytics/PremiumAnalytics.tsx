@@ -492,8 +492,8 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data.services.popular}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
-              <YAxis />
+              <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} type="category" />
+              <YAxis type="number" />
               <Tooltip formatter={(value: number) => [`₨ ${value.toLocaleString()}`, 'Revenue']} />
               <Bar dataKey="revenue" fill="#3b82f6" />
             </BarChart>
