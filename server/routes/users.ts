@@ -131,16 +131,24 @@ export const updateProfile: RequestHandler = async (req, res) => {
           { new: true, runValidators: true },
         );
 
+        if (!updatedUser) {
+          throw new Error("User not found or update failed");
+        }
+
+        console.log(`✅ Profile updated successfully for user ${userId}`);
         return updatedUser;
       },
-      // Fallback: Return updated mock user
+      // Fallback: Return updated mock user with proper structure
       (() => {
-        console.log("⚠️  Database unavailable, returning mock updated profile");
-        const mockUser = getMockUser(userId);
-        // Apply updates to mock user
-        Object.keys(updates).forEach(key => {
-          (mockUser as any)[key] = updates[key];
-        });
+        console.log("⚠️  Database unavailable, simulating profile update in demo mode");
+        const mockUser = {
+          ...getMockUser(userId),
+          ...updates,
+          updatedAt: new Date(),
+        };
+
+        // Simulate successful update for demo
+        console.log(`🔄 Demo mode: Profile update simulated for ${mockUser.name}`);
         return mockUser;
       })()
     );
@@ -152,11 +160,31 @@ export const updateProfile: RequestHandler = async (req, res) => {
       });
     }
 
+    // Ensure user object exists
+    if (!user) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update profile - user object is null",
+      });
+    }
+
+    const responseUser = user.toJSON ? user.toJSON() : user;
+    const isDemoMode = !isDBConnected();
+
+    console.log(`📤 Sending profile update response:`, {
+      success: true,
+      demo: isDemoMode,
+      userId: responseUser._id,
+      updatedFields: Object.keys(updates)
+    });
+
     res.json({
       success: true,
-      message: "Profile updated successfully" + (!isDBConnected() ? " (demo mode)" : ""),
-      user: user.toJSON ? user.toJSON() : user,
-      demo: !isDBConnected(),
+      message: "Profile updated successfully" + (isDemoMode ? " (demo mode)" : ""),
+      user: responseUser,
+      demo: isDemoMode,
+      updatedFields: Object.keys(updates),
+      timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
     console.error("Update profile error:", error);
