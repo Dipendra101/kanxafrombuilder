@@ -99,7 +99,7 @@ const apiRequest = async (
           };
         }
 
-        console.log(`📡 API Response: ${response.status} ${url}`, {
+        console.log(`📡 API Response: ${responseStatus} ${url}`, {
           success: data.success,
           message: data.message,
           demo: data.demo,
@@ -107,10 +107,10 @@ const apiRequest = async (
           parseSuccess,
         });
 
-        // Check response status AFTER parsing body
-        if (!response.ok) {
+        // Check response status using stored values
+        if (!responseOk) {
           // Handle specific auth errors
-          if (response.status === 401 && data.message?.includes("token")) {
+          if (responseStatus === 401 && data.message?.includes("token")) {
             console.warn("🔐 Invalid token detected, clearing storage");
             // Clear invalid token from storage
             localStorage.removeItem("kanxa_token");
@@ -118,7 +118,7 @@ const apiRequest = async (
           }
 
           const errorMessage =
-            data.message || `HTTP ${response.status}: Request failed`;
+            data.message || `HTTP ${responseStatus}: Request failed`;
           console.error(`❌ API Error: ${errorMessage}`, data);
           throw new Error(errorMessage);
         }
