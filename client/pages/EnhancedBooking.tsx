@@ -771,24 +771,24 @@ export default function EnhancedBooking() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Base Amount</span>
-                    <span>NPR {pricing.baseAmount.toLocaleString()}</span>
+                    <span>Rs {pricing.baseAmount.toLocaleString()}</span>
                   </div>
                   {pricing.vatAmount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span>VAT (13%)</span>
-                      <span>NPR {pricing.vatAmount.toLocaleString()}</span>
+                      <span>Rs {pricing.vatAmount.toLocaleString()}</span>
                     </div>
                   )}
                   {pricing.serviceTaxAmount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span>Service Tax</span>
-                      <span>NPR {pricing.serviceTaxAmount.toLocaleString()}</span>
+                      <span>Rs {pricing.serviceTaxAmount.toLocaleString()}</span>
                     </div>
                   )}
                   {pricing.discountAmount > 0 && (
                     <div className="flex justify-between text-sm text-green-600">
                       <span>Discount</span>
-                      <span>-NPR {pricing.discountAmount.toLocaleString()}</span>
+                      <span>-Rs {pricing.discountAmount.toLocaleString()}</span>
                     </div>
                   )}
                 </div>
@@ -797,7 +797,7 @@ export default function EnhancedBooking() {
 
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total Amount</span>
-                  <span className="text-kanxa-orange">NPR {pricing.totalAmount.toLocaleString()}</span>
+                  <span className="text-kanxa-orange">Rs {pricing.totalAmount.toLocaleString()}</span>
                 </div>
 
                 <div className="text-xs text-gray-600 mt-4">
