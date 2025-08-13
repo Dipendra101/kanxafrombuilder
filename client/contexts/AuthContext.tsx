@@ -332,18 +332,50 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setNetworkError(false);
 
     const storedToken = localStorage.getItem("kanxa_token");
-    if (storedToken) {
+    const storedUser = localStorage.getItem("kanxa_user");
+
+    if (storedToken && storedUser) {
       try {
-        const response = await authAPI.verifyToken(storedToken);
+        // Add timeout to retry as well
+        const response = await Promise.race([
+          authAPI.verifyToken(storedToken),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Retry timeout")), 5000)
+          )
+        ]);
+
         if (response.success && response.user) {
           setToken(storedToken);
           setUser(response.user);
+          setNetworkError(false);
           console.log("✅ Connection retry successful");
+        } else {
+          console.log("❌ Token invalid during retry");
+          setNetworkError(false);
+          localStorage.removeItem("kanxa_token");
+          localStorage.removeItem("kanxa_user");
+          setToken(null);
+          setUser(null);
         }
       } catch (error) {
         console.error("❌ Connection retry failed:", error);
         setNetworkError(true);
+
+        // Keep using cached data if network still has issues
+        try {
+          const userData = JSON.parse(storedUser);
+          if (!user) {
+            setToken(storedToken);
+            setUser(userData);
+            console.log("💾 Keeping cached auth during retry failure");
+          }
+        } catch (parseError) {
+          console.log("❌ Unable to use cached data");
+        }
       }
+    } else {
+      setNetworkError(false);
+      console.log("ℹ️ No stored credentials to retry with");
     }
   };
 
