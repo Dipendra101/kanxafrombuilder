@@ -1142,7 +1142,7 @@ export default function AdminDashboard() {
                                     id: service._id,
                                     name: service.name,
                                     type: service.type,
-                                    price: service.pricing.basePrice,
+                                    price: service.pricing?.basePrice || 0,
                                     status: service.isActive ? 'Active' : 'Inactive'
                                   }];
                                   ExportService.exportData(serviceData, {
