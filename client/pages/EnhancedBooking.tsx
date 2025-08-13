@@ -382,7 +382,7 @@ export default function EnhancedBooking() {
 
       if (result.success) {
         toast({
-          title: "Payment Successful! 🎉",
+          title: "Payment Successful! ����",
           description:
             "Your booking has been confirmed. You will receive a confirmation email shortly.",
         });
@@ -830,42 +830,12 @@ export default function EnhancedBooking() {
             {step === 3 && (
               <>
                 {/* Payment Methods */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Choose Payment Method</CardTitle>
-                    <CardDescription>
-                      Select your preferred payment option
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Button
-                        variant="outline"
-                        className="h-20 flex flex-col"
-                        onClick={() => handlePayment("khalti")}
-                        disabled={isSubmitting}
-                      >
-                        <CreditCard className="w-6 h-6 mb-2 text-purple-600" />
-                        <span>Khalti</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="h-20 flex flex-col"
-                        onClick={() => handlePayment("esewa")}
-                        disabled={isSubmitting}
-                      >
-                        <CreditCard className="w-6 h-6 mb-2 text-green-600" />
-                        <span>eSewa</span>
-                      </Button>
-                    </div>
-
-                    <div className="text-center">
-                      <p className="text-sm text-gray-600">
-                        Your payment is secured with 256-bit SSL encryption
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <PaymentOptions
+                  amount={service.pricing.basePrice + (service.pricing.taxes?.vat || 0) + (service.pricing.taxes?.serviceTax || 0)}
+                  service={service.name}
+                  serviceId={service.id}
+                  onPaymentSelect={handlePayment}
+                />
               </>
             )}
           </div>
