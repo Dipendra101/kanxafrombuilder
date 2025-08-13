@@ -35,6 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -240,6 +241,9 @@ export default function Garage() {
         <DialogTitle className="text-2xl font-bold text-kanxa-navy">
           Book Service Appointment
         </DialogTitle>
+        <DialogDescription>
+          Schedule your vehicle service appointment with our expert technicians
+        </DialogDescription>
       </DialogHeader>
 
       <div className="space-y-6">
