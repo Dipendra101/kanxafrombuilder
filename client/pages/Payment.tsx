@@ -132,7 +132,7 @@ export default function Payment() {
   const getRouteFromServiceName = (serviceName: string) => {
     // Extract route information from service name or use defaults
     if (serviceName.includes('Kathmandu')) {
-      return 'Lamjung → Kathmandu';
+      return 'Lamjung �� Kathmandu';
     } else if (serviceName.includes('Pokhara')) {
       return 'Lamjung → Pokhara';
     }
@@ -228,6 +228,17 @@ export default function Payment() {
                                   </Badge>
                                 ))}
                               </div>
+                            </div>
+                          )}
+
+                          {serviceDetails.type === 'Cargo Service' && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <Truck className="w-4 h-4 text-gray-600" />
+                              <span className="text-gray-600">Capacity:</span>
+                              <span className="font-medium text-kanxa-orange">
+                                {serviceDetails.name.includes('Heavy') ? '10 tons' :
+                                 serviceDetails.name.includes('Medium') ? '5 tons' : '2 tons'}
+                              </span>
                             </div>
                           )}
 
