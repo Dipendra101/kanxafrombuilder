@@ -198,8 +198,7 @@ export default function Orders() {
           Order Details - {order.id}
         </DialogTitle>
         <DialogDescription>
-          View complete order information including items, pricing, and delivery
-          details
+          View complete order information including items, pricing, and delivery details
         </DialogDescription>
       </DialogHeader>
 
@@ -222,7 +221,7 @@ export default function Orders() {
           <div>
             <p className="text-sm font-medium text-gray-600">Total Amount</p>
             <p className="font-semibold text-kanxa-orange">
-              NPR {order.total.toLocaleString()}
+              Rs {order.total.toLocaleString()}
             </p>
           </div>
           <div>
@@ -245,13 +244,13 @@ export default function Orders() {
                 <div className="flex-1">
                   <h4 className="font-medium text-kanxa-navy">{item.name}</h4>
                   <p className="text-sm text-gray-600">
-                    {item.quantity} {item.unit} × NPR{" "}
+                    {item.quantity} {item.unit} × Rs{" "}
                     {item.price.toLocaleString()}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-kanxa-orange">
-                    NPR {(item.quantity * item.price).toLocaleString()}
+                    Rs {(item.quantity * item.price).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -370,7 +369,7 @@ export default function Orders() {
             <Card className="text-center">
               <CardContent className="p-6">
                 <div className="text-3xl font-bold text-kanxa-navy mb-2">
-                  NPR{" "}
+                  Rs{" "}
                   {orders.reduce((sum, o) => sum + o.total, 0).toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-600">Total Value</div>
@@ -430,7 +429,7 @@ export default function Orders() {
                         </span>
                       </Badge>
                       <p className="text-lg font-bold text-kanxa-orange mt-1">
-                        NPR {order.total.toLocaleString()}
+                        Rs {order.total.toLocaleString()}
                       </p>
                     </div>
                   </div>
