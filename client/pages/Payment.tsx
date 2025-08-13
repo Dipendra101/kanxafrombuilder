@@ -16,6 +16,9 @@ interface ServiceDetails {
   amount: number;
   description: string;
   icon: JSX.Element;
+  seatNumbers?: string[];
+  vehiclePlate?: string;
+  route?: string;
 }
 
 export default function Payment() {
