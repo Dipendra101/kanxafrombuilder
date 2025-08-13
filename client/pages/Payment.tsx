@@ -58,7 +58,7 @@ export default function Payment() {
         details = {
           id: serviceId,
           type: 'Bus Ticket',
-          name: getBusServiceName(serviceId),
+          name: customServiceName || getBusServiceName(serviceId),
           amount,
           description: 'Comfortable bus transportation',
           icon: <Bus className="w-6 h-6 text-kanxa-blue" />
