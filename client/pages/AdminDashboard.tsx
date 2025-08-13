@@ -874,7 +874,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="text-right space-y-1">
                           <p className="text-sm font-medium">
-                            ₨ {booking.totalAmount.toLocaleString()}
+                            ₨ {(booking.totalAmount || 0).toLocaleString()}
                           </p>
                           {getStatusBadge(booking.status)}
                         </div>
