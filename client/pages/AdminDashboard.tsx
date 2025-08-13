@@ -499,7 +499,7 @@ export default function AdminDashboard() {
       description: service.description,
       type: service.type,
       category: service.category,
-      basePrice: service.pricing.basePrice.toString(),
+      basePrice: (service.pricing?.basePrice || 0).toString(),
       isActive: service.isActive,
       isFeatured: service.isFeatured,
     });
