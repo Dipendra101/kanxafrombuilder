@@ -190,7 +190,8 @@ export default function ChatNotifications() {
 
       <DropdownMenuContent
         align="end"
-        className="w-80 max-h-96 overflow-hidden p-0"
+        className="w-80 max-h-96 overflow-hidden p-0 z-50"
+        sideOffset={8}
       >
         <Tabs defaultValue="notifications" className="w-full">
           <div className="px-4 py-3 border-b">
