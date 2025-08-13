@@ -47,6 +47,7 @@ import SmsTest from "./pages/SmsTest";
 import EnhancedBooking from "./pages/EnhancedBooking";
 import TestFormSubmission from "./pages/TestFormSubmission";
 import SecurityAudit from "./pages/SecurityAudit";
+import Payment from "./pages/Payment";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
