@@ -386,7 +386,14 @@ export default function Transportation() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-2xl font-bold text-kanxa-navy">
-                      Available Buses ({(filteredServices.length > 0 ? filteredServices : filteredBuses).length})
+                      Available Buses (
+                      {
+                        (filteredServices.length > 0
+                          ? filteredServices
+                          : filteredBuses
+                        ).length
+                      }
+                      )
                     </h3>
                     <div className="flex items-center gap-4">
                       <span className="text-sm text-gray-600">Sort by:</span>
@@ -395,7 +402,9 @@ export default function Transportation() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="departure">Departure time</SelectItem>
+                          <SelectItem value="departure">
+                            Departure time
+                          </SelectItem>
                           <SelectItem value="price">Price</SelectItem>
                           <SelectItem value="duration">Duration</SelectItem>
                           <SelectItem value="rating">Rating</SelectItem>
@@ -408,7 +417,8 @@ export default function Transportation() {
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kanxa-blue mx-auto"></div>
                       <p className="mt-2 text-gray-600">Loading buses...</p>
                     </div>
-                  ) : (filteredServices.length === 0 && filteredBuses.length === 0) ? (
+                  ) : filteredServices.length === 0 &&
+                    filteredBuses.length === 0 ? (
                     <Card>
                       <CardContent className="text-center py-8">
                         <Bus className="w-12 h-12 text-gray-300 mx-auto mb-4" />
@@ -430,7 +440,10 @@ export default function Transportation() {
                     </Card>
                   ) : (
                     // Show API results first, fallback to sample data
-                    (filteredServices.length > 0 ? filteredServices : filteredBuses).map((bus) => (
+                    (filteredServices.length > 0
+                      ? filteredServices
+                      : filteredBuses
+                    ).map((bus) => (
                       <Card
                         key={bus.id}
                         className="hover:shadow-lg transition-shadow border-l-4 border-l-kanxa-blue"
@@ -440,19 +453,26 @@ export default function Transportation() {
                             {/* Company Logo & Info */}
                             <div className="flex items-center gap-4 p-6 flex-1">
                               <div className="w-12 h-12 bg-kanxa-blue rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                                {(bus.operator?.name || bus.name || "KS").substring(0, 2).toUpperCase()}
+                                {(bus.operator?.name || bus.name || "KS")
+                                  .substring(0, 2)
+                                  .toUpperCase()}
                               </div>
                               <div className="space-y-1">
                                 <div className="font-semibold text-kanxa-navy text-lg">
-                                  {bus.operator?.name || bus.name || "Kanxa Safari"}
+                                  {bus.operator?.name ||
+                                    bus.name ||
+                                    "Kanxa Safari"}
                                 </div>
                                 <div className="text-sm text-gray-600">
-                                  {bus.busType || bus.vehicle?.busType || "Express"}
+                                  {bus.busType ||
+                                    bus.vehicle?.busType ||
+                                    "Express"}
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                                   <span className="text-sm text-gray-600">
-                                    {bus.rating?.average || bus.rating || "4.5"} ({bus.rating?.count || "150"} reviews)
+                                    {bus.rating?.average || bus.rating || "4.5"}{" "}
+                                    ({bus.rating?.count || "150"} reviews)
                                   </span>
                                 </div>
                               </div>
@@ -463,7 +483,8 @@ export default function Transportation() {
                               <div className="flex items-center gap-2 mb-2">
                                 <MapPin className="w-4 h-4 text-kanxa-blue" />
                                 <span className="text-lg font-semibold text-kanxa-navy">
-                                  {bus.from || "Kathmandu"} → {bus.to || "Pokhara"}
+                                  {bus.from || "Kathmandu"} →{" "}
+                                  {bus.to || "Pokhara"}
                                 </span>
                               </div>
                               <div className="grid grid-cols-2 gap-4 text-sm">
@@ -487,9 +508,18 @@ export default function Transportation() {
 
                             {/* Amenities */}
                             <div className="px-6 py-4 border-l border-gray-200 flex-1">
-                              <div className="text-sm font-medium text-gray-700 mb-2">Amenities:</div>
+                              <div className="text-sm font-medium text-gray-700 mb-2">
+                                Amenities:
+                              </div>
                               <div className="flex flex-wrap gap-1 mb-3">
-                                {(bus.amenities || bus.vehicle?.amenities || ["AC", "WiFi", "Snacks"])
+                                {(
+                                  bus.amenities ||
+                                  bus.vehicle?.amenities || [
+                                    "AC",
+                                    "WiFi",
+                                    "Snacks",
+                                  ]
+                                )
                                   .slice(0, 4)
                                   .map((amenity: string, index: number) => (
                                     <span
@@ -504,16 +534,25 @@ export default function Transportation() {
                                 Seats Available
                               </div>
                               <div className="text-lg font-bold text-kanxa-green">
-                                {bus.availableSeats || Math.floor((bus.totalSeats || 45) * 0.3)}/{bus.totalSeats || 45}
+                                {bus.availableSeats ||
+                                  Math.floor((bus.totalSeats || 45) * 0.3)}
+                                /{bus.totalSeats || 45}
                               </div>
                             </div>
 
                             {/* Pricing & Booking */}
                             <div className="px-6 py-4 text-right">
                               <div className="text-2xl font-bold text-kanxa-navy mb-1">
-                                Rs {(bus.price || bus.pricing?.basePrice || 800).toLocaleString()}
+                                Rs{" "}
+                                {(
+                                  bus.price ||
+                                  bus.pricing?.basePrice ||
+                                  800
+                                ).toLocaleString()}
                               </div>
-                              <div className="text-sm text-gray-500 mb-4">per person</div>
+                              <div className="text-sm text-gray-500 mb-4">
+                                per person
+                              </div>
                               <Dialog
                                 onOpenChange={(open) =>
                                   !open && setSelectedBus(null)
