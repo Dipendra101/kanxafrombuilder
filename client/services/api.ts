@@ -53,7 +53,36 @@ const apiRequest = async (
 
         clearTimeout(timeoutId);
 
-        // Parse response body once
+        // Check response status BEFORE parsing body
+        if (!response.ok) {
+          // For error responses, still try to parse the body for error details
+          let errorData;
+          try {
+            errorData = await response.json();
+          } catch (parseError) {
+            console.error(`❌ Error response parsing failed for ${url}:`, parseError);
+            errorData = {
+              success: false,
+              message: `HTTP ${response.status}: Request failed`,
+              error: "RESPONSE_ERROR",
+            };
+          }
+
+          // Handle specific auth errors
+          if (response.status === 401 && errorData.message?.includes("token")) {
+            console.warn("🔐 Invalid token detected, clearing storage");
+            // Clear invalid token from storage
+            localStorage.removeItem("kanxa_token");
+            localStorage.removeItem("kanxa_user");
+          }
+
+          const errorMessage =
+            errorData.message || `HTTP ${response.status}: Request failed`;
+          console.error(`❌ API Error: ${errorMessage}`, errorData);
+          throw new Error(errorMessage);
+        }
+
+        // Parse successful response body
         let data;
         try {
           data = await response.json();
@@ -73,21 +102,6 @@ const apiRequest = async (
           demo: data.demo,
           attempt: attempt + 1,
         });
-
-        if (!response.ok) {
-          // Handle specific auth errors
-          if (response.status === 401 && data.message?.includes("token")) {
-            console.warn("🔐 Invalid token detected, clearing storage");
-            // Clear invalid token from storage
-            localStorage.removeItem("kanxa_token");
-            localStorage.removeItem("kanxa_user");
-          }
-
-          const errorMessage =
-            data.message || `HTTP ${response.status}: Request failed`;
-          console.error(`❌ API Error: ${errorMessage}`, data);
-          throw new Error(errorMessage);
-        }
 
         return data;
       } catch (fetchError) {
