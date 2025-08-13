@@ -558,7 +558,7 @@ export default function Transportation() {
                               Base Price:
                             </span>
                             <span className="font-medium">
-                              NPR {cargo.basePrice.toLocaleString()}
+                              ₨ {cargo.basePrice.toLocaleString()}
                             </span>
                           </div>
                           <div className="flex justify-between">
