@@ -201,8 +201,12 @@ export default function ChatNotifications() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={toggleDoNotDisturb}
-                  className="p-1"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDoNotDisturb();
+                  }}
+                  className="p-1 hover:bg-gray-100"
                 >
                   {settings.doNotDisturb ? (
                     <Moon className="w-4 h-4 text-purple-600" />
