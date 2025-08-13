@@ -237,7 +237,7 @@ export function PremiumAnalytics() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <MetricCard
           title="Total Revenue"
           value={`₨ ${data.revenue.total.toLocaleString()}`}
@@ -283,7 +283,7 @@ export function PremiumAnalytics() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6">
             {/* Revenue Trend */}
             <Card>
               <CardHeader>
