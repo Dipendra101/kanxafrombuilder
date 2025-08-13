@@ -459,7 +459,7 @@ export default function Transportation() {
                                 </span>
                               </div>
                               <div className="flex flex-wrap gap-1">
-                                {bus.amenities
+                                {(bus.amenities || bus.vehicle?.amenities || [])
                                   .slice(0, 3)
                                   .map((amenity: string, index: number) => (
                                     <Badge
@@ -470,12 +470,12 @@ export default function Transportation() {
                                       {amenity}
                                     </Badge>
                                   ))}
-                                {bus.amenities.length > 3 && (
+                                {(bus.amenities || bus.vehicle?.amenities || []).length > 3 && (
                                   <Badge
                                     variant="secondary"
                                     className="text-xs"
                                   >
-                                    +{bus.amenities.length - 3} more
+                                    +{(bus.amenities || bus.vehicle?.amenities || []).length - 3} more
                                   </Badge>
                                 )}
                               </div>
