@@ -79,8 +79,6 @@ export default function Profile() {
       });
       setProfilePicture(user.profilePicture || null);
 
-      // Fetch user activity and stats
-      fetchUserData();
     }
   }, [user]);
 
