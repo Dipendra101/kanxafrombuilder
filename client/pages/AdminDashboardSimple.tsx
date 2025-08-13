@@ -151,7 +151,7 @@ export default function AdminDashboardSimple() {
     },
     {
       title: "Total Revenue",
-      value: "NPR 1,250,000",
+      value: "₨ 1,250,000",
       change: "+15%",
       icon: DollarSign,
       color: "text-orange-600",
