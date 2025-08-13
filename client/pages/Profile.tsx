@@ -244,17 +244,7 @@ export default function Profile() {
 
   const [activityLoading, setActivityLoading] = useState(false);
 
-  // Show guest restriction if user is in guest mode - MUST be after all hooks
-  if (isGuest || !isAuthenticated) {
-    return (
-      <GuestRestriction
-        action="access your profile"
-        description="You need to be logged in to view and edit your profile. Create an account to manage your personal information and preferences."
-      />
-    );
-  }
-
-  // Load recent activity from backend
+  // Load recent activity from backend - MUST be before conditional return
   useEffect(() => {
     const loadRecentActivity = async () => {
       if (!user) return;
@@ -282,6 +272,16 @@ export default function Profile() {
 
     loadRecentActivity();
   }, [user]);
+
+  // Show guest restriction if user is in guest mode - MUST be after all hooks
+  if (isGuest || !isAuthenticated) {
+    return (
+      <GuestRestriction
+        action="access your profile"
+        description="You need to be logged in to view and edit your profile. Create an account to manage your personal information and preferences."
+      />
+    );
+  }
 
   return (
     <Layout>
