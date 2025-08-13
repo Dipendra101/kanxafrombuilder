@@ -640,10 +640,15 @@ export default function Profile() {
                           className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
                           variant="outline"
                           onClick={() => {
-                            // Scroll to settings tab or switch to it
-                            const settingsTab = document.querySelector('[data-value="settings"]') as HTMLElement;
-                            if (settingsTab) {
-                              settingsTab.click();
+                            // Switch to settings tab
+                            const tabTrigger = document.querySelector('[value="settings"]') as HTMLElement;
+                            if (tabTrigger) {
+                              tabTrigger.click();
+                            } else {
+                              toast({
+                                title: "Settings",
+                                description: "Navigate to the Settings tab to manage notifications.",
+                              });
                             }
                           }}
                         >
