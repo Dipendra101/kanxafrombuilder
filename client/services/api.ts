@@ -103,10 +103,11 @@ const apiRequest = async (
         error.name === "TimeoutError" ||
         error.name === "AbortError" ||
         (error instanceof Error && error.message.includes("fetch")) ||
-        (error instanceof Error && error.message.includes("aborted"));
+        (error instanceof Error && error.message.includes("aborted")) ||
+        (error instanceof Error && error.message.includes("Failed to fetch"));
 
       if (isRetryableError && !isLastAttempt) {
-        const delay = Math.pow(2, attempt) * 1000; // Exponential backoff: 1s, 2s, 4s
+        const delay = Math.min(Math.pow(2, attempt) * 1000, 5000); // Cap at 5 seconds
         console.warn(
           `🔄 API Request failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms...`,
         );
@@ -119,11 +120,15 @@ const apiRequest = async (
         error,
       );
 
-      // Network or parsing errors
+      // Provide better error messages based on error type
       if (isRetryableError) {
-        throw new Error(
-          "Network error: Unable to connect to server. Please check your internet connection and try again.",
-        );
+        if (error.message.includes("Failed to fetch")) {
+          throw new Error("Network error: Unable to connect to server. Please check your internet connection and try again.");
+        } else if (error.name === 'AbortError' || error.message.includes("timeout")) {
+          throw new Error("Request timeout: The server is taking too long to respond. Please try again.");
+        } else {
+          throw new Error("Network error: Unable to connect to server. Please check your internet connection and try again.");
+        }
       }
       throw error;
     }
