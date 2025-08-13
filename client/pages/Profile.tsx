@@ -69,6 +69,37 @@ export default function Profile() {
     bio: "",
   });
 
+  // Fetch user activity and stats from backend
+  const fetchUserData = async () => {
+    if (!user) return;
+
+    try {
+      setActivityLoading(true);
+
+      // Fetch user's recent bookings as activity
+      const bookingsResponse = await bookingsAPI.getBookings({ limit: 5 });
+      if (bookingsResponse.success && bookingsResponse.bookings) {
+        const activities = bookingsResponse.bookings.map((booking: any, index: number) => ({
+          id: booking._id || index,
+          type: "booking",
+          description: `${booking.service?.name || 'Service'} booking${booking.status === 'confirmed' ? ' confirmed' : ''} - ${booking.serviceDetails?.route || booking.contactInfo?.name || 'Service'}`,
+          date: new Date(booking.createdAt).toLocaleDateString(),
+          status: booking.status || 'unknown',
+        }));
+        setRecentActivity(activities);
+      }
+
+      // You could also fetch actual loyalty/stats data here
+      // const statsResponse = await userAPI.getStats();
+
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      // Keep default data on error
+    } finally {
+      setActivityLoading(false);
+    }
+  };
+
   // Update profile when user data changes
   useEffect(() => {
     if (user) {
@@ -82,6 +113,9 @@ export default function Profile() {
         bio: "",
       });
       setProfilePicture(user.profilePicture || null);
+
+      // Fetch user activity and stats
+      fetchUserData();
     }
   }, [user]);
 
@@ -163,7 +197,7 @@ export default function Profile() {
     }
   };
 
-  const recentActivity = [
+  const [recentActivity, setRecentActivity] = useState([
     {
       id: 1,
       type: "booking",
@@ -185,15 +219,17 @@ export default function Profile() {
       date: "2024-01-22",
       status: "upcoming",
     },
-  ];
+  ]);
 
-  const loyaltyStats = {
+  const [loyaltyStats, setLoyaltyStats] = useState({
     totalBookings: 15,
     totalOrders: 8,
     totalSpent: 245000,
     loyaltyPoints: 1250,
     membershipLevel: "Gold",
-  };
+  });
+
+  const [activityLoading, setActivityLoading] = useState(false);
 
   return (
     <Layout>
