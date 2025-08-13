@@ -47,6 +47,9 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
   const occupiedSeats = [2, 5, 8, 12, 15, 23, 28, 31, 37, 42];
 
+  // Get price with fallback
+  const busPrice = bus?.price || bus?.pricing?.basePrice || 800;
+
   // Safety check to ensure we have bus data
   if (!bus) {
     return (
@@ -202,7 +205,7 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
                 <div className="flex justify-between">
                   <span>Seat(s) ({selectedSeats.length})</span>
                   <span>
-                    Rs {(bus.price * selectedSeats.length).toLocaleString()}
+                    Rs {(busPrice * selectedSeats.length).toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -214,8 +217,8 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
                   <span>Total</span>
                   <span className="text-kanxa-blue">
                     Rs{" "}
-                    {(bus.price * selectedSeats.length + 50 > 50
-                      ? bus.price * selectedSeats.length + 50
+                    {(busPrice * selectedSeats.length + 50 > 50
+                      ? busPrice * selectedSeats.length + 50
                       : 0
                     ).toLocaleString()}
                   </span>
