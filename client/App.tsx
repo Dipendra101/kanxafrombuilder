@@ -96,6 +96,10 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
 
+            {/* Test Routes */}
+            <Route path="/test-forms" element={<TestFormSubmission />} />
+            <Route path="/qa-test" element={<TestFormSubmission />} />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
