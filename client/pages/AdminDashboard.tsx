@@ -1230,7 +1230,7 @@ export default function AdminDashboard() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          ₨ {booking.totalAmount.toLocaleString()}
+                          ₨ {(booking.totalAmount || 0).toLocaleString()}
                         </TableCell>
                         <TableCell>
                           {new Date(booking.bookingDate).toLocaleDateString()}
