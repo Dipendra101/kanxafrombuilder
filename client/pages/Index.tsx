@@ -279,7 +279,12 @@ export default function Index() {
                         <p className="font-medium text-kanxa-navy">
                           {cargo.price}
                         </p>
-                        <Button size="sm" variant="outline" asChild className="mt-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          asChild
+                          className="mt-1"
+                        >
                           <Link to="/cargo">Request Quote</Link>
                         </Button>
                       </div>
@@ -346,7 +351,12 @@ export default function Index() {
                   <p className="font-semibold text-kanxa-orange mb-4">
                     {item.price}
                   </p>
-                  <Button size="sm" variant="outline" asChild className="w-full">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    asChild
+                    className="w-full"
+                  >
                     <Link to="/materials">Get Quote</Link>
                   </Button>
                 </CardContent>
