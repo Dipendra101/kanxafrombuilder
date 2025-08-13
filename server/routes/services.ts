@@ -89,6 +89,66 @@ const mockServices = [
     updatedAt: new Date(),
   },
   {
+    _id: "3",
+    name: "Pokhara to Chitwan Express",
+    description: "Comfortable bus service from Pokhara to Chitwan National Park",
+    type: "bus",
+    category: "Transportation",
+    pricing: { basePrice: 750, currency: "Rs" },
+    isActive: true,
+    isFeatured: false,
+    rating: { average: 4.3, count: 95 },
+    busDetails: {
+      busNumber: "PC-2001",
+      capacity: 40,
+      busType: "Non-AC",
+      amenities: ["WiFi", "Music"],
+      route: { from: "Pokhara", to: "Chitwan", duration: "4 hours" },
+      availableSeats: 15,
+      schedule: [
+        {
+          departureTime: "07:00 AM",
+          arrivalTime: "11:00 AM",
+          date: new Date().toISOString().split('T')[0]
+        }
+      ],
+      operator: { name: "Mountain Express" }
+    },
+    images: ["/placeholder.svg"],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    _id: "4",
+    name: "Kathmandu to Chitwan Tourist Bus",
+    description: "Tourist-friendly bus service to Chitwan with guide assistance",
+    type: "bus",
+    category: "Transportation",
+    pricing: { basePrice: 1200, currency: "Rs" },
+    isActive: true,
+    isFeatured: true,
+    rating: { average: 4.6, count: 150 },
+    busDetails: {
+      busNumber: "KC-3001",
+      capacity: 35,
+      busType: "AC Tourist",
+      amenities: ["AC", "WiFi", "Guide", "Refreshments"],
+      route: { from: "Kathmandu", to: "Chitwan", duration: "5 hours" },
+      availableSeats: 8,
+      schedule: [
+        {
+          departureTime: "09:00 AM",
+          arrivalTime: "2:00 PM",
+          date: new Date().toISOString().split('T')[0]
+        }
+      ],
+      operator: { name: "Nepal Tourism Bus" }
+    },
+    images: ["/placeholder.svg"],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
     _id: "mock_service_3",
     name: "Everest Base Camp Tour",
     description: "Guided tour to Everest Base Camp with accommodation",
