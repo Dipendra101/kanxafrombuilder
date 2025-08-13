@@ -1222,10 +1222,10 @@ export default function AdminDashboard() {
                         <TableCell>
                           <div>
                             <p className="font-medium">
-                              {booking.service.name}
+                              {booking.service?.name || 'Service not available'}
                             </p>
                             <Badge variant="outline" className="mt-1">
-                              {booking.service.type}
+                              {booking.service?.type || 'N/A'}
                             </Badge>
                           </div>
                         </TableCell>
