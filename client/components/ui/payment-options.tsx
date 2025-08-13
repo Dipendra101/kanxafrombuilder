@@ -195,8 +195,8 @@ export function PaymentOptions({
         {/* Payment Note */}
         <div className="bg-blue-50 p-3 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>Note:</strong> Payment integration with Khalti and eSewa will be activated soon. 
-            Currently showing demo flow for testing purposes.
+            <strong>Test Environment:</strong> You are using test payment gateways.
+            Use test credentials provided by Khalti and eSewa for testing.
           </p>
         </div>
       </CardContent>
