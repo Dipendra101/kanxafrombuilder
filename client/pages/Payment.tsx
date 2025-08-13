@@ -128,6 +128,16 @@ export default function Payment() {
     return `Custom Tour Package #${id}`;
   };
 
+  const getRouteFromServiceName = (serviceName: string) => {
+    // Extract route information from service name or use defaults
+    if (serviceName.includes('Kathmandu')) {
+      return 'Lamjung → Kathmandu';
+    } else if (serviceName.includes('Pokhara')) {
+      return 'Lamjung → Pokhara';
+    }
+    return 'Lamjung → Kathmandu'; // default route
+  };
+
   const handlePaymentComplete = (method: string) => {
     toast({
       title: "Payment Processing",
