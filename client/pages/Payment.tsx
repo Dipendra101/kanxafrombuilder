@@ -44,6 +44,7 @@ export default function Payment() {
     const serviceType = searchParams.get('type');
     const amount = parseFloat(searchParams.get('amount') || '0');
     const customServiceName = searchParams.get('serviceName');
+    const seatNumbers = searchParams.get('seats')?.split(',') || [];
 
     if (!serviceId || !serviceType || !amount) {
       toast({
