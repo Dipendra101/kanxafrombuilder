@@ -53,46 +53,40 @@ const apiRequest = async (
 
         clearTimeout(timeoutId);
 
-        // Check response status BEFORE parsing body
-        if (!response.ok) {
-          // For error responses, still try to parse the body for error details
-          let errorData;
-          try {
-            errorData = await response.json();
-          } catch (parseError) {
-            console.error(`❌ Error response parsing failed for ${url}:`, parseError);
-            errorData = {
+        // Parse response body once, regardless of status
+        let data;
+        let parseSuccess = false;
+
+        try {
+          // First, try to read the response body as text to avoid stream issues
+          const responseText = await response.text();
+
+          // Then try to parse as JSON
+          if (responseText) {
+            try {
+              data = JSON.parse(responseText);
+              parseSuccess = true;
+            } catch (jsonError) {
+              console.warn(`⚠️ JSON parse failed, treating as plain text response`);
+              data = {
+                success: false,
+                message: responseText || `HTTP ${response.status}: Request failed`,
+                error: "JSON_PARSE_ERROR",
+              };
+            }
+          } else {
+            data = {
               success: false,
-              message: `HTTP ${response.status}: Request failed`,
-              error: "RESPONSE_ERROR",
+              message: `HTTP ${response.status}: Empty response`,
+              error: "EMPTY_RESPONSE",
             };
           }
-
-          // Handle specific auth errors
-          if (response.status === 401 && errorData.message?.includes("token")) {
-            console.warn("🔐 Invalid token detected, clearing storage");
-            // Clear invalid token from storage
-            localStorage.removeItem("kanxa_token");
-            localStorage.removeItem("kanxa_user");
-          }
-
-          const errorMessage =
-            errorData.message || `HTTP ${response.status}: Request failed`;
-          console.error(`❌ API Error: ${errorMessage}`, errorData);
-          throw new Error(errorMessage);
-        }
-
-        // Parse successful response body
-        let data;
-        try {
-          data = await response.json();
-        } catch (parseError) {
-          console.error(`❌ JSON parsing failed for ${url}:`, parseError);
-          // If JSON parsing fails, provide fallback
+        } catch (readError) {
+          console.error(`❌ Response reading failed for ${url}:`, readError);
           data = {
             success: false,
-            message: `Response parsing failed: ${parseError}`,
-            error: "PARSE_ERROR",
+            message: `HTTP ${response.status}: Failed to read response`,
+            error: "READ_ERROR",
           };
         }
 
@@ -101,7 +95,24 @@ const apiRequest = async (
           message: data.message,
           demo: data.demo,
           attempt: attempt + 1,
+          parseSuccess,
         });
+
+        // Check response status AFTER parsing body
+        if (!response.ok) {
+          // Handle specific auth errors
+          if (response.status === 401 && data.message?.includes("token")) {
+            console.warn("🔐 Invalid token detected, clearing storage");
+            // Clear invalid token from storage
+            localStorage.removeItem("kanxa_token");
+            localStorage.removeItem("kanxa_user");
+          }
+
+          const errorMessage =
+            data.message || `HTTP ${response.status}: Request failed`;
+          console.error(`❌ API Error: ${errorMessage}`, data);
+          throw new Error(errorMessage);
+        }
 
         return data;
       } catch (fetchError) {
