@@ -605,8 +605,8 @@ function RevenueAnalytics({ data }: { data: AnalyticsData }) {
           <CardTitle>Monthly Trends</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data.timeSeriesData}>
+          <ResponsiveContainer width="100%" height={350}>
+            <LineChart data={data.timeSeriesData} margin={{ bottom: 20, left: 20, right: 20, top: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="date"
@@ -743,8 +743,8 @@ function ServiceAnalytics({ data }: { data: AnalyticsData }) {
           <CardTitle>Service Performance</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data.services.performance}>
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart data={data.services.performance} margin={{ bottom: 20, left: 20, right: 20, top: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="name"
