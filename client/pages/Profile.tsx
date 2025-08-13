@@ -259,7 +259,7 @@ export default function Profile() {
 
       setActivityLoading(true);
       try {
-        const response = await bookingsAPI.getUserBookings();
+        const response = await bookingsAPI.getBookings({ limit: 5 });
         if (response.success && response.bookings) {
           const activities = response.bookings
             .slice(0, 5)
