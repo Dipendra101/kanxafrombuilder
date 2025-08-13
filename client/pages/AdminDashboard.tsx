@@ -243,7 +243,7 @@ export default function AdminDashboard() {
               category: "bus",
               isActive: true,
               isFeatured: true,
-              pricing: { basePrice: 500, currency: "NPR" },
+              pricing: { basePrice: 500, currency: "₨" },
             },
             {
               _id: "service2",
@@ -252,7 +252,7 @@ export default function AdminDashboard() {
               category: "cargo",
               isActive: true,
               isFeatured: false,
-              pricing: { basePrice: 1000, currency: "NPR" },
+              pricing: { basePrice: 1000, currency: "₨" },
             },
           ];
           setAllServices(demoServices);
@@ -364,7 +364,7 @@ export default function AdminDashboard() {
               description: "Comfortable AC bus service",
               type: "bus",
               category: "Transportation",
-              pricing: { basePrice: 800, currency: "NPR" },
+              pricing: { basePrice: 800, currency: "₨" },
               isActive: true,
               isFeatured: true,
               rating: { average: 4.5, count: 120 },
@@ -446,7 +446,7 @@ export default function AdminDashboard() {
         ...serviceForm,
         pricing: {
           basePrice: parseFloat(serviceForm.basePrice),
-          currency: "NPR",
+          currency: "₨",
         },
       };
 
@@ -642,7 +642,7 @@ export default function AdminDashboard() {
     },
     {
       title: "Total Revenue",
-      value: `NPR ${stats.totalRevenue.toLocaleString()}`,
+      value: `₨ ${stats.totalRevenue.toLocaleString()}`,
       change: "+15%",
       changeType: "positive" as const,
       icon: DollarSign,
@@ -847,7 +847,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="text-right space-y-1">
                           <p className="text-sm font-medium">
-                            NPR {booking.totalAmount.toLocaleString()}
+                            ₨ {booking.totalAmount.toLocaleString()}
                           </p>
                           {getStatusBadge(booking.status)}
                         </div>
@@ -1067,7 +1067,7 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>{service.category}</TableCell>
                         <TableCell>
-                          NPR {service.pricing.basePrice.toLocaleString()}
+                          ₨ {service.pricing.basePrice.toLocaleString()}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-1">
@@ -1185,7 +1185,7 @@ export default function AdminDashboard() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          NPR {booking.totalAmount.toLocaleString()}
+                          ₨ {booking.totalAmount.toLocaleString()}
                         </TableCell>
                         <TableCell>
                           {new Date(booking.bookingDate).toLocaleDateString()}
@@ -1234,7 +1234,7 @@ export default function AdminDashboard() {
                       <div>
                         <p className="text-sm text-blue-600">This Month</p>
                         <p className="text-2xl font-bold text-blue-800">
-                          NPR {stats.monthlyRevenue.toLocaleString()}
+                          ₨ {stats.monthlyRevenue.toLocaleString()}
                         </p>
                       </div>
                       <TrendingUp className="w-8 h-8 text-blue-600" />
@@ -1409,7 +1409,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div>
-                <Label htmlFor="basePrice">Base Price (NPR)</Label>
+                <Label htmlFor="basePrice">Base Price (₨)</Label>
                 <Input
                   id="basePrice"
                   type="number"
