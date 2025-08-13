@@ -662,9 +662,9 @@ export default function Transportation() {
                             </span>
                           </div>
                         </div>
-                        <Link to={`/book?service=${cargo.id}&type=cargo`}>
+                        <Link to={`/payment?service=${cargo.id}&type=cargo&amount=${cargo.basePrice}`}>
                           <Button className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
-                            Request Quote
+                            Book Service
                           </Button>
                         </Link>
                       </CardContent>
