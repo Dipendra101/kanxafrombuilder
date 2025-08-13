@@ -33,6 +33,7 @@ import AdminDashboardSimple from "./pages/AdminDashboardSimple";
 import AdminTest from "./pages/AdminTest";
 import SmsTest from "./pages/SmsTest";
 import EnhancedBooking from "./pages/EnhancedBooking";
+import TestFormSubmission from "./pages/TestFormSubmission";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
