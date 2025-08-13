@@ -218,8 +218,12 @@ export default function ChatNotifications() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={clearAll}
-                    className="text-xs"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      clearAll();
+                    }}
+                    className="text-xs hover:bg-gray-100"
                   >
                     Clear all
                   </Button>
