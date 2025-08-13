@@ -614,5 +614,6 @@ export default {
   servicesAPI,
   bookingsAPI,
   adminAPI,
+  paymentAPI,
   healthAPI,
 };
