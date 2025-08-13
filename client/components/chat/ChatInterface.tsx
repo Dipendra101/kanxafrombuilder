@@ -36,6 +36,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { kanxaChatbot, ChatMessage } from "@/services/chatbot";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import EnhancedChatSettings from "./EnhancedChatSettings";
+import ExportService from "@/services/exportService";
 
 interface ChatInterfaceProps {
   onClose: () => void;
@@ -59,6 +61,7 @@ export default function ChatInterface({
   const [isRecording, setIsRecording] = useState(false);
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [showInfo, setShowInfo] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -366,12 +369,45 @@ export default function ChatInterface({
                 <Info className="w-4 h-4 mr-2" />
                 Contact Info
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowSettings(true)}>
+                <Settings className="w-4 h-4 mr-2" />
+                Chat Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={async () => {
+                const chatData = messages.map(msg => ({
+                  id: msg.id,
+                  text: msg.text,
+                  sender: msg.sender,
+                  timestamp: msg.timestamp.toISOString(),
+                  type: msg.type
+                }));
+                await ExportService.exportData(chatData, {
+                  format: 'json',
+                  filename: `chat_${contact.name.replace(/\s+/g, '_').toLowerCase()}_${new Date().toISOString().split('T')[0]}`
+                });
+              }}>
+                <Download className="w-4 h-4 mr-2" />
+                Export Chat
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <Heart className="w-4 h-4 mr-2" />
                 Add to Favorites
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem className="text-red-600" onClick={() => {
+                setMessages([]);
+                if (contact.type === 'bot') {
+                  const welcomeMessage: ChatMessage = {
+                    id: 'welcome',
+                    text: '🙏 Namaste! Welcome to Kanxa Safari! I\'m your AI assistant. How can I help you today?',
+                    sender: 'bot',
+                    timestamp: new Date(),
+                    type: 'text',
+                    status: 'read',
+                  };
+                  setMessages([welcomeMessage]);
+                }
+              }}>
                 <Trash2 className="w-4 h-4 mr-2" />
                 Clear Chat
               </DropdownMenuItem>
@@ -493,6 +529,22 @@ export default function ChatInterface({
         accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
         onChange={handleFileUpload}
       />
+
+      {/* Enhanced Chat Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-h-[90vh] overflow-y-auto w-full max-w-4xl">
+            <div className="p-6">
+              <EnhancedChatSettings
+                onClose={() => setShowSettings(false)}
+                initialSettings={{
+                  // Load saved settings or defaults
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
