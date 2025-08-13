@@ -505,14 +505,38 @@ export default function Transportation() {
                               >
                                 <DialogTrigger asChild>
                                   <Button
-                                    className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90"
+                                    className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90 text-white font-semibold py-2 px-6 rounded-lg"
                                     onClick={() => setSelectedBus(bus)}
                                   >
-                                    Book Seats
+                                    Select Seats
                                   </Button>
                                 </DialogTrigger>
                                 <SeatSelectionDialog bus={selectedBus || bus} />
                               </Dialog>
+                            </div>
+                          </div>
+
+                          {/* Additional Features Row */}
+                          <div className="px-6 py-3 bg-gray-50 border-t">
+                            <div className="flex items-center gap-6 text-sm text-gray-600">
+                              <div className="flex items-center gap-1">
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                <span>Premium seats</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                <span>USB charging</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                <span>Entertainment system</span>
+                              </div>
+                              {bus.busType?.includes("AC") && (
+                                <div className="flex items-center gap-1">
+                                  <CheckCircle className="w-4 h-4 text-green-500" />
+                                  <span>Climate control</span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </CardContent>
