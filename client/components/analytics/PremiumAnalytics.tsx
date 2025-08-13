@@ -335,7 +335,7 @@ export function PremiumAnalytics() {
                 <CardTitle>Booking Status</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={350}>
                   <PieChart>
                     <Pie
                       data={[
@@ -823,7 +823,7 @@ function GeographicAnalytics({ data }: { data: AnalyticsData }) {
           <CardTitle>Revenue by Location</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={350}>
             <PieChart>
               <Pie
                 data={data.geographic}
