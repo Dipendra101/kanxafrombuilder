@@ -140,10 +140,23 @@ export default function Payment() {
   };
 
   const handlePaymentComplete = (method: string) => {
+    // Generate unique transaction ID
+    const transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
     toast({
-      title: "Payment Processing",
-      description: `Processing payment via ${method}...`,
+      title: "Initiating Payment...",
+      description: `Connecting to ${method} payment gateway...`,
     });
+
+    // Store payment details for after redirect
+    localStorage.setItem('paymentDetails', JSON.stringify({
+      serviceId: serviceDetails?.id,
+      serviceName: serviceDetails?.name,
+      amount: serviceDetails?.amount,
+      method: method,
+      transactionId: transactionId,
+      timestamp: Date.now(),
+    }));
   };
 
   if (!serviceDetails) {
