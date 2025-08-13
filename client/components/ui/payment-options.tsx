@@ -34,36 +34,80 @@ export function PaymentOptions({
       // If parent component wants to handle payment selection
       if (onPaymentSelect) {
         onPaymentSelect(method);
+        setIsProcessing(false);
+        setSelectedMethod("");
         return;
       }
 
-      // Mock payment processing - later this will integrate with actual payment gateways
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Generate unique transaction ID
+      const transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
       toast({
-        title: "Payment Initiated! 🚀",
-        description: `Redirecting to ${method} payment gateway...`,
+        title: "Initiating Payment...",
+        description: `Connecting to ${method} payment gateway...`,
       });
 
-      // Later this will redirect to actual payment gateway
-      // For now, just show success after a delay
-      setTimeout(() => {
-        toast({
-          title: "Payment Successful! 🎉",
-          description: `Payment of Rs ${amount.toLocaleString()} via ${method} completed successfully.`,
-        });
-        
-        // Navigate to orders or confirmation page
-        navigate('/orders');
-      }, 3000);
+      // Call payment initiation API
+      const response = await fetch('/api/payments/initiate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amount,
+          productName: service,
+          transactionId: transactionId,
+          method: method,
+          customerInfo: {
+            name: 'Customer Name',
+            email: 'customer@example.com',
+            phone: '9800000000',
+          },
+        }),
+      });
 
-    } catch (error) {
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Payment initiation failed');
+      }
+
+      toast({
+        title: "Redirecting to Payment Gateway",
+        description: `Opening ${method} payment page...`,
+      });
+
+      // Handle different payment methods
+      if (method === 'khalti') {
+        // Redirect to Khalti payment URL
+        window.location.href = result.paymentUrl;
+      } else if (method === 'esewa') {
+        // Create form and submit to eSewa
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = result.paymentUrl;
+
+        // Add all required fields for eSewa
+        Object.entries(result.config).forEach(([key, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value as string;
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+      }
+
+    } catch (error: any) {
+      console.error('Payment initiation error:', error);
       toast({
         title: "Payment Failed",
-        description: "Unable to process payment. Please try again.",
+        description: error.message || "Unable to process payment. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsProcessing(false);
       setSelectedMethod("");
     }
