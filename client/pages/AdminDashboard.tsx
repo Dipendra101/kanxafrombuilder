@@ -1094,7 +1094,7 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>{service.category}</TableCell>
                         <TableCell>
-                          ₨ {service.pricing.basePrice.toLocaleString()}
+                          ₨ {(service.pricing?.basePrice || 0).toLocaleString()}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-1">
