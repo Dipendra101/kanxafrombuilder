@@ -74,6 +74,8 @@ import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { adminAPI, servicesAPI, bookingsAPI, userAPI } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
+import ExportService from "@/services/exportService";
+import PremiumAnalytics from "@/components/analytics/PremiumAnalytics";
 
 interface DashboardStats {
   totalUsers: number;
@@ -741,10 +743,33 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-            <Button variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Export Data
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Data
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => ExportService.exportUsers(allUsers)}>
+                  Export Users
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => ExportService.exportServices(allServices)}>
+                  Export Services
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => ExportService.exportBookings(allBookings)}>
+                  Export Bookings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => ExportService.exportFinancialReport({
+                  totalRevenue: stats.totalRevenue,
+                  monthlyRevenue: stats.monthlyRevenue,
+                  bookings: allBookings
+                })}>
+                  Financial Report
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="outline" size="sm">
               <Bell className="w-4 h-4 mr-2" />
               Notifications
@@ -803,12 +828,13 @@ export default function AdminDashboard() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="premium">Premium</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -1110,6 +1136,24 @@ export default function AdminDashboard() {
                                 Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
+                                onClick={() => {
+                                  const serviceData = [{
+                                    id: service._id,
+                                    name: service.name,
+                                    type: service.type,
+                                    price: service.pricing.basePrice,
+                                    status: service.isActive ? 'Active' : 'Inactive'
+                                  }];
+                                  ExportService.exportData(serviceData, {
+                                    format: 'csv',
+                                    filename: `service_${service.name.replace(/\s+/g, '_').toLowerCase()}`
+                                  });
+                                }}
+                              >
+                                <Download className="w-4 h-4 mr-2" />
+                                Export Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
                                 onClick={() => handleServiceDelete(service._id)}
                                 className="text-red-600"
                               >
@@ -1202,6 +1246,12 @@ export default function AdminDashboard() {
                               <DropdownMenuItem>
                                 <Eye className="w-4 h-4 mr-2" />
                                 View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => ExportService.exportInvoice(booking)}
+                              >
+                                <Download className="w-4 h-4 mr-2" />
+                                Download Invoice
                               </DropdownMenuItem>
                               <DropdownMenuItem>
                                 <Edit className="w-4 h-4 mr-2" />
@@ -1327,6 +1377,11 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Premium Analytics Tab */}
+          <TabsContent value="premium" className="space-y-6">
+            <PremiumAnalytics />
           </TabsContent>
         </Tabs>
 
