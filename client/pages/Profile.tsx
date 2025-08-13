@@ -36,6 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import Layout from "@/components/layout/Layout";
+import { bookingsAPI } from "@/services/api";
 
 export default function Profile() {
   const { user, isGuest, isAuthenticated, updateUser, logout } = useAuth();
