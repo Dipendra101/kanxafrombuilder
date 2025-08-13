@@ -1,5 +1,15 @@
 import "./global.css";
 
+// Suppress Recharts defaultProps warnings
+const originalError = console.error;
+console.error = (...args) => {
+  if (args[0]?.includes?.('Support for defaultProps will be removed') &&
+      (args[0]?.includes?.('XAxis') || args[0]?.includes?.('YAxis'))) {
+    return; // Suppress Recharts warnings
+  }
+  originalError.apply(console, args);
+};
+
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot, Root } from "react-dom/client"; // 1. Import the 'Root' type
 import { Toaster as Sonner } from "@/components/ui/sonner";
