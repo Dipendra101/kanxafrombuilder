@@ -28,6 +28,7 @@ export default function Payment() {
     const serviceId = searchParams.get('service');
     const serviceType = searchParams.get('type');
     const amount = parseFloat(searchParams.get('amount') || '0');
+    const customServiceName = searchParams.get('serviceName');
 
     if (!serviceId || !serviceType || !amount) {
       toast({
