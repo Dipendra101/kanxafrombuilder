@@ -67,7 +67,8 @@ export default function Payment() {
           name: getCargoServiceName(serviceId),
           amount,
           description: 'Professional cargo transportation service',
-          icon: <Truck className="w-6 h-6 text-kanxa-orange" />
+          icon: <Truck className="w-6 h-6 text-kanxa-orange" />,
+          vehiclePlate: generateVehiclePlate('cargo', serviceId)
         };
         break;
       case 'bus':
@@ -316,7 +317,7 @@ export default function Payment() {
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <h4 className="font-medium text-blue-900 mb-2">Important Notes</h4>
                       <ul className="text-blue-800 text-sm space-y-1">
-                        <li>�� Payment will be processed securely through official gateways</li>
+                        <li>• Payment will be processed securely through official gateways</li>
                         <li>• You will receive confirmation via SMS and email</li>
                         <li>• Refund policy applies as per terms and conditions</li>
                         <li>• Customer support available 24/7 for payment issues</li>
