@@ -211,6 +211,7 @@ export default function Payment() {
                         <div className="mt-3 space-y-2">
                           {serviceDetails.route && (
                             <div className="flex items-center gap-2 text-sm">
+                              <MapPin className="w-4 h-4 text-gray-600" />
                               <span className="text-gray-600">Route:</span>
                               <span className="font-medium text-kanxa-blue">{serviceDetails.route}</span>
                             </div>
@@ -315,7 +316,7 @@ export default function Payment() {
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <h4 className="font-medium text-blue-900 mb-2">Important Notes</h4>
                       <ul className="text-blue-800 text-sm space-y-1">
-                        <li>• Payment will be processed securely through official gateways</li>
+                        <li>�� Payment will be processed securely through official gateways</li>
                         <li>• You will receive confirmation via SMS and email</li>
                         <li>• Refund policy applies as per terms and conditions</li>
                         <li>• Customer support available 24/7 for payment issues</li>
