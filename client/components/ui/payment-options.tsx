@@ -1,0 +1,158 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CreditCard, Shield, CheckCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+interface PaymentOptionsProps {
+  amount: number;
+  service: string;
+  serviceId: string;
+  onPaymentSelect?: (method: string) => void;
+  className?: string;
+}
+
+export function PaymentOptions({ 
+  amount, 
+  service, 
+  serviceId, 
+  onPaymentSelect,
+  className = "" 
+}: PaymentOptionsProps) {
+  const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handlePaymentMethod = async (method: string) => {
+    setSelectedMethod(method);
+    setIsProcessing(true);
+
+    try {
+      // If parent component wants to handle payment selection
+      if (onPaymentSelect) {
+        onPaymentSelect(method);
+        return;
+      }
+
+      // Mock payment processing - later this will integrate with actual payment gateways
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      toast({
+        title: "Payment Initiated! 🚀",
+        description: `Redirecting to ${method} payment gateway...`,
+      });
+
+      // Later this will redirect to actual payment gateway
+      // For now, just show success after a delay
+      setTimeout(() => {
+        toast({
+          title: "Payment Successful! 🎉",
+          description: `Payment of Rs ${amount.toLocaleString()} via ${method} completed successfully.`,
+        });
+        
+        // Navigate to orders or confirmation page
+        navigate('/orders');
+      }, 3000);
+
+    } catch (error) {
+      toast({
+        title: "Payment Failed",
+        description: "Unable to process payment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+      setSelectedMethod("");
+    }
+  };
+
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <CreditCard className="w-5 h-5 text-kanxa-blue" />
+          Choose Payment Method
+        </CardTitle>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-gray-600">Service: {service}</span>
+          <Badge variant="secondary" className="bg-kanxa-light-green text-kanxa-navy">
+            Rs {amount.toLocaleString()}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Payment Methods Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Khalti Option */}
+          <Button
+            variant="outline"
+            className="h-24 flex flex-col gap-2 hover:bg-purple-50 hover:border-purple-200 transition-colors"
+            onClick={() => handlePaymentMethod("khalti")}
+            disabled={isProcessing}
+          >
+            <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">K</span>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-purple-700">Khalti</div>
+              <div className="text-xs text-gray-500">Digital Wallet</div>
+            </div>
+            {selectedMethod === "khalti" && isProcessing && (
+              <div className="absolute inset-0 bg-purple-50 bg-opacity-75 flex items-center justify-center rounded-lg">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+              </div>
+            )}
+          </Button>
+
+          {/* Esewa Option */}
+          <Button
+            variant="outline"
+            className="h-24 flex flex-col gap-2 hover:bg-green-50 hover:border-green-200 transition-colors"
+            onClick={() => handlePaymentMethod("esewa")}
+            disabled={isProcessing}
+          >
+            <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">E</span>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-green-700">eSewa</div>
+              <div className="text-xs text-gray-500">Digital Payment</div>
+            </div>
+            {selectedMethod === "esewa" && isProcessing && (
+              <div className="absolute inset-0 bg-green-50 bg-opacity-75 flex items-center justify-center rounded-lg">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+              </div>
+            )}
+          </Button>
+        </div>
+
+        {/* Payment Features */}
+        <div className="space-y-3 pt-4 border-t">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Shield className="w-4 h-4 text-green-500" />
+            <span>256-bit SSL encryption</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <CheckCircle className="w-4 h-4 text-green-500" />
+            <span>Instant payment confirmation</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <CheckCircle className="w-4 h-4 text-green-500" />
+            <span>24/7 customer support</span>
+          </div>
+        </div>
+
+        {/* Payment Note */}
+        <div className="bg-blue-50 p-3 rounded-lg">
+          <p className="text-sm text-blue-800">
+            <strong>Note:</strong> Payment integration with Khalti and eSewa will be activated soon. 
+            Currently showing demo flow for testing purposes.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
