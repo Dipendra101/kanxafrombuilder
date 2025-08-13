@@ -305,12 +305,21 @@ export const login: RequestHandler = async (req, res) => {
     // Remove password from response
     const userResponse = user.toJSON ? user.toJSON() : user;
 
+    console.log(`✅ Login successful for ${user.email}:`, {
+      userId: user._id,
+      role: user.role,
+      demo: !isDBConnected(),
+      tokenGenerated: !!accessToken
+    });
+
     res.json({
       success: true,
       message: "Login successful" + (!isDBConnected() ? " (demo mode)" : ""),
       user: userResponse,
       token: accessToken, // Frontend expects 'token', not 'tokens'
       refreshToken,
+      demo: !isDBConnected(),
+      timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
     console.error("Login error:", error);
