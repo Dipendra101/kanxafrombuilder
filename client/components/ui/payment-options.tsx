@@ -14,12 +14,12 @@ interface PaymentOptionsProps {
   className?: string;
 }
 
-export function PaymentOptions({ 
-  amount, 
-  service, 
-  serviceId, 
+export function PaymentOptions({
+  amount,
+  service,
+  serviceId,
   onPaymentSelect,
-  className = "" 
+  className = "",
 }: PaymentOptionsProps) {
   const [selectedMethod, setSelectedMethod] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -48,10 +48,10 @@ export function PaymentOptions({
       });
 
       // Call payment initiation API
-      const response = await fetch('/api/payments/initiate', {
-        method: 'POST',
+      const response = await fetch("/api/payments/initiate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           amount: amount,
@@ -59,9 +59,9 @@ export function PaymentOptions({
           transactionId: transactionId,
           method: method,
           customerInfo: {
-            name: 'Customer Name',
-            email: 'customer@example.com',
-            phone: '9800000000',
+            name: "Customer Name",
+            email: "customer@example.com",
+            phone: "9800000000",
           },
         }),
       });
@@ -69,7 +69,7 @@ export function PaymentOptions({
       const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || 'Payment initiation failed');
+        throw new Error(result.error || "Payment initiation failed");
       }
 
       toast({
@@ -78,19 +78,19 @@ export function PaymentOptions({
       });
 
       // Handle different payment methods
-      if (method === 'khalti') {
+      if (method === "khalti") {
         // Redirect to Khalti payment URL
         window.location.href = result.paymentUrl;
-      } else if (method === 'esewa') {
+      } else if (method === "esewa") {
         // Create form and submit to eSewa
-        const form = document.createElement('form');
-        form.method = 'POST';
+        const form = document.createElement("form");
+        form.method = "POST";
         form.action = result.paymentUrl;
 
         // Add all required fields for eSewa
         Object.entries(result.config).forEach(([key, value]) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
+          const input = document.createElement("input");
+          input.type = "hidden";
           input.name = key;
           input.value = value as string;
           form.appendChild(input);
@@ -100,12 +100,12 @@ export function PaymentOptions({
         form.submit();
         document.body.removeChild(form);
       }
-
     } catch (error: any) {
-      console.error('Payment initiation error:', error);
+      console.error("Payment initiation error:", error);
       toast({
         title: "Payment Failed",
-        description: error.message || "Unable to process payment. Please try again.",
+        description:
+          error.message || "Unable to process payment. Please try again.",
         variant: "destructive",
       });
       setIsProcessing(false);
@@ -122,7 +122,10 @@ export function PaymentOptions({
         </CardTitle>
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-600">Service: {service}</span>
-          <Badge variant="secondary" className="bg-kanxa-light-green text-kanxa-navy">
+          <Badge
+            variant="secondary"
+            className="bg-kanxa-light-green text-kanxa-navy"
+          >
             Rs {amount.toLocaleString()}
           </Badge>
         </div>
@@ -138,11 +141,15 @@ export function PaymentOptions({
             disabled={isProcessing}
           >
             <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg">
-              <div className="text-white font-bold text-xl tracking-wider">K</div>
+              <div className="text-white font-bold text-xl tracking-wider">
+                K
+              </div>
             </div>
             <div className="text-center">
               <div className="font-bold text-purple-700 text-lg">Khalti</div>
-              <div className="text-xs text-purple-600 font-medium">Digital Wallet</div>
+              <div className="text-xs text-purple-600 font-medium">
+                Digital Wallet
+              </div>
             </div>
             {selectedMethod === "khalti" && isProcessing && (
               <div className="absolute inset-0 bg-purple-50 bg-opacity-90 flex items-center justify-center rounded-lg">
@@ -166,7 +173,9 @@ export function PaymentOptions({
             </div>
             <div className="text-center">
               <div className="font-bold text-green-700 text-lg">eSewa</div>
-              <div className="text-xs text-green-600 font-medium">Digital Payment</div>
+              <div className="text-xs text-green-600 font-medium">
+                Digital Payment
+              </div>
             </div>
             {selectedMethod === "esewa" && isProcessing && (
               <div className="absolute inset-0 bg-green-50 bg-opacity-90 flex items-center justify-center rounded-lg">
@@ -195,8 +204,9 @@ export function PaymentOptions({
         {/* Payment Note */}
         <div className="bg-blue-50 p-3 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>Test Environment:</strong> You are using test payment gateways.
-            Use test credentials provided by Khalti and eSewa for testing.
+            <strong>Test Environment:</strong> You are using test payment
+            gateways. Use test credentials provided by Khalti and eSewa for
+            testing.
           </p>
         </div>
       </CardContent>

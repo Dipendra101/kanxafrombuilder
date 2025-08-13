@@ -7,8 +7,8 @@ import Layout from "@/components/layout/Layout";
 
 export default function PaymentFailure() {
   const [searchParams] = useSearchParams();
-  const method = searchParams.get('method') || 'Unknown';
-  const error = searchParams.get('error') || 'Payment was cancelled or failed';
+  const method = searchParams.get("method") || "Unknown";
+  const error = searchParams.get("error") || "Payment was cancelled or failed";
 
   return (
     <Layout>
@@ -29,7 +29,9 @@ export default function PaymentFailure() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="bg-white p-4 rounded-lg border border-red-200">
-                  <h3 className="font-semibold text-red-700 mb-3">Payment Details</h3>
+                  <h3 className="font-semibold text-red-700 mb-3">
+                    Payment Details
+                  </h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Payment Method:</span>
@@ -39,9 +41,7 @@ export default function PaymentFailure() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Status:</span>
-                      <Badge variant="destructive">
-                        Failed
-                      </Badge>
+                      <Badge variant="destructive">Failed</Badge>
                     </div>
                     <div className="flex justify-between items-start">
                       <span className="text-gray-600">Reason:</span>
@@ -53,15 +53,21 @@ export default function PaymentFailure() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-kanxa-navy">What can you do?</h3>
+                  <h3 className="font-semibold text-kanxa-navy">
+                    What can you do?
+                  </h3>
                   <ul className="space-y-2 text-sm text-gray-600">
                     <li className="flex items-center gap-2">
                       <RefreshCw className="w-4 h-4 text-kanxa-blue" />
-                      <span>Try the payment again with the same or different method</span>
+                      <span>
+                        Try the payment again with the same or different method
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <AlertCircle className="w-4 h-4 text-kanxa-orange" />
-                      <span>Check your account balance and payment details</span>
+                      <span>
+                        Check your account balance and payment details
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <AlertCircle className="w-4 h-4 text-kanxa-orange" />
@@ -77,24 +83,34 @@ export default function PaymentFailure() {
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                   <h4 className="font-medium text-blue-900 mb-2">Need Help?</h4>
                   <p className="text-blue-800 text-sm mb-3">
-                    Our customer support team is available 24/7 to help you with payment issues.
+                    Our customer support team is available 24/7 to help you with
+                    payment issues.
                   </p>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="text-blue-700 border-blue-300" asChild>
-                      <Link to="/chat">
-                        Live Chat
-                      </Link>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-blue-700 border-blue-300"
+                      asChild
+                    >
+                      <Link to="/chat">Live Chat</Link>
                     </Button>
-                    <Button size="sm" variant="outline" className="text-blue-700 border-blue-300" asChild>
-                      <Link to="/support">
-                        Support Center
-                      </Link>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-blue-700 border-blue-300"
+                      asChild
+                    >
+                      <Link to="/support">Support Center</Link>
                     </Button>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
-                  <Button className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90" asChild>
+                  <Button
+                    className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90"
+                    asChild
+                  >
                     <Link to="/payment">
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Try Again

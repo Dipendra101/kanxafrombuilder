@@ -572,7 +572,7 @@ export const paymentAPI = {
     amount: number;
     productName: string;
     transactionId: string;
-    method: 'khalti' | 'esewa';
+    method: "khalti" | "esewa";
     customerInfo?: {
       name?: string;
       email?: string;

@@ -23,14 +23,15 @@ export default function PaymentSuccess() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isVerifying, setIsVerifying] = useState(true);
-  const [verificationResult, setVerificationResult] = useState<PaymentVerificationResult | null>(null);
+  const [verificationResult, setVerificationResult] =
+    useState<PaymentVerificationResult | null>(null);
 
-  const method = searchParams.get('method');
-  const transactionUuid = searchParams.get('transaction_uuid');
-  const pidx = searchParams.get('pidx');
-  const oid = searchParams.get('oid');
-  const amt = searchParams.get('amt');
-  const refId = searchParams.get('refId');
+  const method = searchParams.get("method");
+  const transactionUuid = searchParams.get("transaction_uuid");
+  const pidx = searchParams.get("pidx");
+  const oid = searchParams.get("oid");
+  const amt = searchParams.get("amt");
+  const refId = searchParams.get("refId");
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -40,43 +41,43 @@ export default function PaymentSuccess() {
           description: "Payment method not specified",
           variant: "destructive",
         });
-        navigate('/');
+        navigate("/");
         return;
       }
 
       try {
         let verificationResponse;
 
-        if (method === 'khalti') {
+        if (method === "khalti") {
           if (!pidx) {
-            throw new Error('Missing pidx parameter for Khalti verification');
+            throw new Error("Missing pidx parameter for Khalti verification");
           }
 
-          verificationResponse = await fetch('/api/payments/verify/khalti', {
-            method: 'POST',
+          verificationResponse = await fetch("/api/payments/verify/khalti", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({ pidx }),
           });
-        } else if (method === 'esewa') {
+        } else if (method === "esewa") {
           if (!oid || !amt || !refId) {
-            throw new Error('Missing parameters for eSewa verification');
+            throw new Error("Missing parameters for eSewa verification");
           }
 
-          verificationResponse = await fetch('/api/payments/verify/esewa', {
-            method: 'POST',
+          verificationResponse = await fetch("/api/payments/verify/esewa", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({ oid, amt, refId }),
           });
         } else {
-          throw new Error('Unknown payment method');
+          throw new Error("Unknown payment method");
         }
 
         const result = await verificationResponse.json();
-        console.log('Payment verification result:', result);
+        console.log("Payment verification result:", result);
 
         setVerificationResult(result);
 
@@ -88,15 +89,17 @@ export default function PaymentSuccess() {
         } else {
           toast({
             title: "Payment Verification Failed",
-            description: result.error || "Unable to verify payment. Please contact support.",
+            description:
+              result.error ||
+              "Unable to verify payment. Please contact support.",
             variant: "destructive",
           });
         }
       } catch (error: any) {
-        console.error('Payment verification error:', error);
+        console.error("Payment verification error:", error);
         setVerificationResult({
           success: false,
-          error: error.message || 'Verification failed',
+          error: error.message || "Verification failed",
         });
         toast({
           title: "Verification Error",
@@ -131,7 +134,8 @@ export default function PaymentSuccess() {
     );
   }
 
-  const isPaymentSuccessful = verificationResult?.success && verificationResult?.verified;
+  const isPaymentSuccessful =
+    verificationResult?.success && verificationResult?.verified;
 
   return (
     <Layout>
@@ -153,7 +157,9 @@ export default function PaymentSuccess() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="bg-white p-4 rounded-lg border">
-                    <h3 className="font-semibold text-kanxa-navy mb-3">Payment Details</h3>
+                    <h3 className="font-semibold text-kanxa-navy mb-3">
+                      Payment Details
+                    </h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Payment Method:</span>
@@ -197,7 +203,9 @@ export default function PaymentSuccess() {
                   <Separator />
 
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-kanxa-navy">What's Next?</h3>
+                    <h3 className="font-semibold text-kanxa-navy">
+                      What's Next?
+                    </h3>
                     <ul className="space-y-2 text-sm text-gray-600">
                       <li className="flex items-center gap-2">
                         <CheckCircle className="w-4 h-4 text-green-500" />
@@ -215,7 +223,10 @@ export default function PaymentSuccess() {
                   </div>
 
                   <div className="flex gap-3">
-                    <Button className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90" asChild>
+                    <Button
+                      className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90"
+                      asChild
+                    >
                       <Link to="/orders">
                         View My Bookings
                         <ArrowRight className="w-4 h-4 ml-2" />
@@ -240,28 +251,34 @@ export default function PaymentSuccess() {
                     Payment Verification Failed
                   </CardTitle>
                   <p className="text-red-600">
-                    We couldn't verify your payment. Please try again or contact support.
+                    We couldn't verify your payment. Please try again or contact
+                    support.
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {verificationResult?.error && (
                     <div className="bg-white p-4 rounded-lg border border-red-200">
-                      <h3 className="font-semibold text-red-700 mb-2">Error Details</h3>
-                      <p className="text-sm text-red-600">{verificationResult.error}</p>
+                      <h3 className="font-semibold text-red-700 mb-2">
+                        Error Details
+                      </h3>
+                      <p className="text-sm text-red-600">
+                        {verificationResult.error}
+                      </p>
                     </div>
                   )}
 
                   <div className="flex gap-3">
-                    <Button className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90" asChild>
+                    <Button
+                      className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90"
+                      asChild
+                    >
                       <Link to="/payment">
                         Try Again
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Link>
                     </Button>
                     <Button variant="outline" asChild>
-                      <Link to="/support">
-                        Contact Support
-                      </Link>
+                      <Link to="/support">Contact Support</Link>
                     </Button>
                   </div>
                 </CardContent>

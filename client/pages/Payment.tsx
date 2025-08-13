@@ -23,8 +23,16 @@ interface ServiceDetails {
 
 // Generate Nepalese vehicle plate number
 const generateVehiclePlate = (serviceType: string, serviceId: string) => {
-  const provinces = ['BAGMATI', 'KOSHI', 'GANDAKI', 'LUMBINI', 'KARNALI', 'SUDURPASHCHIM', 'MADHESH'];
-  const letters = ['GA', 'KA', 'BA', 'JA', 'NA', 'PA', 'RA', 'LA', 'SA', 'HA'];
+  const provinces = [
+    "BAGMATI",
+    "KOSHI",
+    "GANDAKI",
+    "LUMBINI",
+    "KARNALI",
+    "SUDURPASHCHIM",
+    "MADHESH",
+  ];
+  const letters = ["GA", "KA", "BA", "JA", "NA", "PA", "RA", "LA", "SA", "HA"];
 
   const province = provinces[Math.floor(Math.random() * provinces.length)];
   const letterCode = letters[Math.floor(Math.random() * letters.length)];
@@ -37,14 +45,16 @@ export default function Payment() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(null);
+  const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(
+    null,
+  );
 
   useEffect(() => {
-    const serviceId = searchParams.get('service');
-    const serviceType = searchParams.get('type');
-    const amount = parseFloat(searchParams.get('amount') || '0');
-    const customServiceName = searchParams.get('serviceName');
-    const seatNumbers = searchParams.get('seats')?.split(',') || [];
+    const serviceId = searchParams.get("service");
+    const serviceType = searchParams.get("type");
+    const amount = parseFloat(searchParams.get("amount") || "0");
+    const customServiceName = searchParams.get("serviceName");
+    const seatNumbers = searchParams.get("seats")?.split(",") || [];
 
     if (!serviceId || !serviceType || !amount) {
       toast({
@@ -52,56 +62,58 @@ export default function Payment() {
         description: "Missing payment information. Redirecting...",
         variant: "destructive",
       });
-      navigate('/transportation');
+      navigate("/transportation");
       return;
     }
 
     // Mock service details based on type and ID
     let details: ServiceDetails;
-    
+
     switch (serviceType) {
-      case 'cargo':
+      case "cargo":
         details = {
           id: serviceId,
-          type: 'Cargo Service',
+          type: "Cargo Service",
           name: getCargoServiceName(serviceId),
           amount,
-          description: 'Professional cargo transportation service',
+          description: "Professional cargo transportation service",
           icon: <Truck className="w-6 h-6 text-kanxa-orange" />,
-          vehiclePlate: generateVehiclePlate('cargo', serviceId)
+          vehiclePlate: generateVehiclePlate("cargo", serviceId),
         };
         break;
-      case 'bus':
+      case "bus":
         details = {
           id: serviceId,
-          type: 'Bus Ticket',
+          type: "Bus Ticket",
           name: customServiceName || getBusServiceName(serviceId),
           amount,
-          description: 'Comfortable bus transportation',
+          description: "Comfortable bus transportation",
           icon: <Bus className="w-6 h-6 text-kanxa-blue" />,
           seatNumbers: seatNumbers.length > 0 ? seatNumbers : undefined,
-          vehiclePlate: generateVehiclePlate('bus', serviceId),
-          route: getRouteFromServiceName(customServiceName || getBusServiceName(serviceId))
+          vehiclePlate: generateVehiclePlate("bus", serviceId),
+          route: getRouteFromServiceName(
+            customServiceName || getBusServiceName(serviceId),
+          ),
         };
         break;
-      case 'tour':
+      case "tour":
         details = {
           id: serviceId,
-          type: 'Tour Package',
+          type: "Tour Package",
           name: getTourServiceName(serviceId),
           amount,
-          description: 'Custom tour transportation',
-          icon: <Route className="w-6 h-6 text-kanxa-green" />
+          description: "Custom tour transportation",
+          icon: <Route className="w-6 h-6 text-kanxa-green" />,
         };
         break;
       default:
         details = {
           id: serviceId,
-          type: 'Service',
-          name: 'Transportation Service',
+          type: "Service",
+          name: "Transportation Service",
           amount,
-          description: 'General transportation service',
-          icon: <Package className="w-6 h-6 text-kanxa-navy" />
+          description: "General transportation service",
+          icon: <Package className="w-6 h-6 text-kanxa-navy" />,
         };
     }
 
@@ -110,19 +122,19 @@ export default function Payment() {
 
   const getCargoServiceName = (id: string) => {
     const cargoNames: { [key: string]: string } = {
-      '1': 'Heavy Truck - 10 tons',
-      '2': 'Medium Truck - 5 tons',
-      '3': 'Light Truck - 2 tons'
+      "1": "Heavy Truck - 10 tons",
+      "2": "Medium Truck - 5 tons",
+      "3": "Light Truck - 2 tons",
     };
-    return cargoNames[id] || 'Cargo Service';
+    return cargoNames[id] || "Cargo Service";
   };
 
   const getBusServiceName = (id: string) => {
     const busNames: { [key: string]: string } = {
-      '1': 'Kathmandu Express - Deluxe AC',
-      '2': 'Pokhara Express - Standard'
+      "1": "Kathmandu Express - Deluxe AC",
+      "2": "Pokhara Express - Standard",
     };
-    return busNames[id] || 'Bus Service';
+    return busNames[id] || "Bus Service";
   };
 
   const getTourServiceName = (id: string) => {
@@ -131,12 +143,12 @@ export default function Payment() {
 
   const getRouteFromServiceName = (serviceName: string) => {
     // Extract route information from service name or use defaults
-    if (serviceName.includes('Kathmandu')) {
-      return 'Lamjung → Kathmandu';
-    } else if (serviceName.includes('Pokhara')) {
-      return 'Lamjung → Pokhara';
+    if (serviceName.includes("Kathmandu")) {
+      return "Lamjung → Kathmandu";
+    } else if (serviceName.includes("Pokhara")) {
+      return "Lamjung → Pokhara";
     }
-    return 'Lamjung → Kathmandu'; // default route
+    return "Lamjung → Kathmandu"; // default route
   };
 
   const handlePaymentComplete = (method: string) => {
@@ -149,14 +161,17 @@ export default function Payment() {
     });
 
     // Store payment details for after redirect
-    localStorage.setItem('paymentDetails', JSON.stringify({
-      serviceId: serviceDetails?.id,
-      serviceName: serviceDetails?.name,
-      amount: serviceDetails?.amount,
-      method: method,
-      transactionId: transactionId,
-      timestamp: Date.now(),
-    }));
+    localStorage.setItem(
+      "paymentDetails",
+      JSON.stringify({
+        serviceId: serviceDetails?.id,
+        serviceName: serviceDetails?.name,
+        amount: serviceDetails?.amount,
+        method: method,
+        transactionId: transactionId,
+        timestamp: Date.now(),
+      }),
+    );
   };
 
   if (!serviceDetails) {
@@ -198,7 +213,6 @@ export default function Payment() {
         <div className="container px-4">
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              
               {/* Service Summary */}
               <div className="lg:col-span-1">
                 <Card className="sticky top-6">
@@ -221,50 +235,71 @@ export default function Payment() {
                       </p>
 
                       {/* Transportation service details */}
-                      {(serviceDetails.type === 'Bus Ticket' || serviceDetails.type === 'Cargo Service') && (
+                      {(serviceDetails.type === "Bus Ticket" ||
+                        serviceDetails.type === "Cargo Service") && (
                         <div className="mt-3 space-y-2">
                           {serviceDetails.route && (
                             <div className="flex items-center gap-2 text-sm">
                               <MapPin className="w-4 h-4 text-gray-600" />
                               <span className="text-gray-600">Route:</span>
-                              <span className="font-medium text-kanxa-blue">{serviceDetails.route}</span>
+                              <span className="font-medium text-kanxa-blue">
+                                {serviceDetails.route}
+                              </span>
                             </div>
                           )}
 
-                          {serviceDetails.type === 'Bus Ticket' && serviceDetails.seatNumbers && serviceDetails.seatNumbers.length > 0 && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <span className="text-gray-600">Seat Numbers:</span>
-                              <div className="flex gap-1">
-                                {serviceDetails.seatNumbers.map((seat, index) => (
-                                  <Badge key={index} variant="outline" className="text-xs bg-kanxa-light-blue text-kanxa-navy">
-                                    {seat}
-                                  </Badge>
-                                ))}
+                          {serviceDetails.type === "Bus Ticket" &&
+                            serviceDetails.seatNumbers &&
+                            serviceDetails.seatNumbers.length > 0 && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <span className="text-gray-600">
+                                  Seat Numbers:
+                                </span>
+                                <div className="flex gap-1">
+                                  {serviceDetails.seatNumbers.map(
+                                    (seat, index) => (
+                                      <Badge
+                                        key={index}
+                                        variant="outline"
+                                        className="text-xs bg-kanxa-light-blue text-kanxa-navy"
+                                      >
+                                        {seat}
+                                      </Badge>
+                                    ),
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
 
-                          {serviceDetails.type === 'Cargo Service' && (
+                          {serviceDetails.type === "Cargo Service" && (
                             <div className="flex items-center gap-2 text-sm">
                               <Truck className="w-4 h-4 text-gray-600" />
                               <span className="text-gray-600">Capacity:</span>
                               <span className="font-medium text-kanxa-orange">
-                                {serviceDetails.name.includes('Heavy') ? '10 tons' :
-                                 serviceDetails.name.includes('Medium') ? '5 tons' : '2 tons'}
+                                {serviceDetails.name.includes("Heavy")
+                                  ? "10 tons"
+                                  : serviceDetails.name.includes("Medium")
+                                    ? "5 tons"
+                                    : "2 tons"}
                               </span>
                             </div>
                           )}
 
                           {serviceDetails.vehiclePlate && (
                             <div className="flex items-center gap-2 text-sm">
-                              <span className="text-gray-600">Vehicle Plate:</span>
+                              <span className="text-gray-600">
+                                Vehicle Plate:
+                              </span>
                               <div className="bg-white border-2 border-gray-800 px-3 py-2 rounded-md shadow-sm">
                                 <div className="text-center">
                                   <div className="text-[8px] font-bold text-gray-700 leading-none mb-1">
-                                    {serviceDetails.vehiclePlate.split(' ')[0]}
+                                    {serviceDetails.vehiclePlate.split(" ")[0]}
                                   </div>
                                   <div className="text-sm font-bold text-gray-900 tracking-widest font-mono">
-                                    {serviceDetails.vehiclePlate.split(' ').slice(1).join(' ')}
+                                    {serviceDetails.vehiclePlate
+                                      .split(" ")
+                                      .slice(1)
+                                      .join(" ")}
                                   </div>
                                 </div>
                               </div>
@@ -319,12 +354,16 @@ export default function Payment() {
                 {/* Additional Information */}
                 <Card className="mt-6">
                   <CardHeader>
-                    <CardTitle className="text-lg">Payment Information</CardTitle>
+                    <CardTitle className="text-lg">
+                      Payment Information
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
-                        <h4 className="font-medium text-kanxa-navy mb-2">Khalti Payment</h4>
+                        <h4 className="font-medium text-kanxa-navy mb-2">
+                          Khalti Payment
+                        </h4>
                         <ul className="text-gray-600 space-y-1">
                           <li>• Digital wallet payment</li>
                           <li>• Instant transaction</li>
@@ -333,7 +372,9 @@ export default function Payment() {
                         </ul>
                       </div>
                       <div>
-                        <h4 className="font-medium text-kanxa-navy mb-2">eSewa Payment</h4>
+                        <h4 className="font-medium text-kanxa-navy mb-2">
+                          eSewa Payment
+                        </h4>
                         <ul className="text-gray-600 space-y-1">
                           <li>• Secure digital payment</li>
                           <li>• Bank account linking</li>
@@ -346,13 +387,19 @@ export default function Payment() {
                     <Separator />
 
                     <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-blue-900 mb-2">Test Environment Notice</h4>
+                      <h4 className="font-medium text-blue-900 mb-2">
+                        Test Environment Notice
+                      </h4>
                       <ul className="text-blue-800 text-sm space-y-1">
                         <li>• Currently using test payment gateways</li>
-                        <li>• Use Khalti test phone: 9800000000, OTP: 123456</li>
+                        <li>
+                          • Use Khalti test phone: 9800000000, OTP: 123456
+                        </li>
                         <li>• eSewa test: any amount works in test mode</li>
                         <li>• No real money will be charged</li>
-                        <li>• Customer support available 24/7 for payment issues</li>
+                        <li>
+                          • Customer support available 24/7 for payment issues
+                        </li>
                       </ul>
                     </div>
                   </CardContent>

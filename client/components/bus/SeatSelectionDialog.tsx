@@ -232,8 +232,10 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
                 disabled={selectedSeats.length === 0}
                 onClick={() => {
                   const totalAmount = busPrice * selectedSeats.length + 50;
-                  const serviceName = `${bus.operator?.name || bus.name || "Bus Service"} - ${selectedSeats.length} seat${selectedSeats.length > 1 ? 's' : ''}`;
-                  navigate(`/payment?service=${bus.id}&type=bus&amount=${totalAmount}&seats=${selectedSeats.join(',')}&serviceName=${encodeURIComponent(serviceName)}`);
+                  const serviceName = `${bus.operator?.name || bus.name || "Bus Service"} - ${selectedSeats.length} seat${selectedSeats.length > 1 ? "s" : ""}`;
+                  navigate(
+                    `/payment?service=${bus.id}&type=bus&amount=${totalAmount}&seats=${selectedSeats.join(",")}&serviceName=${encodeURIComponent(serviceName)}`,
+                  );
                 }}
               >
                 Proceed to Payment

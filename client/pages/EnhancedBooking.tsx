@@ -831,7 +831,11 @@ export default function EnhancedBooking() {
               <>
                 {/* Payment Methods */}
                 <PaymentOptions
-                  amount={service.pricing.basePrice + (service.pricing.taxes?.vat || 0) + (service.pricing.taxes?.serviceTax || 0)}
+                  amount={
+                    service.pricing.basePrice +
+                    (service.pricing.taxes?.vat || 0) +
+                    (service.pricing.taxes?.serviceTax || 0)
+                  }
                   service={service.name}
                   serviceId={service.id}
                   onPaymentSelect={handlePayment}
