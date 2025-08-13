@@ -238,47 +238,88 @@ export const getAllUsers: RequestHandler = async (req, res) => {
       sortOrder = "desc",
     } = req.query;
 
-    const query: any = {};
+    const result = await withDB(
+      async () => {
+        const query: any = {};
 
-    // Search by name or email
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-      ];
-    }
+        // Search by name or email
+        if (search) {
+          query.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { email: { $regex: search, $options: "i" } },
+          ];
+        }
 
-    // Filter by role
-    if (role) {
-      query.role = role;
-    }
+        // Filter by role
+        if (role) {
+          query.role = role;
+        }
 
-    // Filter by active status
-    if (isActive !== "") {
-      query.isActive = isActive === "true";
-    }
+        // Filter by active status
+        if (isActive !== "") {
+          query.isActive = isActive === "true";
+        }
 
-    const sort: any = {};
-    sort[sortBy as string] = sortOrder === "asc" ? 1 : -1;
+        const sort: any = {};
+        sort[sortBy as string] = sortOrder === "asc" ? 1 : -1;
 
-    const users = await User.find(query)
-      .sort(sort)
-      .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit))
-      .select("-password -verification")
-      .exec();
+        const users = await User.find(query)
+          .sort(sort)
+          .limit(Number(limit))
+          .skip((Number(page) - 1) * Number(limit))
+          .select("-password -verification")
+          .exec();
 
-    const total = await User.countDocuments(query);
+        const total = await User.countDocuments(query);
+
+        return { users, total };
+      },
+      // Fallback mock data
+      {
+        users: [
+          {
+            _id: "mock_user_1",
+            name: "Ram Kumar Sharma",
+            email: "ram@example.com",
+            phone: "+977-9841234567",
+            role: "user",
+            isActive: true,
+            createdAt: new Date(),
+            lastLogin: new Date(),
+          },
+          {
+            _id: "mock_user_2",
+            name: "Sita Devi Thapa",
+            email: "sita@example.com",
+            phone: "+977-9841234568",
+            role: "user",
+            isActive: true,
+            createdAt: new Date(),
+          },
+          {
+            _id: "mock_user_3",
+            name: "Hari Bahadur Gurung",
+            email: "hari@example.com",
+            phone: "+977-9841234569",
+            role: "admin",
+            isActive: true,
+            createdAt: new Date(),
+          },
+        ],
+        total: 3,
+      }
+    );
 
     res.json({
       success: true,
-      users,
+      users: result.users,
       pagination: {
         page: Number(page),
         limit: Number(limit),
-        total,
-        pages: Math.ceil(total / Number(limit)),
+        total: result.total,
+        pages: Math.ceil(result.total / Number(limit)),
       },
+      demo: !isDBConnected(),
     });
   } catch (error: any) {
     console.error("Get all users error:", error);
