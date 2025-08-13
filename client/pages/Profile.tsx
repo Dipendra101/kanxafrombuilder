@@ -46,16 +46,6 @@ export default function Profile() {
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Show guest restriction if user is in guest mode
-  if (isGuest || !isAuthenticated) {
-    return (
-      <GuestRestriction
-        action="access your profile"
-        description="You need to be logged in to view and edit your profile. Create an account to manage your personal information and preferences."
-      />
-    );
-  }
-
   // Default image provided
   const defaultImage =
     "https://cdn.builder.io/api/v1/image/assets%2Fe0e990aaf8214381b9783ad82133cc2a%2F726cd8591a334f858722142910fcf4de?format=webp&width=800";
