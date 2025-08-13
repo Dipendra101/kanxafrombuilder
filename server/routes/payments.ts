@@ -5,7 +5,8 @@ import crypto from 'crypto';
 const router = express.Router();
 
 // Environment variables for payment gateways
-const KHALTI_SECRET_KEY = process.env.KHALTI_SECRET_KEY || 'test_secret_key_73b2987c1a3d4e5f';
+const KHALTI_SECRET_KEY = process.env.KHALTI_SECRET_KEY || 'test_secret_key_3f78fb6364ef4bd1b5fc670ce33a06f5';
+const KHALTI_PUBLIC_KEY = process.env.KHALTI_PUBLIC_KEY || 'test_public_key_617c4c6fe77c441d88451ec1408a0c0e';
 const ESEWA_MERCHANT_CODE = process.env.ESEWA_MERCHANT_CODE || 'EPAYTEST';
 const ESEWA_SECRET_KEY = process.env.ESEWA_SECRET_KEY || '8gBm/:&EnhH.1/q';
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
