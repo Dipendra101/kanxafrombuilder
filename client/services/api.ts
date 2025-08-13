@@ -25,6 +25,11 @@ const createHeaders = (includeAuth = true) => {
 const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
 
+  console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`, {
+    body: options.body ? 'present' : 'none',
+    hasAuth: !!getAuthToken()
+  });
+
   try {
     const response = await fetch(url, {
       ...options,
@@ -39,24 +44,39 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
     try {
       data = await response.json();
     } catch (parseError) {
+      console.error(`❌ JSON parsing failed for ${url}:`, parseError);
       // If JSON parsing fails, provide fallback
-      data = { message: `Response parsing failed: ${parseError}` };
+      data = {
+        success: false,
+        message: `Response parsing failed: ${parseError}`,
+        error: "PARSE_ERROR"
+      };
     }
+
+    console.log(`📡 API Response: ${response.status} ${url}`, {
+      success: data.success,
+      message: data.message,
+      demo: data.demo
+    });
 
     if (!response.ok) {
       // Handle specific auth errors
       if (response.status === 401 && data.message?.includes("token")) {
+        console.warn("🔐 Invalid token detected, clearing storage");
         // Clear invalid token from storage
         localStorage.removeItem("kanxa_token");
         localStorage.removeItem("kanxa_user");
       }
-      throw new Error(
-        data.message || `HTTP ${response.status}: Request failed`,
-      );
+
+      const errorMessage = data.message || `HTTP ${response.status}: Request failed`;
+      console.error(`❌ API Error: ${errorMessage}`, data);
+      throw new Error(errorMessage);
     }
 
     return data;
   } catch (error) {
+    console.error(`💥 API Request failed for ${url}:`, error);
+
     // Network or parsing errors
     if (error instanceof TypeError && error.message.includes("fetch")) {
       throw new Error("Network error: Unable to connect to server");
