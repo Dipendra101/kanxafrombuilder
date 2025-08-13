@@ -62,7 +62,6 @@ export default function Profile() {
     bio: "",
   });
 
-
   // Update profile when user data changes
   useEffect(() => {
     if (user) {
@@ -78,7 +77,6 @@ export default function Profile() {
         bio: "",
       });
       setProfilePicture(user.profilePicture || null);
-
     }
   }, [user]);
 
@@ -786,8 +784,8 @@ export default function Profile() {
                         <div className="bg-kanxa-blue h-2 rounded-full w-3/4"></div>
                       </div>
                       <p className="text-xs sm:text-sm text-gray-600">
-                        Spend Rs 55,000 more to reach Platinum status and
-                        unlock exclusive benefits!
+                        Spend Rs 55,000 more to reach Platinum status and unlock
+                        exclusive benefits!
                       </p>
                     </div>
                   </CardContent>
