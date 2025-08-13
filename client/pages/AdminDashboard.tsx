@@ -1099,10 +1099,10 @@ export default function AdminDashboard() {
                         <TableCell>
                           <div className="flex items-center space-x-1">
                             <span className="text-sm font-medium">
-                              {service.rating.average.toFixed(1)}
+                              {service.rating?.average?.toFixed(1) || 'N/A'}
                             </span>
                             <span className="text-sm text-gray-500">
-                              ({service.rating.count})
+                              ({service.rating?.count || 0})
                             </span>
                           </div>
                         </TableCell>
