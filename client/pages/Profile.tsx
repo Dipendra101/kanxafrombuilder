@@ -777,7 +777,7 @@ export default function Profile() {
                   <Card className="text-center">
                     <CardContent className="p-3 sm:p-4 lg:p-6">
                       <div className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-kanxa-green mb-1 sm:mb-2">
-                        NPR {loyaltyStats.totalSpent.toLocaleString()}
+                        Rs {loyaltyStats.totalSpent.toLocaleString()}
                       </div>
                       <div className="text-xs sm:text-sm text-gray-600">
                         Total Spent
@@ -819,7 +819,7 @@ export default function Profile() {
                         <div className="bg-kanxa-blue h-2 rounded-full w-3/4"></div>
                       </div>
                       <p className="text-xs sm:text-sm text-gray-600">
-                        Spend NPR 55,000 more to reach Platinum status and
+                        Spend Rs 55,000 more to reach Platinum status and
                         unlock exclusive benefits!
                       </p>
                     </div>
