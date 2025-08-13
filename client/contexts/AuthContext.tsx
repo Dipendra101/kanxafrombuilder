@@ -27,6 +27,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   isGuest: boolean;
+  networkError: boolean;
   login: (email: string, password: string) => Promise<void>;
   smsLogin: (phone: string, code: string) => Promise<void>;
   guestLogin: () => void;
@@ -39,6 +40,7 @@ interface AuthContextType {
   logout: () => void;
   updateUser: (userData: Partial<User>) => Promise<void>;
   refreshUser: () => Promise<void>;
+  retryConnection: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
