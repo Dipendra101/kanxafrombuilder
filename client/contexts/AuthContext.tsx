@@ -113,12 +113,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             // Check if it's a network error
             if (tokenError.message.includes("fetch") || tokenError.message.includes("Network")) {
               console.log("🌐 Network error detected - keeping stored auth for retry");
+              setNetworkError(true);
               // Keep the stored data for potential retry, but continue without auth for now
               // This prevents clearing valid credentials due to temporary network issues
             } else {
               // Clear invalid token data only if it's not a network error
               localStorage.removeItem("kanxa_token");
               localStorage.removeItem("kanxa_user");
+              setNetworkError(false);
             }
           }
         } else {
