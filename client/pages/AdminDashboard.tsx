@@ -247,6 +247,7 @@ export default function AdminDashboard() {
               isActive: true,
               isFeatured: true,
               pricing: { basePrice: 500, currency: "₨" },
+              rating: { average: 4.8, count: 156 },
             },
             {
               _id: "service2",
@@ -256,6 +257,7 @@ export default function AdminDashboard() {
               isActive: true,
               isFeatured: false,
               pricing: { basePrice: 1000, currency: "₨" },
+              rating: { average: 4.5, count: 89 },
             },
           ];
           setAllServices(demoServices);
