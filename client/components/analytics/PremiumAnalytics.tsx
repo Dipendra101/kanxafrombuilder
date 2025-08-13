@@ -290,21 +290,21 @@ export function PremiumAnalytics() {
                 <CardTitle>Revenue Trend</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={data.timeSeriesData}>
+                <ResponsiveContainer width="100%" height={350}>
+                  <AreaChart data={data.timeSeriesData} margin={{ bottom: 20, left: 20, right: 20, top: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis
                       dataKey="date"
                       type="category"
                       axisLine={true}
                       tickLine={true}
-                      tick={true}
+                      tick={{ fontSize: 12 }}
                     />
                     <YAxis
                       type="number"
                       axisLine={true}
                       tickLine={true}
-                      tick={true}
+                      tick={{ fontSize: 12 }}
                     />
                     <Tooltip
                       formatter={(value: number) => [
@@ -657,8 +657,8 @@ function UserAnalytics({ data }: { data: AnalyticsData }) {
           <CardTitle>User Growth</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={data.timeSeriesData}>
+          <ResponsiveContainer width="100%" height={350}>
+            <AreaChart data={data.timeSeriesData} margin={{ bottom: 20, left: 20, right: 20, top: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="date"
