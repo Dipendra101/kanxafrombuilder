@@ -193,7 +193,18 @@ export default function Payment() {
             <Button
               variant="ghost"
               className="text-white hover:bg-white/20 mb-4"
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                const serviceType = searchParams.get('type');
+                if (serviceType === 'bus') {
+                  navigate('/transportation');
+                } else if (serviceType === 'cargo') {
+                  navigate('/transportation');
+                } else if (serviceType === 'tour') {
+                  navigate('/transportation');
+                } else {
+                  navigate('/transportation');
+                }
+              }}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Services
