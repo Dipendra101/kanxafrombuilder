@@ -533,8 +533,8 @@ function UserAnalytics({ data }: { data: AnalyticsData }) {
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={data.timeSeriesData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
+              <XAxis dataKey="date" type="category" />
+              <YAxis type="number" />
               <Tooltip />
               <Area type="monotone" dataKey="users" stroke="#8b5cf6" fill="#a78bfa" fillOpacity={0.3} />
             </AreaChart>
