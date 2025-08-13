@@ -38,6 +38,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import Layout from "@/components/layout/Layout";
+import { PaymentOptions } from "@/components/ui/payment-options";
 import { useAuth } from "@/contexts/AuthContext";
 import { servicesAPI, bookingsAPI } from "@/services/api";
 
