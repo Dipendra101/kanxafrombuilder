@@ -754,21 +754,33 @@ export default function AdminDashboard() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => ExportService.exportUsers(allUsers)}>
-                  Export Users
+                <DropdownMenuItem
+                  onClick={() => ExportService.exportUsers(allUsers)}
+                  disabled={isLoading}
+                >
+                  Export Users ({allUsers.length})
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => ExportService.exportServices(allServices)}>
-                  Export Services
+                <DropdownMenuItem
+                  onClick={() => ExportService.exportServices(allServices)}
+                  disabled={isLoading}
+                >
+                  Export Services ({allServices.length})
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => ExportService.exportBookings(allBookings)}>
-                  Export Bookings
+                <DropdownMenuItem
+                  onClick={() => ExportService.exportBookings(allBookings)}
+                  disabled={isLoading}
+                >
+                  Export Bookings ({allBookings.length})
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => ExportService.exportFinancialReport({
-                  totalRevenue: stats.totalRevenue,
-                  monthlyRevenue: stats.monthlyRevenue,
-                  bookings: allBookings
-                })}>
+                <DropdownMenuItem
+                  onClick={() => ExportService.exportFinancialReport({
+                    totalRevenue: stats.totalRevenue,
+                    monthlyRevenue: stats.monthlyRevenue,
+                    bookings: allBookings
+                  })}
+                  disabled={isLoading}
+                >
                   Financial Report
                 </DropdownMenuItem>
               </DropdownMenuContent>
