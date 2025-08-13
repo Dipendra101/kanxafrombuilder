@@ -22,13 +22,17 @@ const createHeaders = (includeAuth = true) => {
 };
 
 // Generic API request function with retry logic
-const apiRequest = async (endpoint: string, options: RequestInit = {}, retries = 2) => {
+const apiRequest = async (
+  endpoint: string,
+  options: RequestInit = {},
+  retries = 2,
+) => {
   const url = `${API_BASE_URL}${endpoint}`;
 
-  console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`, {
-    body: options.body ? 'present' : 'none',
+  console.log(`🌐 API Request: ${options.method || "GET"} ${url}`, {
+    body: options.body ? "present" : "none",
     hasAuth: !!getAuthToken(),
-    retries
+    retries,
   });
 
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -44,45 +48,46 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}, retries =
             ...createHeaders(),
             ...options.headers,
           },
-          signal: controller.signal
+          signal: controller.signal,
         });
 
         clearTimeout(timeoutId);
 
-      // Parse response body once
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        console.error(`❌ JSON parsing failed for ${url}:`, parseError);
-        // If JSON parsing fails, provide fallback
-        data = {
-          success: false,
-          message: `Response parsing failed: ${parseError}`,
-          error: "PARSE_ERROR"
-        };
-      }
-
-      console.log(`📡 API Response: ${response.status} ${url}`, {
-        success: data.success,
-        message: data.message,
-        demo: data.demo,
-        attempt: attempt + 1
-      });
-
-      if (!response.ok) {
-        // Handle specific auth errors
-        if (response.status === 401 && data.message?.includes("token")) {
-          console.warn("🔐 Invalid token detected, clearing storage");
-          // Clear invalid token from storage
-          localStorage.removeItem("kanxa_token");
-          localStorage.removeItem("kanxa_user");
+        // Parse response body once
+        let data;
+        try {
+          data = await response.json();
+        } catch (parseError) {
+          console.error(`❌ JSON parsing failed for ${url}:`, parseError);
+          // If JSON parsing fails, provide fallback
+          data = {
+            success: false,
+            message: `Response parsing failed: ${parseError}`,
+            error: "PARSE_ERROR",
+          };
         }
 
-        const errorMessage = data.message || `HTTP ${response.status}: Request failed`;
-        console.error(`❌ API Error: ${errorMessage}`, data);
-        throw new Error(errorMessage);
-      }
+        console.log(`📡 API Response: ${response.status} ${url}`, {
+          success: data.success,
+          message: data.message,
+          demo: data.demo,
+          attempt: attempt + 1,
+        });
+
+        if (!response.ok) {
+          // Handle specific auth errors
+          if (response.status === 401 && data.message?.includes("token")) {
+            console.warn("🔐 Invalid token detected, clearing storage");
+            // Clear invalid token from storage
+            localStorage.removeItem("kanxa_token");
+            localStorage.removeItem("kanxa_user");
+          }
+
+          const errorMessage =
+            data.message || `HTTP ${response.status}: Request failed`;
+          console.error(`❌ API Error: ${errorMessage}`, data);
+          throw new Error(errorMessage);
+        }
 
         return data;
       } catch (fetchError) {
@@ -93,24 +98,32 @@ const apiRequest = async (endpoint: string, options: RequestInit = {}, retries =
       const isLastAttempt = attempt === retries;
 
       // Check if it's a network/timeout error that we should retry
-      const isRetryableError = error instanceof TypeError ||
-                               error.name === 'TimeoutError' ||
-                               error.name === 'AbortError' ||
-                               (error instanceof Error && error.message.includes("fetch")) ||
-                               (error instanceof Error && error.message.includes("aborted"));
+      const isRetryableError =
+        error instanceof TypeError ||
+        error.name === "TimeoutError" ||
+        error.name === "AbortError" ||
+        (error instanceof Error && error.message.includes("fetch")) ||
+        (error instanceof Error && error.message.includes("aborted"));
 
       if (isRetryableError && !isLastAttempt) {
         const delay = Math.pow(2, attempt) * 1000; // Exponential backoff: 1s, 2s, 4s
-        console.warn(`🔄 API Request failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        console.warn(
+          `🔄 API Request failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms...`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
 
-      console.error(`💥 API Request failed for ${url} (attempt ${attempt + 1}/${retries + 1}):`, error);
+      console.error(
+        `💥 API Request failed for ${url} (attempt ${attempt + 1}/${retries + 1}):`,
+        error,
+      );
 
       // Network or parsing errors
       if (isRetryableError) {
-        throw new Error("Network error: Unable to connect to server. Please check your internet connection and try again.");
+        throw new Error(
+          "Network error: Unable to connect to server. Please check your internet connection and try again.",
+        );
       }
       throw error;
     }

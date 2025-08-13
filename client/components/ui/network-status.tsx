@@ -16,8 +16,8 @@ export const NetworkStatus: React.FC = () => {
         <span className="text-orange-800">
           Connection lost. Some features may be limited.
         </span>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
           onClick={retryConnection}
           className="ml-4 border-orange-300 text-orange-700 hover:bg-orange-100"

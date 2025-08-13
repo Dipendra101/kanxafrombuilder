@@ -1,4 +1,5 @@
 # 🚀 PRODUCTION DEPLOYMENT CHECKLIST
+
 ## Kanxa Safari - Production Setup Guide
 
 ### CRITICAL ENVIRONMENT VARIABLES
@@ -8,13 +9,13 @@
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/kanxasafari
 DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/kanxasafari
 
-# Security Configuration  
+# Security Configuration
 JWT_SECRET=your-super-secure-jwt-secret-key-min-32-chars
 NODE_ENV=production
 
 # SMS Configuration (Optional - for SMS login)
 TWILIO_ACCOUNT_SID=your-twilio-account-sid
-TWILIO_AUTH_TOKEN=your-twilio-auth-token  
+TWILIO_AUTH_TOKEN=your-twilio-auth-token
 TWILIO_PHONE_NUMBER=your-twilio-phone-number
 
 # Email Configuration (Future)
@@ -31,11 +32,13 @@ ESEWA_SECRET_KEY=your-esewa-secret-key
 ### SECURITY CHECKLIST
 
 - [ ] **Database Security**
+
   - [ ] MongoDB Atlas with IP whitelisting
   - [ ] Database user with minimal required permissions
   - [ ] Connection string encryption
 
 - [ ] **API Security**
+
   - [ ] Rate limiting implemented
   - [ ] CORS configured for production domain
   - [ ] Input validation on all endpoints
@@ -51,6 +54,7 @@ ESEWA_SECRET_KEY=your-esewa-secret-key
 ### PERFORMANCE OPTIMIZATION
 
 - [ ] **Frontend Optimization**
+
   - [ ] Code splitting implemented
   - [ ] Assets minified and compressed
   - [ ] Images optimized and lazy loaded
@@ -65,6 +69,7 @@ ESEWA_SECRET_KEY=your-esewa-secret-key
 ### MONITORING & LOGGING
 
 - [ ] **Error Monitoring**
+
   - [ ] Sentry or similar error tracking
   - [ ] API response time monitoring
   - [ ] Database performance monitoring
@@ -78,6 +83,7 @@ ESEWA_SECRET_KEY=your-esewa-secret-key
 ### BACKUP & RECOVERY
 
 - [ ] **Database Backups**
+
   - [ ] Automated daily backups
   - [ ] Point-in-time recovery
   - [ ] Backup testing procedures
@@ -90,6 +96,7 @@ ESEWA_SECRET_KEY=your-esewa-secret-key
 ### TESTING PROCEDURES
 
 - [ ] **Pre-deployment Testing**
+
   - [ ] All API endpoints tested
   - [ ] Authentication flows verified
   - [ ] Payment processing tested
@@ -104,16 +111,19 @@ ESEWA_SECRET_KEY=your-esewa-secret-key
 ### DEPLOYMENT STEPS
 
 1. **Build the Application**
+
    ```bash
    npm run build
    ```
 
 2. **Set Environment Variables**
+
    - Configure all production environment variables
    - Verify MongoDB connection string
    - Test JWT secret configuration
 
 3. **Deploy to Production**
+
    - Deploy to hosting platform (Vercel, Netlify, etc.)
    - Configure custom domain
    - Set up SSL certificate
@@ -127,6 +137,7 @@ ESEWA_SECRET_KEY=your-esewa-secret-key
 ### MAINTENANCE PROCEDURES
 
 - [ ] **Regular Updates**
+
   - [ ] Security patches applied monthly
   - [ ] Dependency updates reviewed
   - [ ] Performance optimizations
@@ -139,6 +150,7 @@ ESEWA_SECRET_KEY=your-esewa-secret-key
 ### SUPPORT & DOCUMENTATION
 
 - [ ] **User Documentation**
+
   - [ ] User guide created
   - [ ] FAQ section updated
   - [ ] Support contact information

@@ -15,7 +15,7 @@ const getMockUser = (userId: string) => ({
   isActive: true,
   createdAt: new Date(),
   updatedAt: new Date(),
-  toJSON: function() {
+  toJSON: function () {
     return {
       _id: this._id,
       name: this.name,
@@ -46,7 +46,7 @@ export const getProfile: RequestHandler = async (req, res) => {
       (() => {
         console.log("⚠️  Database unavailable, returning mock user profile");
         return getMockUser(req.user.userId);
-      })()
+      })(),
     );
 
     if (!user) {
@@ -99,7 +99,11 @@ export const updateProfile: RequestHandler = async (req, res) => {
     });
 
     // Validate phone if being updated
-    if (updates.phone && !/^\+977[0-9]{10}$/.test(updates.phone) && !/^[0-9]{10}$/.test(updates.phone)) {
+    if (
+      updates.phone &&
+      !/^\+977[0-9]{10}$/.test(updates.phone) &&
+      !/^[0-9]{10}$/.test(updates.phone)
+    ) {
       return res.status(400).json({
         success: false,
         message: "Please provide a valid phone number",
@@ -140,7 +144,9 @@ export const updateProfile: RequestHandler = async (req, res) => {
       },
       // Fallback: Return updated mock user with proper structure
       (() => {
-        console.log("⚠️  Database unavailable, simulating profile update in demo mode");
+        console.log(
+          "⚠️  Database unavailable, simulating profile update in demo mode",
+        );
         const mockUser = {
           ...getMockUser(userId),
           ...updates,
@@ -148,9 +154,11 @@ export const updateProfile: RequestHandler = async (req, res) => {
         };
 
         // Simulate successful update for demo
-        console.log(`🔄 Demo mode: Profile update simulated for ${mockUser.name}`);
+        console.log(
+          `🔄 Demo mode: Profile update simulated for ${mockUser.name}`,
+        );
         return mockUser;
-      })()
+      })(),
     );
 
     if (!user) {
@@ -175,12 +183,13 @@ export const updateProfile: RequestHandler = async (req, res) => {
       success: true,
       demo: isDemoMode,
       userId: responseUser._id,
-      updatedFields: Object.keys(updates)
+      updatedFields: Object.keys(updates),
     });
 
     res.json({
       success: true,
-      message: "Profile updated successfully" + (isDemoMode ? " (demo mode)" : ""),
+      message:
+        "Profile updated successfully" + (isDemoMode ? " (demo mode)" : ""),
       user: responseUser,
       demo: isDemoMode,
       updatedFields: Object.keys(updates),
@@ -244,12 +253,14 @@ export const deactivateAccount: RequestHandler = async (req, res) => {
         _id: userId,
         isActive: false,
         lastActivity: new Date(),
-      }
+      },
     );
 
     res.json({
       success: true,
-      message: "Account deactivated successfully" + (!isDBConnected() ? " (demo mode)" : ""),
+      message:
+        "Account deactivated successfully" +
+        (!isDBConnected() ? " (demo mode)" : ""),
       demo: !isDBConnected(),
     });
   } catch (error: any) {
@@ -353,7 +364,7 @@ export const getAllUsers: RequestHandler = async (req, res) => {
           },
         ],
         total: 3,
-      }
+      },
     );
 
     res.json({
@@ -407,7 +418,7 @@ export const getUserById: RequestHandler = async (req, res) => {
         isActive: true,
         createdAt: new Date(),
         loginHistory: [],
-      }
+      },
     );
 
     if (!user) {
@@ -489,7 +500,8 @@ export const updateUserById: RequestHandler = async (req, res) => {
           });
 
           if (existingUser) {
-            const field = existingUser.email === updates.email ? "email" : "phone";
+            const field =
+              existingUser.email === updates.email ? "email" : "phone";
             throw new Error(`User already exists with this ${field}`);
           }
         }
@@ -511,12 +523,13 @@ export const updateUserById: RequestHandler = async (req, res) => {
         _id: id,
         ...updates,
         updatedAt: new Date(),
-      }
+      },
     );
 
     res.json({
       success: true,
-      message: "User updated successfully" + (!isDBConnected() ? " (demo mode)" : ""),
+      message:
+        "User updated successfully" + (!isDBConnected() ? " (demo mode)" : ""),
       user: user.toJSON ? user.toJSON() : user,
       demo: !isDBConnected(),
     });
@@ -569,12 +582,13 @@ export const deleteUser: RequestHandler = async (req, res) => {
         return deletedUser;
       },
       // Fallback for demo mode
-      { deleted: true }
+      { deleted: true },
     );
 
     res.json({
       success: true,
-      message: "User deleted successfully" + (!isDBConnected() ? " (demo mode)" : ""),
+      message:
+        "User deleted successfully" + (!isDBConnected() ? " (demo mode)" : ""),
       demo: !isDBConnected(),
     });
   } catch (error: any) {
@@ -605,7 +619,10 @@ export const getUserStats: RequestHandler = async (req, res) => {
           {
             $facet: {
               totalUsers: [{ $count: "count" }],
-              activeUsers: [{ $match: { isActive: true } }, { $count: "count" }],
+              activeUsers: [
+                { $match: { isActive: true } },
+                { $count: "count" },
+              ],
               usersByRole: [{ $group: { _id: "$role", count: { $sum: 1 } } }],
               recentUsers: [
                 {
@@ -650,7 +667,7 @@ export const getUserStats: RequestHandler = async (req, res) => {
           user: 1200,
           admin: 47,
         },
-      }
+      },
     );
 
     res.json({

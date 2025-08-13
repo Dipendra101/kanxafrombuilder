@@ -198,7 +198,8 @@ export default function Orders() {
           Order Details - {order.id}
         </DialogTitle>
         <DialogDescription>
-          View complete order information including items, pricing, and delivery details
+          View complete order information including items, pricing, and delivery
+          details
         </DialogDescription>
       </DialogHeader>
 

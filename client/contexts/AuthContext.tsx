@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             // Simple connectivity check first
             const healthCheck = await fetch("/api/health", {
               method: "GET",
-              headers: { "Content-Type": "application/json" }
+              headers: { "Content-Type": "application/json" },
             });
 
             if (!healthCheck.ok) {
@@ -111,8 +111,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log("❌ Auth initialization error:", tokenError.message);
 
             // Check if it's a network error
-            if (tokenError.message.includes("fetch") || tokenError.message.includes("Network")) {
-              console.log("🌐 Network error detected - keeping stored auth for retry");
+            if (
+              tokenError.message.includes("fetch") ||
+              tokenError.message.includes("Network")
+            ) {
+              console.log(
+                "🌐 Network error detected - keeping stored auth for retry",
+              );
               setNetworkError(true);
               // Keep the stored data for potential retry, but continue without auth for now
               // This prevents clearing valid credentials due to temporary network issues
@@ -198,7 +203,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
 
       // Simulate SMS verification API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // For demo purposes, accept any 6-digit code
       if (code.length !== 6) {
@@ -256,7 +261,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const updateUser = async (userData: Partial<User>) => {
     console.log("🔄 AuthContext: Updating user profile", {
       userId: user?._id,
-      updatingFields: Object.keys(userData)
+      updatingFields: Object.keys(userData),
     });
 
     try {
@@ -265,7 +270,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("📝 AuthContext: Profile update response", {
         success: response.success,
         demo: response.demo,
-        message: response.message
+        message: response.message,
       });
 
       if (response.success && response.user) {
@@ -275,17 +280,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         console.log("✅ AuthContext: User profile updated successfully", {
           userId: updatedUser._id,
-          name: updatedUser.name
+          name: updatedUser.name,
         });
       } else {
-        const errorMessage = response.message || "Profile update failed - no user data returned";
+        const errorMessage =
+          response.message || "Profile update failed - no user data returned";
         console.error("❌ AuthContext: Profile update failed:", errorMessage);
         throw new Error(errorMessage);
       }
     } catch (error: any) {
       console.error("💥 AuthContext: Update user error:", {
         message: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
       throw error;
     }

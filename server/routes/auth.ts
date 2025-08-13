@@ -309,7 +309,7 @@ export const login: RequestHandler = async (req, res) => {
       userId: user._id,
       role: user.role,
       demo: !isDBConnected(),
-      tokenGenerated: !!accessToken
+      tokenGenerated: !!accessToken,
     });
 
     res.json({
