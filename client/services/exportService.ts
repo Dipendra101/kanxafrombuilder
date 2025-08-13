@@ -16,7 +16,9 @@ export class ExportService {
   // Convert data to CSV format
   static toCSV(data: ExportData[], options: ExportOptions = { format: 'csv' }): string {
     if (!data || data.length === 0) {
-      throw new Error('No data to export');
+      // Return a CSV with just headers if no data
+      const headers = options.columns ? options.columns.join(',') : 'No data available';
+      return options.includeHeaders !== false ? headers + '\n' : 'No data available\n';
     }
 
     const columns = options.columns || Object.keys(data[0]);
