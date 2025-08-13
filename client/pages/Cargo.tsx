@@ -319,7 +319,7 @@ export default function Cargo() {
                       <CardContent>
                         <div className="text-center">
                           <div className="text-3xl font-bold text-kanxa-blue mb-2">
-                            NPR {calculateQuote().toLocaleString()}
+                            Rs {calculateQuote().toLocaleString()}
                           </div>
                           <p className="text-sm text-gray-600 mb-4">
                             Estimated total cost
