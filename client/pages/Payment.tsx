@@ -132,7 +132,7 @@ export default function Payment() {
   const getRouteFromServiceName = (serviceName: string) => {
     // Extract route information from service name or use defaults
     if (serviceName.includes('Kathmandu')) {
-      return 'Lamjung �� Kathmandu';
+      return 'Lamjung → Kathmandu';
     } else if (serviceName.includes('Pokhara')) {
       return 'Lamjung → Pokhara';
     }
@@ -244,9 +244,16 @@ export default function Payment() {
 
                           {serviceDetails.vehiclePlate && (
                             <div className="flex items-center gap-2 text-sm">
-                              <span className="text-gray-600">Vehicle:</span>
-                              <div className="bg-white border-2 border-gray-800 px-3 py-1 rounded text-xs font-mono font-bold tracking-wider">
-                                {serviceDetails.vehiclePlate}
+                              <span className="text-gray-600">Vehicle Plate:</span>
+                              <div className="bg-white border-2 border-gray-800 px-3 py-2 rounded-md shadow-sm">
+                                <div className="text-center">
+                                  <div className="text-[8px] font-bold text-gray-700 leading-none mb-1">
+                                    {serviceDetails.vehiclePlate.split(' ')[0]}
+                                  </div>
+                                  <div className="text-sm font-bold text-gray-900 tracking-widest font-mono">
+                                    {serviceDetails.vehiclePlate.split(' ').slice(1).join(' ')}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           )}
