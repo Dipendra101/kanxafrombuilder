@@ -34,6 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -280,6 +281,9 @@ export default function Machinery() {
         <DialogTitle className="text-2xl font-bold text-kanxa-navy">
           Rent {machine.name}
         </DialogTitle>
+        <DialogDescription>
+          Complete the rental form to reserve {machine.name} for your project
+        </DialogDescription>
       </DialogHeader>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

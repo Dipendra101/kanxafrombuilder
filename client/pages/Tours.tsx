@@ -37,6 +37,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -189,6 +190,9 @@ export default function Tours() {
         <DialogTitle className="text-2xl font-bold text-kanxa-navy">
           Custom Tour Request
         </DialogTitle>
+        <DialogDescription>
+          Fill out this form to request a customized tour package tailored to your preferences
+        </DialogDescription>
       </DialogHeader>
 
       <div className="space-y-6">

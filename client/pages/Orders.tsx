@@ -31,6 +31,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -196,6 +197,9 @@ export default function Orders() {
           <Package className="h-6 w-6 text-kanxa-orange" />
           Order Details - {order.id}
         </DialogTitle>
+        <DialogDescription>
+          View complete order information including items, pricing, and delivery details
+        </DialogDescription>
       </DialogHeader>
 
       <div className="space-y-6">
