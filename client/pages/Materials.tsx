@@ -359,7 +359,7 @@ export default function Materials() {
                       </h4>
                       <p className="text-sm text-gray-600">{material.unit}</p>
                       <p className="text-sm font-medium text-kanxa-orange">
-                        NPR {material.price.toLocaleString()}
+                        Rs {material.price.toLocaleString()}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -381,7 +381,7 @@ export default function Materials() {
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-kanxa-blue">
-                        NPR {(material.price * quantity).toLocaleString()}
+                        Rs {(material.price * quantity).toLocaleString()}
                       </p>
                     </div>
                   </div>
@@ -395,14 +395,14 @@ export default function Materials() {
               <div className="flex justify-between text-lg font-bold">
                 <span>Total:</span>
                 <span className="text-kanxa-blue">
-                  NPR {getTotalPrice().toLocaleString()}
+                  Rs {getTotalPrice().toLocaleString()}
                 </span>
               </div>
 
               <Alert>
                 <Truck className="h-4 w-4" />
                 <AlertDescription>
-                  Free delivery for orders above NPR 50,000. Delivery charges
+                  Free delivery for orders above Rs 50,000. Delivery charges
                   apply for smaller orders.
                 </AlertDescription>
               </Alert>
@@ -596,7 +596,7 @@ export default function Materials() {
                     <div className="flex items-end justify-between">
                       <div>
                         <p className="text-2xl font-bold text-kanxa-orange">
-                          NPR {material.price.toLocaleString()}
+                          Rs {material.price.toLocaleString()}
                         </p>
                         <p className="text-xs text-gray-500">{material.unit}</p>
                       </div>
@@ -686,7 +686,7 @@ export default function Materials() {
               {
                 icon: <Truck className="h-8 w-8 text-kanxa-orange" />,
                 title: "Free Delivery",
-                description: "Free delivery for orders above NPR 50,000",
+                description: "Free delivery for orders above Rs 50,000",
               },
               {
                 icon: <Shield className="h-8 w-8 text-kanxa-blue" />,
