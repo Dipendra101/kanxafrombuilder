@@ -41,6 +41,7 @@ interface AuthContextType {
   updateUser: (userData: Partial<User>) => Promise<void>;
   refreshUser: () => Promise<void>;
   retryConnection: () => Promise<void>;
+  handleTokenExpiry: (error: any) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
