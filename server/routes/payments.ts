@@ -15,12 +15,13 @@ const KHALTI_PUBLIC_KEY =
   "test_public_key_617c4c6fe77c441d88451ec1408a0c0e";
 
 // eSewa Configuration
-const ESEWA_URL = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
-const ESEWA_SCD = 'EPAYTEST';
-const ESEWA_SECRET = '8gBm/:&EnhH.1/q';
+const ESEWA_URL = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
+const ESEWA_SCD = "EPAYTEST";
+const ESEWA_SECRET = "8gBm/:&EnhH.1/q";
 const BASE_URL = process.env.BASE_URL || "http://localhost:8080";
 
-const SUCCESS_ICON_URL = 'https://cdn.vectorstock.com/i/500p/20/36/3d-green-check-icon-tick-mark-symbol-vector-56142036.jpg';
+const SUCCESS_ICON_URL =
+  "https://cdn.vectorstock.com/i/500p/20/36/3d-green-check-icon-tick-mark-symbol-vector-56142036.jpg";
 
 // Award loyalty points function
 const awardLoyaltyPoints = async (userId: string) => {
@@ -30,20 +31,20 @@ const awardLoyaltyPoints = async (userId: string) => {
     console.log(`Awarding ${pointsToAdd} loyalty points to user ${userId}`);
     return pointsToAdd;
   } catch (error) {
-    console.error('Error awarding loyalty points:', error);
+    console.error("Error awarding loyalty points:", error);
     return 0;
   }
 };
 
 // eSewa Payment Initiation
-router.post('/esewa/initiate', authenticate, async (req, res) => {
+router.post("/esewa/initiate", authenticate, async (req, res) => {
   try {
     const { amount, service, serviceId, bookingId } = req.body;
 
     if (!amount || !service) {
       return res.status(400).json({
         success: false,
-        message: 'Amount and service are required'
+        message: "Amount and service are required",
       });
     }
 
@@ -51,63 +52,66 @@ router.post('/esewa/initiate', authenticate, async (req, res) => {
     const amountToPay = amount.toString();
 
     // Create eSewa signature
-    const signedFieldNames = 'total_amount,transaction_uuid,product_code';
+    const signedFieldNames = "total_amount,transaction_uuid,product_code";
     const signatureBaseString = `total_amount=${amountToPay},transaction_uuid=${transactionId},product_code=${ESEWA_SCD}`;
 
-    const hmac = crypto.createHmac('sha256', ESEWA_SECRET);
+    const hmac = crypto.createHmac("sha256", ESEWA_SECRET);
     hmac.update(signatureBaseString);
-    const signature = hmac.digest('base64');
+    const signature = hmac.digest("base64");
 
     const esewaData = {
       amount: amountToPay,
       success_url: `${BASE_URL}/payment/esewa/success`,
       failure_url: `${BASE_URL}/payment/esewa/failure`,
-      product_delivery_charge: '0',
-      product_service_charge: '0',
+      product_delivery_charge: "0",
+      product_service_charge: "0",
       product_code: ESEWA_SCD,
       signature,
       signed_field_names: signedFieldNames,
-      tax_amount: '0',
+      tax_amount: "0",
       total_amount: amountToPay,
       transaction_uuid: transactionId,
     };
 
     // Store payment info for verification (in real app, use database)
-    console.log(`📱 eSewa payment initiated: ${transactionId} - Rs.${amountToPay}`);
+    console.log(
+      `📱 eSewa payment initiated: ${transactionId} - Rs.${amountToPay}`,
+    );
 
     res.json({
       success: true,
       ...esewaData,
-      ESEWA_URL
+      ESEWA_URL,
     });
-
   } catch (error: any) {
-    console.error('Error in eSewa initiation:', error);
+    console.error("Error in eSewa initiation:", error);
     res.status(500).json({
       success: false,
-      message: 'Server Error while initiating eSewa payment'
+      message: "Server Error while initiating eSewa payment",
     });
   }
 });
 
 // eSewa Payment Verification
-router.post('/esewa/verify', async (req, res) => {
+router.post("/esewa/verify", async (req, res) => {
   try {
     const { data } = req.query;
 
     if (!data) {
       return res.status(400).json({
         success: false,
-        message: 'No data provided for verification'
+        message: "No data provided for verification",
       });
     }
 
-    const decodedData = JSON.parse(Buffer.from(data as string, 'base64').toString('utf-8'));
+    const decodedData = JSON.parse(
+      Buffer.from(data as string, "base64").toString("utf-8"),
+    );
 
-    if (decodedData.status !== 'COMPLETE') {
+    if (decodedData.status !== "COMPLETE") {
       return res.status(400).json({
         success: false,
-        message: `Payment not complete. Status: ${decodedData.status}`
+        message: `Payment not complete. Status: ${decodedData.status}`,
       });
     }
 
@@ -117,55 +121,53 @@ router.post('/esewa/verify', async (req, res) => {
     const response = await axios.get(verificationUrl);
     const verificationResponse = response.data;
 
-    if (verificationResponse.status === 'COMPLETE') {
+    if (verificationResponse.status === "COMPLETE") {
       // Award loyalty points
-      const points = await awardLoyaltyPoints('user_id'); // In real app, get from auth
+      const points = await awardLoyaltyPoints("user_id"); // In real app, get from auth
 
       console.log(`✅ eSewa payment verified: ${decodedData.transaction_uuid}`);
 
       res.status(200).json({
         success: true,
         message: `Payment successful! You earned ${points} loyalty points.`,
-        points: points
+        points: points,
       });
-
     } else {
       res.status(400).json({
         success: false,
-        message: 'eSewa payment verification failed'
+        message: "eSewa payment verification failed",
       });
     }
-
   } catch (error: any) {
-    console.error('Error in eSewa verification:', error);
+    console.error("Error in eSewa verification:", error);
     res.status(500).json({
       success: false,
-      message: 'Server error during eSewa verification.'
+      message: "Server error during eSewa verification.",
     });
   }
 });
 
 // Khalti Payment Verification
-router.post('/khalti/verify', authenticate, async (req, res) => {
+router.post("/khalti/verify", authenticate, async (req, res) => {
   try {
     const { token, amount, service, serviceId, bookingId } = req.body;
 
     if (!token || !amount) {
       return res.status(400).json({
         success: false,
-        message: 'Missing payment verification details.'
+        message: "Missing payment verification details.",
       });
     }
 
     // Verify payment with Khalti
     const khaltiResponse = await axios.post(
-      'https://khalti.com/api/v2/payment/verify/',
+      "https://khalti.com/api/v2/payment/verify/",
       { token, amount },
       {
         headers: {
-          'Authorization': `Key ${KHALTI_SECRET_KEY}`
-        }
-      }
+          Authorization: `Key ${KHALTI_SECRET_KEY}`,
+        },
+      },
     );
 
     if (khaltiResponse.data && khaltiResponse.data.idx) {
@@ -178,21 +180,22 @@ router.post('/khalti/verify', authenticate, async (req, res) => {
         success: true,
         message: `Payment successful! You've earned ${points} loyalty points.`,
         points: points,
-        transactionId: khaltiResponse.data.idx
+        transactionId: khaltiResponse.data.idx,
       });
-
     } else {
       return res.status(400).json({
         success: false,
-        message: 'Khalti payment verification failed.'
+        message: "Khalti payment verification failed.",
       });
     }
-
   } catch (error: any) {
-    console.error('Khalti verification error:', error.response ? error.response.data : error.message);
+    console.error(
+      "Khalti verification error:",
+      error.response ? error.response.data : error.message,
+    );
     res.status(500).json({
       success: false,
-      message: 'Server error during Khalti verification.'
+      message: "Server error during Khalti verification.",
     });
   }
 });

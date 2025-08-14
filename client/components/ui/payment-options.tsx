@@ -41,14 +41,14 @@ export function PaymentOptions({
 
     try {
       const amountToPay = amount;
-      
-      if (method === 'esewa') {
+
+      if (method === "esewa") {
         try {
-          const response = await fetch('/api/payments/esewa/initiate', {
-            method: 'POST',
+          const response = await fetch("/api/payments/esewa/initiate", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
             },
             body: JSON.stringify({
               amount: amountToPay,
@@ -60,28 +60,28 @@ export function PaymentOptions({
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'An API error occurred.');
+            throw new Error(errorData.message || "An API error occurred.");
           }
 
           const esewaResponse = await response.json();
-          
+
           toast({
             title: "Redirecting to eSewa",
             description: "Please complete your payment on eSewa...",
           });
 
           // Create form for eSewa submission
-          const form = document.createElement('form');
-          form.setAttribute('method', 'POST');
-          form.setAttribute('action', esewaResponse.ESEWA_URL);
+          const form = document.createElement("form");
+          form.setAttribute("method", "POST");
+          form.setAttribute("action", esewaResponse.ESEWA_URL);
 
           // Add all form fields
           for (const key in esewaResponse) {
-            if (key !== 'ESEWA_URL') {
-              const hiddenField = document.createElement('input');
-              hiddenField.setAttribute('type', 'hidden');
-              hiddenField.setAttribute('name', key);
-              hiddenField.setAttribute('value', esewaResponse[key]);
+            if (key !== "ESEWA_URL") {
+              const hiddenField = document.createElement("input");
+              hiddenField.setAttribute("type", "hidden");
+              hiddenField.setAttribute("name", key);
+              hiddenField.setAttribute("value", esewaResponse[key]);
               form.appendChild(hiddenField);
             }
           }
@@ -89,31 +89,31 @@ export function PaymentOptions({
           document.body.appendChild(form);
           form.submit();
           document.body.removeChild(form);
-          
         } catch (error: any) {
           console.error("eSewa payment error:", error);
           toast({
             title: "Payment Failed",
-            description: error.message || 'Error initiating eSewa payment.',
+            description: error.message || "Error initiating eSewa payment.",
             variant: "destructive",
           });
         }
-        
+
         setIsProcessing(false);
         setSelectedMethod("");
         return;
       }
 
-      if (method === 'khalti') {
+      if (method === "khalti") {
         toast({
           title: "Opening Khalti",
           description: "Please complete your payment...",
         });
 
         // Load Khalti script if not already loaded
-        if (typeof window.KhaltiCheckout === 'undefined') {
-          const script = document.createElement('script');
-          script.src = 'https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js';
+        if (typeof window.KhaltiCheckout === "undefined") {
+          const script = document.createElement("script");
+          script.src =
+            "https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js";
           script.onload = () => initializeKhaltiPayment();
           document.head.appendChild(script);
         } else {
@@ -130,17 +130,17 @@ export function PaymentOptions({
               async onSuccess(payload: any) {
                 try {
                   setIsProcessing(true);
-                  
+
                   toast({
                     title: "Verifying Payment...",
                     description: "Please wait while we verify your payment...",
                   });
 
-                  const response = await fetch('/api/payments/khalti/verify', {
-                    method: 'POST',
+                  const response = await fetch("/api/payments/khalti/verify", {
+                    method: "POST",
                     headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${localStorage.getItem("authToken")}`,
                     },
                     body: JSON.stringify({
                       token: payload.token,
@@ -152,27 +152,33 @@ export function PaymentOptions({
                   });
 
                   const result = await response.json();
-                  
+
                   if (result.success) {
                     toast({
                       title: "Payment Successful! 🎉",
-                      description: result.message || 'Payment verified successfully!',
+                      description:
+                        result.message || "Payment verified successfully!",
                     });
 
                     // Handle success based on service type
                     if (service === "Construction Materials") {
-                      window.dispatchEvent(new CustomEvent("paymentCompleted", {
-                        detail: { method: 'khalti', service },
-                      }));
+                      window.dispatchEvent(
+                        new CustomEvent("paymentCompleted", {
+                          detail: { method: "khalti", service },
+                        }),
+                      );
                     }
 
                     if (onPaymentSelect) {
-                      onPaymentSelect('khalti');
+                      onPaymentSelect("khalti");
                     }
 
                     // Redirect based on service
                     setTimeout(() => {
-                      if (service.includes("Bus") || service.includes("Transportation")) {
+                      if (
+                        service.includes("Bus") ||
+                        service.includes("Transportation")
+                      ) {
                         navigate("/bookings");
                       } else if (service === "Construction Materials") {
                         navigate("/materials");
@@ -180,16 +186,17 @@ export function PaymentOptions({
                         navigate("/profile");
                       }
                     }, 2000);
-                    
                   } else {
-                    throw new Error(result.message || 'Payment verification failed');
+                    throw new Error(
+                      result.message || "Payment verification failed",
+                    );
                   }
-                  
                 } catch (error: any) {
                   console.error("Khalti verification error:", error);
                   toast({
                     title: "Payment Verification Failed",
-                    description: error.message || 'Payment verification failed.',
+                    description:
+                      error.message || "Payment verification failed.",
                     variant: "destructive",
                   });
                 } finally {
@@ -201,19 +208,25 @@ export function PaymentOptions({
                 console.error("Khalti payment error:", error);
                 toast({
                   title: "Payment Failed",
-                  description: 'Payment process was interrupted.',
+                  description: "Payment process was interrupted.",
                   variant: "destructive",
                 });
                 setIsProcessing(false);
                 setSelectedMethod("");
               },
               onClose: () => {
-                console.log('Khalti widget closed');
+                console.log("Khalti widget closed");
                 setIsProcessing(false);
                 setSelectedMethod("");
               },
             },
-            paymentPreference: ["KHALTI", "EBANKING", "MOBILE_BANKING", "CONNECT_IPS", "SCT"],
+            paymentPreference: [
+              "KHALTI",
+              "EBANKING",
+              "MOBILE_BANKING",
+              "CONNECT_IPS",
+              "SCT",
+            ],
           };
 
           const checkout = new window.KhaltiCheckout(khaltiConfig);
@@ -224,7 +237,7 @@ export function PaymentOptions({
       }
 
       // Handle COD method
-      if (method === 'cod') {
+      if (method === "cod") {
         try {
           toast({
             title: "Processing COD Order",
@@ -232,7 +245,7 @@ export function PaymentOptions({
           });
 
           // Simulate COD confirmation
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          await new Promise((resolve) => setTimeout(resolve, 1500));
 
           toast({
             title: "Order Confirmed! 📦",
@@ -240,15 +253,16 @@ export function PaymentOptions({
           });
 
           if (service === "Construction Materials") {
-            window.dispatchEvent(new CustomEvent("paymentCompleted", {
-              detail: { method: 'cod', service },
-            }));
+            window.dispatchEvent(
+              new CustomEvent("paymentCompleted", {
+                detail: { method: "cod", service },
+              }),
+            );
           }
 
           if (onPaymentSelect) {
-            onPaymentSelect('cod');
+            onPaymentSelect("cod");
           }
-
         } catch (error: any) {
           toast({
             title: "Order Failed",
@@ -266,12 +280,12 @@ export function PaymentOptions({
       if (onPaymentSelect) {
         onPaymentSelect(method);
       }
-
     } catch (error: any) {
       console.error("Payment method error:", error);
       toast({
         title: "Payment Failed",
-        description: error.message || "Unable to process payment. Please try again.",
+        description:
+          error.message || "Unable to process payment. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -359,9 +373,7 @@ export function PaymentOptions({
             disabled={isProcessing}
           >
             <div className="w-14 h-14 bg-gradient-to-br from-orange-600 to-orange-700 rounded-xl flex items-center justify-center shadow-lg">
-              <div className="text-white font-bold text-lg">
-                COD
-              </div>
+              <div className="text-white font-bold text-lg">COD</div>
             </div>
             <div className="text-center">
               <div className="font-bold text-orange-700 text-lg">Cash</div>
@@ -396,8 +408,9 @@ export function PaymentOptions({
         {/* Payment Note */}
         <div className="bg-blue-50 p-3 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>Secure Payment:</strong> All transactions are protected with industry-standard security measures.
-            Choose your preferred payment method above.
+            <strong>Secure Payment:</strong> All transactions are protected with
+            industry-standard security measures. Choose your preferred payment
+            method above.
           </p>
         </div>
       </CardContent>

@@ -72,9 +72,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check if the error indicates token expiry
     const isTokenExpired =
       error?.status === 401 ||
-      error?.message?.includes('token') ||
-      error?.message?.includes('unauthorized') ||
-      error?.message?.includes('expired');
+      error?.message?.includes("token") ||
+      error?.message?.includes("unauthorized") ||
+      error?.message?.includes("expired");
 
     if (isTokenExpired && isAuthenticated) {
       console.log("🔄 Token expired during API call - switching to guest mode");
@@ -90,10 +90,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Show notification to user
       setTimeout(() => {
-        if (typeof window !== 'undefined' && window.dispatchEvent) {
-          window.dispatchEvent(new CustomEvent('tokenExpired', {
-            detail: { message: 'Your session expired. You can continue browsing as a guest or log in again.' }
-          }));
+        if (typeof window !== "undefined" && window.dispatchEvent) {
+          window.dispatchEvent(
+            new CustomEvent("tokenExpired", {
+              detail: {
+                message:
+                  "Your session expired. You can continue browsing as a guest or log in again.",
+              },
+            }),
+          );
         }
       }, 500);
 
@@ -147,10 +152,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
               // Show user-friendly notification
               setTimeout(() => {
-                if (typeof window !== 'undefined' && window.dispatchEvent) {
-                  window.dispatchEvent(new CustomEvent('tokenExpired', {
-                    detail: { message: 'Your session expired. You can continue browsing as a guest or log in again.' }
-                  }));
+                if (typeof window !== "undefined" && window.dispatchEvent) {
+                  window.dispatchEvent(
+                    new CustomEvent("tokenExpired", {
+                      detail: {
+                        message:
+                          "Your session expired. You can continue browsing as a guest or log in again.",
+                      },
+                    }),
+                  );
                 }
               }, 1000);
             }
@@ -184,7 +194,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               }
             } else {
               // Token expired during usage - switch to guest mode
-              console.log("🔄 Token expired during usage - switching to guest mode");
+              console.log(
+                "🔄 Token expired during usage - switching to guest mode",
+              );
               localStorage.removeItem("kanxa_token");
               localStorage.removeItem("kanxa_user");
 
@@ -194,10 +206,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
               // Show user-friendly notification
               setTimeout(() => {
-                if (typeof window !== 'undefined' && window.dispatchEvent) {
-                  window.dispatchEvent(new CustomEvent('tokenExpired', {
-                    detail: { message: 'Your session expired. You can continue browsing as a guest or log in again.' }
-                  }));
+                if (typeof window !== "undefined" && window.dispatchEvent) {
+                  window.dispatchEvent(
+                    new CustomEvent("tokenExpired", {
+                      detail: {
+                        message:
+                          "Your session expired. You can continue browsing as a guest or log in again.",
+                      },
+                    }),
+                  );
                 }
               }, 1000);
             }

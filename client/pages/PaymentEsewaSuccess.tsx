@@ -17,19 +17,22 @@ export default function PaymentEsewaSuccess() {
   useEffect(() => {
     const verifyPayment = async () => {
       try {
-        const data = searchParams.get('data');
-        
+        const data = searchParams.get("data");
+
         if (!data) {
-          throw new Error('No payment data received');
+          throw new Error("No payment data received");
         }
 
         // Verify payment with backend
-        const response = await fetch(`/api/payments/esewa/verify?data=${data}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        const response = await fetch(
+          `/api/payments/esewa/verify?data=${data}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
           },
-        });
+        );
 
         const result = await response.json();
         setVerificationResult(result);
@@ -37,13 +40,17 @@ export default function PaymentEsewaSuccess() {
         if (result.success) {
           toast({
             title: "Payment Successful! 🎉",
-            description: result.message || "Your eSewa payment has been verified successfully.",
+            description:
+              result.message ||
+              "Your eSewa payment has been verified successfully.",
           });
 
           // Dispatch payment completion event
-          window.dispatchEvent(new CustomEvent("paymentCompleted", {
-            detail: { method: 'esewa', service: 'eSewa Payment' }
-          }));
+          window.dispatchEvent(
+            new CustomEvent("paymentCompleted", {
+              detail: { method: "esewa", service: "eSewa Payment" },
+            }),
+          );
         } else {
           toast({
             title: "Payment Verification Failed",
@@ -51,14 +58,13 @@ export default function PaymentEsewaSuccess() {
             variant: "destructive",
           });
         }
-
       } catch (error: any) {
-        console.error('Payment verification error:', error);
+        console.error("Payment verification error:", error);
         setVerificationResult({
           success: false,
-          message: error.message || 'Failed to verify payment'
+          message: error.message || "Failed to verify payment",
         });
-        
+
         toast({
           title: "Verification Error",
           description: error.message || "Failed to verify payment",
@@ -120,7 +126,10 @@ export default function PaymentEsewaSuccess() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Payment Method:</span>
-                      <Badge variant="secondary" className="bg-green-100 text-green-800">
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-100 text-green-800"
+                      >
                         eSewa
                       </Badge>
                     </div>
@@ -130,7 +139,9 @@ export default function PaymentEsewaSuccess() {
                     </div>
                     {verificationResult?.points && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">Loyalty Points Earned:</span>
+                        <span className="text-gray-600">
+                          Loyalty Points Earned:
+                        </span>
                         <div className="flex items-center gap-1">
                           <Gift className="h-4 w-4 text-purple-600" />
                           <span className="font-semibold text-purple-600">
@@ -143,7 +154,9 @@ export default function PaymentEsewaSuccess() {
                 </div>
 
                 <div className="bg-green-100 p-4 rounded-lg">
-                  <h4 className="font-semibold text-green-800 mb-2">What's Next?</h4>
+                  <h4 className="font-semibold text-green-800 mb-2">
+                    What's Next?
+                  </h4>
                   <ul className="text-sm text-green-700 space-y-1">
                     <li>• Your order is being processed</li>
                     <li>• You'll receive confirmation via email</li>
@@ -154,9 +167,7 @@ export default function PaymentEsewaSuccess() {
 
                 <div className="flex gap-4">
                   <Button asChild className="flex-1">
-                    <Link to="/profile">
-                      View Orders
-                    </Link>
+                    <Link to="/profile">View Orders</Link>
                   </Button>
                   <Button variant="outline" asChild className="flex-1">
                     <Link to="/">
@@ -177,28 +188,28 @@ export default function PaymentEsewaSuccess() {
                   Payment Verification Failed
                 </CardTitle>
                 <p className="text-red-600">
-                  We couldn't verify your payment. Please try again or contact support.
+                  We couldn't verify your payment. Please try again or contact
+                  support.
                 </p>
               </CardHeader>
 
               <CardContent className="space-y-6">
                 <div className="bg-white p-4 rounded-lg">
-                  <h3 className="font-semibold text-red-800 mb-2">Error Details</h3>
+                  <h3 className="font-semibold text-red-800 mb-2">
+                    Error Details
+                  </h3>
                   <p className="text-sm text-red-700">
-                    {verificationResult?.message || 'Payment verification failed'}
+                    {verificationResult?.message ||
+                      "Payment verification failed"}
                   </p>
                 </div>
 
                 <div className="flex gap-4">
                   <Button variant="destructive" asChild className="flex-1">
-                    <Link to="/materials">
-                      Try Again
-                    </Link>
+                    <Link to="/materials">Try Again</Link>
                   </Button>
                   <Button variant="outline" asChild className="flex-1">
-                    <Link to="/support">
-                      Contact Support
-                    </Link>
+                    <Link to="/support">Contact Support</Link>
                   </Button>
                 </div>
               </CardContent>

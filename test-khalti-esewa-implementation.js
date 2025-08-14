@@ -4,7 +4,9 @@ console.log("💳 Testing Khalti & eSewa Payment Implementation...");
 // Test 1: Frontend Payment Component
 const testPaymentComponent = () => {
   console.log("\n🎨 Frontend Payment Component:");
-  console.log("✅ PaymentOptions component updated with working implementation");
+  console.log(
+    "✅ PaymentOptions component updated with working implementation",
+  );
   console.log("✅ Khalti Checkout widget integration");
   console.log("✅ eSewa form submission");
   console.log("✅ COD option added");
@@ -15,9 +17,15 @@ const testPaymentComponent = () => {
 // Test 2: Backend API Routes
 const testBackendRoutes = () => {
   console.log("\n🖥️  Backend API Routes:");
-  console.log("✅ POST /api/payments/esewa/initiate - eSewa payment initiation");
-  console.log("✅ POST /api/payments/esewa/verify - eSewa payment verification");
-  console.log("✅ POST /api/payments/khalti/verify - Khalti payment verification");
+  console.log(
+    "✅ POST /api/payments/esewa/initiate - eSewa payment initiation",
+  );
+  console.log(
+    "✅ POST /api/payments/esewa/verify - eSewa payment verification",
+  );
+  console.log(
+    "✅ POST /api/payments/khalti/verify - Khalti payment verification",
+  );
   console.log("✅ HMAC signature generation for eSewa");
   console.log("✅ Khalti API integration with axios");
   console.log("✅ Loyalty points system integrated");
@@ -46,8 +54,12 @@ const testPages = () => {
 // Test 5: Configuration
 const testConfiguration = () => {
   console.log("\n⚙️  Configuration:");
-  console.log("✅ Khalti Secret Key: test_secret_key_3f78fb6364ef4bd1b5fc670ce33a06f5");
-  console.log("✅ Khalti Public Key: test_public_key_617c4c6fe77c441d88451ec1408a0c0e");
+  console.log(
+    "✅ Khalti Secret Key: test_secret_key_3f78fb6364ef4bd1b5fc670ce33a06f5",
+  );
+  console.log(
+    "✅ Khalti Public Key: test_public_key_617c4c6fe77c441d88451ec1408a0c0e",
+  );
   console.log("✅ eSewa Secret Key: 8gBm/:&EnhH.1/q");
   console.log("✅ eSewa Merchant Code: EPAYTEST");
   console.log("✅ Environment variables set via DevServerControl");
@@ -97,4 +109,6 @@ console.log("Khalti Test Code: 123456");
 console.log("eSewa Test ID: 9806800001");
 console.log("eSewa Test Password: 123456");
 
-console.log("\n✨ Payment system now uses proven working code from user's project!");
+console.log(
+  "\n✨ Payment system now uses proven working code from user's project!",
+);

@@ -48,7 +48,10 @@ export default function PaymentEsewaFailure() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Payment Method:</span>
-                    <Badge variant="destructive" className="bg-red-100 text-red-800">
+                    <Badge
+                      variant="destructive"
+                      className="bg-red-100 text-red-800"
+                    >
                       eSewa
                     </Badge>
                   </div>
@@ -68,7 +71,9 @@ export default function PaymentEsewaFailure() {
               </div>
 
               <div className="bg-orange-100 p-4 rounded-lg">
-                <h4 className="font-semibold text-orange-800 mb-2">Possible Reasons</h4>
+                <h4 className="font-semibold text-orange-800 mb-2">
+                  Possible Reasons
+                </h4>
                 <ul className="text-sm text-orange-700 space-y-1">
                   <li>• Payment was cancelled by user</li>
                   <li>• Insufficient balance in eSewa account</li>
@@ -78,9 +83,13 @@ export default function PaymentEsewaFailure() {
               </div>
 
               <div className="bg-blue-100 p-4 rounded-lg">
-                <h4 className="font-semibold text-blue-800 mb-2">What You Can Do</h4>
+                <h4 className="font-semibold text-blue-800 mb-2">
+                  What You Can Do
+                </h4>
                 <ul className="text-sm text-blue-700 space-y-1">
-                  <li>• Try the payment again with the same or different method</li>
+                  <li>
+                    • Try the payment again with the same or different method
+                  </li>
                   <li>• Check your eSewa account balance</li>
                   <li>• Contact our customer support for assistance</li>
                   <li>• Use alternative payment methods (Khalti, COD)</li>
@@ -95,26 +104,21 @@ export default function PaymentEsewaFailure() {
                   </Link>
                 </Button>
                 <Button variant="outline" asChild className="flex-1">
-                  <Link to="/support">
-                    Contact Support
-                  </Link>
+                  <Link to="/support">Contact Support</Link>
                 </Button>
               </div>
 
               <div className="text-center">
                 <p className="text-sm text-gray-600 mb-4">
-                  Need immediate help? Our customer support team is available 24/7.
+                  Need immediate help? Our customer support team is available
+                  24/7.
                 </p>
                 <div className="flex justify-center gap-4">
                   <Button variant="ghost" size="sm" asChild>
-                    <Link to="tel:+977-XXX-XXXXXX">
-                      📞 Call Support
-                    </Link>
+                    <Link to="tel:+977-XXX-XXXXXX">📞 Call Support</Link>
                   </Button>
                   <Button variant="ghost" size="sm" asChild>
-                    <Link to="/chat">
-                      💬 Live Chat
-                    </Link>
+                    <Link to="/chat">💬 Live Chat</Link>
                   </Button>
                 </div>
               </div>

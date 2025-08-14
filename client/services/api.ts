@@ -115,18 +115,28 @@ const apiRequest = async (
         // Check response status using stored values
         if (!responseOk) {
           // Handle specific auth errors
-          if (responseStatus === 401 && (data.message?.includes("token") || data.message?.includes("unauthorized") || data.message?.includes("expired"))) {
-            console.warn("🔐 Token expired/invalid detected - triggering guest mode switch");
+          if (
+            responseStatus === 401 &&
+            (data.message?.includes("token") ||
+              data.message?.includes("unauthorized") ||
+              data.message?.includes("expired"))
+          ) {
+            console.warn(
+              "🔐 Token expired/invalid detected - triggering guest mode switch",
+            );
 
             // Dispatch token expiry event to trigger automatic guest mode
-            if (typeof window !== 'undefined' && window.dispatchEvent) {
-              window.dispatchEvent(new CustomEvent('tokenExpired', {
-                detail: {
-                  message: 'Your session expired. You can continue browsing as a guest or log in again.',
-                  source: 'api_call',
-                  url: url
-                }
-              }));
+            if (typeof window !== "undefined" && window.dispatchEvent) {
+              window.dispatchEvent(
+                new CustomEvent("tokenExpired", {
+                  detail: {
+                    message:
+                      "Your session expired. You can continue browsing as a guest or log in again.",
+                    source: "api_call",
+                    url: url,
+                  },
+                }),
+              );
             }
 
             // Clear invalid token from storage

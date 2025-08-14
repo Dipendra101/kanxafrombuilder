@@ -13,7 +13,9 @@ export default function TokenExpiryHandler() {
 
       toast({
         title: "Session Expired",
-        description: message || "Your login session has expired. You can continue browsing as a guest.",
+        description:
+          message ||
+          "Your login session has expired. You can continue browsing as a guest.",
         duration: 8000, // Show for 8 seconds
         action: (
           <div className="flex items-center gap-2">
@@ -33,11 +35,14 @@ export default function TokenExpiryHandler() {
     };
 
     // Listen for token expiry events
-    window.addEventListener('tokenExpired', handleTokenExpiry as EventListener);
+    window.addEventListener("tokenExpired", handleTokenExpiry as EventListener);
 
     // Cleanup
     return () => {
-      window.removeEventListener('tokenExpired', handleTokenExpiry as EventListener);
+      window.removeEventListener(
+        "tokenExpired",
+        handleTokenExpiry as EventListener,
+      );
     };
   }, [toast]);
 
