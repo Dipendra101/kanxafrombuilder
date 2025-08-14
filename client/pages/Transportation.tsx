@@ -529,7 +529,7 @@ export default function Transportation() {
                     </Card>
                   ) : (
                     <div className="space-y-4">
-                      {filteredServices.map(renderBusService)}
+                      {filteredServices.map((service) => renderBusService(service))}
                     </div>
                   )}
                 </div>
@@ -565,7 +565,7 @@ export default function Transportation() {
                   </Card>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredServices.map(renderCargoService)}
+                    {filteredServices.map((service) => renderCargoService(service))}
                   </div>
                 )}
               </TabsContent>
