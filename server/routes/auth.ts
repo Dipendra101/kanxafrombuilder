@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import User, { IUser } from "../models/User";
 import { withDB, isDBConnected } from "../config/database";
+import { authenticate } from "../middleware/auth";
 
 const router = Router();
 const JWT_SECRET =
