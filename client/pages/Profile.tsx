@@ -502,6 +502,11 @@ export default function Profile() {
             <p className="text-base sm:text-lg lg:text-xl text-white/90 px-4 sm:px-0">
               Manage your account settings and preferences
             </p>
+            {networkError && (
+              <div className="bg-orange-500/20 border border-orange-300 text-orange-100 px-4 py-2 rounded-lg mt-4 text-sm mx-4 sm:mx-0">
+                <span className="font-medium">⚠️ Offline Mode:</span> Some features may be limited due to network connectivity issues.
+              </div>
+            )}
           </div>
         </div>
       </section>
