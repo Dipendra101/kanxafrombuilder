@@ -71,10 +71,15 @@ const apiRequest = async (
             try {
               data = JSON.parse(responseText);
             } catch (jsonError) {
-              console.warn(`⚠️ Non-JSON response from ${url}:`, responseText.slice(0, 100));
+              console.warn(
+                `⚠️ Non-JSON response from ${url}:`,
+                responseText.slice(0, 100),
+              );
               data = {
                 success: false,
-                message: responseText || `HTTP ${responseStatus}: ${responseStatusText}`,
+                message:
+                  responseText ||
+                  `HTTP ${responseStatus}: ${responseStatusText}`,
                 error: "NON_JSON_RESPONSE",
                 rawResponse: responseText,
               };
@@ -88,7 +93,10 @@ const apiRequest = async (
             };
           }
         } catch (readError: any) {
-          console.error(`❌ Failed to read response for ${url}:`, readError.message);
+          console.error(
+            `❌ Failed to read response for ${url}:`,
+            readError.message,
+          );
 
           // Create fallback data structure
           data = {
@@ -116,14 +124,17 @@ const apiRequest = async (
               data.message?.includes("unauthorized") ||
               data.message?.includes("expired"))
           ) {
-            console.warn("🔐 Token expired/invalid detected - triggering guest mode switch");
+            console.warn(
+              "🔐 Token expired/invalid detected - triggering guest mode switch",
+            );
 
             // Dispatch token expiry event
             if (typeof window !== "undefined" && window.dispatchEvent) {
               window.dispatchEvent(
                 new CustomEvent("tokenExpired", {
                   detail: {
-                    message: "Your session expired. You can continue browsing as a guest or log in again.",
+                    message:
+                      "Your session expired. You can continue browsing as a guest or log in again.",
                     source: "api_call",
                     url: url,
                   },
@@ -136,8 +147,11 @@ const apiRequest = async (
             localStorage.removeItem("kanxa_user");
           }
 
-          const errorMessage = data.message || `HTTP ${responseStatus}: Request failed`;
-          console.error(`❌ API Error: HTTP ${responseStatus}: ${errorMessage}`);
+          const errorMessage =
+            data.message || `HTTP ${responseStatus}: Request failed`;
+          console.error(
+            `❌ API Error: HTTP ${responseStatus}: ${errorMessage}`,
+          );
           throw new Error(`HTTP ${responseStatus}: ${errorMessage}`);
         }
 
@@ -160,26 +174,37 @@ const apiRequest = async (
         (error.message && error.message.includes("NetworkError"));
 
       // Don't retry HTTP status errors (4xx, 5xx)
-      const isHttpStatusError = error.message && error.message.startsWith("HTTP ");
+      const isHttpStatusError =
+        error.message && error.message.startsWith("HTTP ");
 
       if (isRetryableError && !isHttpStatusError && !isLastAttempt) {
         const delay = Math.min(Math.pow(2, attempt) * 1000, 5000); // Cap at 5 seconds
         console.warn(
           `🔄 API Request failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms...`,
-          error.message
+          error.message,
         );
         await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
 
-      console.error(`💥 API Request failed for ${url} (attempt ${attempt + 1}/${retries + 1}):`, error.message);
+      console.error(
+        `💥 API Request failed for ${url} (attempt ${attempt + 1}/${retries + 1}):`,
+        error.message,
+      );
 
       // Provide better error messages based on error type
       if (isRetryableError && !isHttpStatusError) {
         if (error.message && error.message.includes("Failed to fetch")) {
-          throw new Error("Network error: Unable to connect to server. Please check your internet connection and try again.");
-        } else if (error.name === "AbortError" || (error.message && error.message.includes("timeout"))) {
-          throw new Error("Request timeout: The server is taking too long to respond. Please try again.");
+          throw new Error(
+            "Network error: Unable to connect to server. Please check your internet connection and try again.",
+          );
+        } else if (
+          error.name === "AbortError" ||
+          (error.message && error.message.includes("timeout"))
+        ) {
+          throw new Error(
+            "Request timeout: The server is taking too long to respond. Please try again.",
+          );
         }
       }
 
