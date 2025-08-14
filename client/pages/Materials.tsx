@@ -458,6 +458,71 @@ export default function Materials() {
     </DialogContent>
   );
 
+  const LoginPromptDialog = () => (
+    <DialogContent className="max-w-md">
+      <DialogHeader>
+        <DialogTitle className="text-2xl font-bold text-kanxa-navy flex items-center gap-2">
+          <Lock className="h-6 w-6 text-kanxa-orange" />
+          Login Required
+        </DialogTitle>
+      </DialogHeader>
+
+      <div className="space-y-6">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-kanxa-light-orange rounded-full flex items-center justify-center mx-auto">
+            <User className="h-8 w-8 text-kanxa-orange" />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-lg font-medium text-kanxa-navy">
+              Please log in to complete your purchase
+            </p>
+            <p className="text-gray-600 text-sm">
+              You need an account to track orders, manage deliveries, and access customer support.
+            </p>
+          </div>
+
+          <Alert>
+            <ShoppingCart className="h-4 w-4" />
+            <AlertDescription>
+              Your cart items will be saved when you log in or create an account.
+            </AlertDescription>
+          </Alert>
+        </div>
+
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowLoginPrompt(false)}
+            className="flex-1"
+          >
+            Continue Browsing
+          </Button>
+          <Button
+            asChild
+            className="flex-1 bg-kanxa-orange hover:bg-kanxa-orange/90"
+          >
+            <Link to="/login">
+              Login
+            </Link>
+          </Button>
+        </div>
+
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-kanxa-blue hover:underline font-medium"
+            >
+              Sign up here
+            </Link>
+          </p>
+        </div>
+      </div>
+    </DialogContent>
+  );
+
   const PaymentDialog = () => (
     <DialogContent className="max-w-lg">
       <DialogHeader>
