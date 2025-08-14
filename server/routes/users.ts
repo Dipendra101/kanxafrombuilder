@@ -101,6 +101,27 @@ export const updateProfile: RequestHandler = async (req, res) => {
       }
     });
 
+    // Handle bio and company fields - store them in profile object as well
+    if (req.body.bio !== undefined || req.body.company !== undefined) {
+      if (!updates.profile) {
+        updates.profile = {};
+      }
+      if (req.body.bio !== undefined) {
+        updates.profile.bio = req.body.bio;
+      }
+      if (req.body.company !== undefined) {
+        updates.profile.company = req.body.company;
+      }
+    }
+
+    // Handle avatar field - also set as profilePicture for backward compatibility
+    if (req.body.avatar !== undefined) {
+      updates.profilePicture = req.body.avatar;
+    }
+    if (req.body.profilePicture !== undefined) {
+      updates.avatar = req.body.profilePicture;
+    }
+
     // Validate phone if being updated
     if (
       updates.phone &&
