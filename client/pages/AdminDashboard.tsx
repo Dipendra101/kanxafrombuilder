@@ -15,6 +15,7 @@ import {
   Download,
   Bell,
   Settings,
+  RefreshCw,
   BarChart3,
   PieChart,
   Activity,
