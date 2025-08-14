@@ -153,16 +153,57 @@ const mockAnalyticsData: AnalyticsData = {
 
 export function PremiumAnalytics() {
   const [data, setData] = useState<AnalyticsData>(mockAnalyticsData);
-  const [timeRange, setTimeRange] = useState("7d");
+  const [timeRange, setTimeRange] = useState("30d");
   const [selectedMetric, setSelectedMetric] = useState("revenue");
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  const fetchAnalyticsData = async (period: string = timeRange) => {
+    try {
+      setIsLoading(true);
+
+      const token = localStorage.getItem("kanxa_token");
+      const response = await fetch(`/api/admin/analytics?period=${period}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        setData(result.data);
+        console.log("✅ Analytics data loaded from backend");
+      } else {
+        throw new Error(result.message || "Failed to load analytics data");
+      }
+    } catch (error: any) {
+      console.error("❌ Failed to fetch analytics:", error);
+      // Keep using mock data on error
+      setData(mockAnalyticsData);
+
+      // Only show error toast if it's not initial load (to avoid spam)
+      if (!isInitialLoading) {
+        console.warn("⚠️ Using fallback analytics data due to:", error.message);
+      }
+    } finally {
+      setIsLoading(false);
+      setIsInitialLoading(false);
+    }
+  };
+
+  // Load data on component mount and when time range changes
+  useEffect(() => {
+    fetchAnalyticsData(timeRange);
+  }, [timeRange]);
 
   const refreshData = async () => {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setData({ ...mockAnalyticsData });
-    setIsLoading(false);
+    await fetchAnalyticsData(timeRange);
   };
 
   const exportAnalytics = async () => {
