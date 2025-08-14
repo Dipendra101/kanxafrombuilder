@@ -31,11 +31,16 @@ export function createServer() {
   // Middleware
   app.use(
     cors({
-      origin: [
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://localhost:8080",
-      ],
+      origin: process.env.NODE_ENV === 'production'
+        ? [
+            process.env.BASE_URL || "https://your-domain.com",
+            // Add your production domains here
+          ]
+        : [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:8080",
+          ],
       credentials: true,
     }),
   );
