@@ -562,12 +562,21 @@ export default function Transportation() {
                                 }
                               >
                                 <DialogTrigger asChild>
-                                  <Button
-                                    className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90 text-white font-semibold py-2 px-6 rounded-lg"
-                                    onClick={() => setSelectedBus(bus)}
-                                  >
-                                    Select Seats
-                                  </Button>
+                                  {!isAuthenticated || isGuest ? (
+                                    <Link to="/login">
+                                      <Button className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90 text-white font-semibold py-2 px-6 rounded-lg">
+                                        <Lock className="mr-2 h-4 w-4" />
+                                        Login to Book
+                                      </Button>
+                                    </Link>
+                                  ) : (
+                                    <Button
+                                      className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90 text-white font-semibold py-2 px-6 rounded-lg"
+                                      onClick={() => setSelectedBus(bus)}
+                                    >
+                                      Select Seats
+                                    </Button>
+                                  )}
                                 </DialogTrigger>
                                 <SeatSelectionDialog bus={selectedBus || bus} />
                               </Dialog>
