@@ -100,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               console.log("✅ Auth initialized successfully");
             } else {
               // Token is invalid/expired - switch to guest mode instead of full logout
-              console.log("🔄 Token expired - switching to guest mode");
+              console.log("���� Token expired - switching to guest mode");
               localStorage.removeItem("kanxa_token");
               localStorage.removeItem("kanxa_user");
 
@@ -146,11 +146,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 setNetworkError(false);
               }
             } else {
-              // Clear invalid token data for non-network errors
-              console.log("🗑️ Clearing invalid auth data");
+              // Token expired during usage - switch to guest mode
+              console.log("🔄 Token expired during usage - switching to guest mode");
               localStorage.removeItem("kanxa_token");
               localStorage.removeItem("kanxa_user");
+
+              // Automatically switch to guest mode
+              await guestLogin();
               setNetworkError(false);
+
+              // Show user-friendly notification
+              setTimeout(() => {
+                if (typeof window !== 'undefined' && window.dispatchEvent) {
+                  window.dispatchEvent(new CustomEvent('tokenExpired', {
+                    detail: { message: 'Your session expired. You can continue browsing as a guest or log in again.' }
+                  }));
+                }
+              }, 1000);
             }
           }
         } else {
