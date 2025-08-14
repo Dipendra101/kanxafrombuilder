@@ -442,10 +442,23 @@ export default function Materials() {
               <div className="flex gap-4">
                 <Button
                   className="flex-1 bg-kanxa-orange hover:bg-kanxa-orange/90"
-                  onClick={() => setShowPayment(true)}
+                  onClick={() => {
+                    if (!isAuthenticated || isGuest) {
+                      setShowLoginPrompt(true);
+                    } else {
+                      setShowPayment(true);
+                    }
+                  }}
                   disabled={Object.keys(cart).length === 0}
                 >
-                  Proceed to Checkout
+                  {!isAuthenticated || isGuest ? (
+                    <>
+                      <Lock className="mr-2 h-4 w-4" />
+                      Login to Checkout
+                    </>
+                  ) : (
+                    "Proceed to Checkout"
+                  )}
                 </Button>
                 <Button variant="outline" onClick={() => setCart({})}>
                   Clear Cart
