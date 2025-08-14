@@ -569,6 +569,30 @@ export const adminAPI = {
   },
 };
 
+// SMS API
+export const smsAPI = {
+  sendCode: async (phoneNumber: string) => {
+    return apiRequest("/sms/send-code", {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber }),
+    });
+  },
+
+  verifyCode: async (phoneNumber: string, code: string) => {
+    return apiRequest("/sms/verify-code", {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber, code }),
+    });
+  },
+
+  resendCode: async (phoneNumber: string) => {
+    return apiRequest("/sms/resend-code", {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber }),
+    });
+  },
+};
+
 // Payment API
 export const paymentsAPI = {
   initializeKhalti: async (paymentData: {
