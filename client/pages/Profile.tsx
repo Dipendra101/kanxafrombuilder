@@ -126,7 +126,14 @@ export default function Profile() {
         email: profile.email,
         phone: profile.phone,
         address: profile.address,
+        avatar: profilePicture || undefined,
         profilePicture: profilePicture || undefined,
+        profile: {
+          bio: profile.bio,
+          company: profile.company,
+        },
+        bio: profile.bio,
+        company: profile.company,
       });
 
       setIsEditing(false);
