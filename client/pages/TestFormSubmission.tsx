@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import { authAPI, userAPI, bookingsAPI, servicesAPI } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -268,9 +268,7 @@ export default function TestFormSubmission() {
       addTestResult({
         name: "Database Connection Test",
         status: response.ok ? "pass" : "warning",
-        message: response.ok
-          ? "Health endpoint accessible"
-          : "Health endpoint failed",
+        message: response.ok ? "Health endpoint accessible" : "Health endpoint failed",
         data: healthData,
       });
     } catch (error: any) {
@@ -378,7 +376,11 @@ export default function TestFormSubmission() {
       pending: "bg-blue-100 text-blue-800",
     };
 
-    return <Badge className={variants[status]}>{status.toUpperCase()}</Badge>;
+    return (
+      <Badge className={variants[status]}>
+        {status.toUpperCase()}
+      </Badge>
+    );
   };
 
   return (
@@ -389,13 +391,10 @@ export default function TestFormSubmission() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <Bug className="h-8 w-8" />
-              <h1 className="text-4xl lg:text-5xl font-bold">
-                QA Testing Suite
-              </h1>
+              <h1 className="text-4xl lg:text-5xl font-bold">QA Testing Suite</h1>
             </div>
             <p className="text-xl text-white/90 mb-8">
-              Comprehensive quality assurance testing for form submissions and
-              backend integration
+              Comprehensive quality assurance testing for form submissions and backend integration
             </p>
           </div>
         </div>
@@ -494,10 +493,7 @@ export default function TestFormSubmission() {
                         id="name"
                         value={profileData.name}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
-                            name: e.target.value,
-                          })
+                          setProfileData({ ...profileData, name: e.target.value })
                         }
                         placeholder="Enter your name"
                       />
@@ -509,10 +505,7 @@ export default function TestFormSubmission() {
                         type="email"
                         value={profileData.email}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
-                            email: e.target.value,
-                          })
+                          setProfileData({ ...profileData, email: e.target.value })
                         }
                         placeholder="Enter your email"
                       />
@@ -523,10 +516,7 @@ export default function TestFormSubmission() {
                         id="phone"
                         value={profileData.phone}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
-                            phone: e.target.value,
-                          })
+                          setProfileData({ ...profileData, phone: e.target.value })
                         }
                         placeholder="Enter your phone"
                       />
@@ -537,10 +527,7 @@ export default function TestFormSubmission() {
                         id="address"
                         value={profileData.address}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
-                            address: e.target.value,
-                          })
+                          setProfileData({ ...profileData, address: e.target.value })
                         }
                         placeholder="Enter your address"
                       />
@@ -551,10 +538,7 @@ export default function TestFormSubmission() {
                         id="bio"
                         value={profileData.bio}
                         onChange={(e) =>
-                          setProfileData({
-                            ...profileData,
-                            bio: e.target.value,
-                          })
+                          setProfileData({ ...profileData, bio: e.target.value })
                         }
                         placeholder="Enter your bio"
                         rows={3}
@@ -593,15 +577,11 @@ export default function TestFormSubmission() {
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 {getStatusIcon(result.status)}
-                                <span className="font-medium">
-                                  {result.name}
-                                </span>
+                                <span className="font-medium">{result.name}</span>
                               </div>
                               {getStatusBadge(result.status)}
                             </div>
-                            <p className="text-sm text-gray-600">
-                              {result.message}
-                            </p>
+                            <p className="text-sm text-gray-600">{result.message}</p>
                             {result.data && (
                               <details className="text-xs">
                                 <summary className="cursor-pointer text-blue-600">

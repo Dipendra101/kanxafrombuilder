@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -49,13 +49,12 @@ export default function SecurityAudit() {
       name: "HTTPS Configuration",
       category: "security",
       message: "Checking SSL/TLS configuration",
-      recommendation:
-        "Ensure all traffic is served over HTTPS with valid certificates",
+      recommendation: "Ensure all traffic is served over HTTPS with valid certificates",
     },
     {
       id: "auth-validation",
       name: "Authentication Security",
-      category: "security",
+      category: "security", 
       message: "Validating authentication mechanisms",
       recommendation: "Implement strong password policies and MFA",
     },
@@ -85,8 +84,7 @@ export default function SecurityAudit() {
       name: "Page Load Speed",
       category: "performance",
       message: "Measuring page load performance",
-      recommendation:
-        "Optimize images, implement caching, and minimize JavaScript",
+      recommendation: "Optimize images, implement caching, and minimize JavaScript",
     },
     {
       id: "api-response",
@@ -118,13 +116,9 @@ export default function SecurityAudit() {
     },
   ];
 
-  const runSecurityTest = async (
-    test: Omit<SecurityTest, "status" | "score">,
-  ): Promise<SecurityTest> => {
+  const runSecurityTest = async (test: Omit<SecurityTest, "status" | "score">): Promise<SecurityTest> => {
     // Simulate test execution
-    await new Promise((resolve) =>
-      setTimeout(resolve, Math.random() * 2000 + 500),
-    );
+    await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 500));
 
     let status: SecurityTest["status"] = "pass";
     let score = 90;
@@ -135,7 +129,7 @@ export default function SecurityAudit() {
         const isHTTPS = window.location.protocol === "https:";
         status = isHTTPS ? "pass" : "fail";
         score = isHTTPS ? 100 : 0;
-        details = isHTTPS
+        details = isHTTPS 
           ? ["✅ Site served over HTTPS", "✅ Secure connection established"]
           : ["❌ Site not using HTTPS", "❌ Insecure connection detected"];
         break;
@@ -145,12 +139,10 @@ export default function SecurityAudit() {
         status = hasAuth ? "pass" : "warning";
         score = hasAuth ? 85 : 60;
         details = [
-          hasAuth
-            ? "✅ Authentication system active"
-            : "⚠️ No active authentication",
+          hasAuth ? "✅ Authentication system active" : "⚠️ No active authentication",
           "✅ JWT token system implemented",
           "⚠️ MFA not implemented",
-          "✅ Password validation present",
+          "✅ Password validation present"
         ];
         break;
 
@@ -161,7 +153,7 @@ export default function SecurityAudit() {
           "✅ Basic input validation present",
           "⚠️ CSP headers not fully configured",
           "✅ Form validation implemented",
-          "⚠️ XSS protection needs enhancement",
+          "⚠️ XSS protection needs enhancement"
         ];
         break;
 
@@ -172,7 +164,7 @@ export default function SecurityAudit() {
           "✅ Authentication required for protected routes",
           "⚠️ Rate limiting not implemented",
           "✅ Error handling implemented",
-          "⚠️ CORS configuration needs review",
+          "⚠️ CORS configuration needs review"
         ];
         break;
 
@@ -183,7 +175,7 @@ export default function SecurityAudit() {
           "✅ Password hashing implemented",
           "✅ JWT token encryption",
           "⚠️ Database encryption not verified",
-          "✅ HTTPS data transmission",
+          "✅ HTTPS data transmission"
         ];
         break;
 
@@ -195,7 +187,7 @@ export default function SecurityAudit() {
           `📊 Page load time: ${Math.round(loadTime)}ms`,
           "✅ Code splitting implemented",
           "⚠️ Image optimization needed",
-          "✅ Minification enabled",
+          "✅ Minification enabled"
         ];
         break;
 
@@ -206,7 +198,7 @@ export default function SecurityAudit() {
           "✅ API responses under 500ms",
           "✅ Database queries optimized",
           "⚠️ Caching not implemented",
-          "✅ Proper error handling",
+          "✅ Proper error handling"
         ];
         break;
 
@@ -218,7 +210,7 @@ export default function SecurityAudit() {
           "✅ Responsive design implemented",
           "✅ Mobile-first approach",
           "✅ Touch-friendly interface",
-          "✅ Viewport meta tag present",
+          "✅ Viewport meta tag present"
         ];
         break;
 
@@ -229,7 +221,7 @@ export default function SecurityAudit() {
           "✅ Semantic HTML structure",
           "⚠️ ARIA labels incomplete",
           "⚠️ Keyboard navigation limited",
-          "✅ Color contrast adequate",
+          "✅ Color contrast adequate"
         ];
         break;
 
@@ -240,7 +232,7 @@ export default function SecurityAudit() {
           "⚠️ Meta descriptions missing",
           "✅ Title tags present",
           "⚠️ Structured data not implemented",
-          "⚠️ Sitemap not generated",
+          "⚠️ Sitemap not generated"
         ];
         break;
 
@@ -266,15 +258,8 @@ export default function SecurityAudit() {
 
     for (const test of securityTests) {
       // Add pending test
-      const pendingTest: SecurityTest = {
-        ...test,
-        status: "pending",
-        score: 0,
-      };
-      setTests((prev) => [
-        ...prev.filter((t) => t.id !== test.id),
-        pendingTest,
-      ]);
+      const pendingTest: SecurityTest = { ...test, status: "pending", score: 0 };
+      setTests(prev => [...prev.filter(t => t.id !== test.id), pendingTest]);
 
       // Run the test
       const result = await runSecurityTest(test);
@@ -282,7 +267,7 @@ export default function SecurityAudit() {
       results.push(result);
 
       // Update with result
-      setTests((prev) => [...prev.filter((t) => t.id !== test.id), result]);
+      setTests(prev => [...prev.filter(t => t.id !== test.id), result]);
     }
 
     setOverallScore(Math.round(totalScore / securityTests.length));
@@ -313,12 +298,16 @@ export default function SecurityAudit() {
   const getStatusBadge = (status: SecurityTest["status"]) => {
     const variants: Record<SecurityTest["status"], string> = {
       pass: "bg-green-100 text-green-800",
-      fail: "bg-red-100 text-red-800",
+      fail: "bg-red-100 text-red-800", 
       warning: "bg-yellow-100 text-yellow-800",
       pending: "bg-blue-100 text-blue-800",
     };
 
-    return <Badge className={variants[status]}>{status.toUpperCase()}</Badge>;
+    return (
+      <Badge className={variants[status]}>
+        {status.toUpperCase()}
+      </Badge>
+    );
   };
 
   const getCategoryIcon = (category: SecurityTest["category"]) => {
@@ -342,14 +331,11 @@ export default function SecurityAudit() {
     return "text-red-600";
   };
 
-  const categorizedTests = tests.reduce(
-    (acc, test) => {
-      if (!acc[test.category]) acc[test.category] = [];
-      acc[test.category].push(test);
-      return acc;
-    },
-    {} as Record<string, SecurityTest[]>,
-  );
+  const categorizedTests = tests.reduce((acc, test) => {
+    if (!acc[test.category]) acc[test.category] = [];
+    acc[test.category].push(test);
+    return acc;
+  }, {} as Record<string, SecurityTest[]>);
 
   return (
     <Layout>
@@ -359,13 +345,10 @@ export default function SecurityAudit() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <ShieldCheck className="h-8 w-8" />
-              <h1 className="text-4xl lg:text-5xl font-bold">
-                Security & Performance Audit
-              </h1>
+              <h1 className="text-4xl lg:text-5xl font-bold">Security & Performance Audit</h1>
             </div>
             <p className="text-xl text-white/90 mb-8">
-              Comprehensive security analysis and performance testing for
-              world-class quality assurance
+              Comprehensive security analysis and performance testing for world-class quality assurance
             </p>
           </div>
         </div>
@@ -383,9 +366,7 @@ export default function SecurityAudit() {
                     <Database className="h-5 w-5" />
                     Overall Security Score
                   </span>
-                  <div
-                    className={`text-3xl font-bold ${getScoreColor(overallScore)}`}
-                  >
+                  <div className={`text-3xl font-bold ${getScoreColor(overallScore)}`}>
                     {overallScore}/100
                   </div>
                 </CardTitle>
@@ -393,8 +374,8 @@ export default function SecurityAudit() {
               <CardContent>
                 <Progress value={overallScore} className="mb-4" />
                 <div className="flex items-center justify-between text-sm">
-                  <Button
-                    onClick={runAllTests}
+                  <Button 
+                    onClick={runAllTests} 
                     disabled={isRunning}
                     className="bg-purple-600 hover:bg-purple-700"
                   >
@@ -418,67 +399,60 @@ export default function SecurityAudit() {
             </Card>
 
             {/* Test Results by Category */}
-            {Object.entries(categorizedTests).map(
-              ([category, categoryTests]) => (
-                <Card key={category} className="mb-6">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 capitalize">
-                      {getCategoryIcon(category as SecurityTest["category"])}
-                      {category} Tests
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {categoryTests.map((test) => (
-                        <div
-                          key={test.id}
-                          className="border rounded-lg p-4 space-y-3"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              {getStatusIcon(test.status)}
-                              <span className="font-medium">{test.name}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={`font-bold ${getScoreColor(test.score)}`}
-                              >
-                                {test.score}/100
-                              </span>
-                              {getStatusBadge(test.status)}
+            {Object.entries(categorizedTests).map(([category, categoryTests]) => (
+              <Card key={category} className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 capitalize">
+                    {getCategoryIcon(category as SecurityTest["category"])}
+                    {category} Tests
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {categoryTests.map((test) => (
+                      <div
+                        key={test.id}
+                        className="border rounded-lg p-4 space-y-3"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {getStatusIcon(test.status)}
+                            <span className="font-medium">{test.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`font-bold ${getScoreColor(test.score)}`}>
+                              {test.score}/100
+                            </span>
+                            {getStatusBadge(test.status)}
+                          </div>
+                        </div>
+                        
+                        <p className="text-sm text-gray-600">{test.message}</p>
+                        
+                        {test.details && (
+                          <div className="bg-gray-50 p-3 rounded text-sm">
+                            <div className="space-y-1">
+                              {test.details.map((detail, index) => (
+                                <div key={index}>{detail}</div>
+                              ))}
                             </div>
                           </div>
-
-                          <p className="text-sm text-gray-600">
-                            {test.message}
-                          </p>
-
-                          {test.details && (
-                            <div className="bg-gray-50 p-3 rounded text-sm">
-                              <div className="space-y-1">
-                                {test.details.map((detail, index) => (
-                                  <div key={index}>{detail}</div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {test.recommendation && (
-                            <Alert>
-                              <AlertTriangle className="h-4 w-4" />
-                              <AlertDescription>
-                                <strong>Recommendation:</strong>{" "}
-                                {test.recommendation}
-                              </AlertDescription>
-                            </Alert>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ),
-            )}
+                        )}
+                        
+                        {test.recommendation && (
+                          <Alert>
+                            <AlertTriangle className="h-4 w-4" />
+                            <AlertDescription>
+                              <strong>Recommendation:</strong> {test.recommendation}
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
 
             {/* Security Recommendations */}
             {tests.length > 0 && (
@@ -494,33 +468,28 @@ export default function SecurityAudit() {
                     <Alert variant="destructive">
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>
-                        <strong>High Priority:</strong> Implement rate limiting
-                        on API endpoints to prevent abuse and DDoS attacks.
+                        <strong>High Priority:</strong> Implement rate limiting on API endpoints to prevent abuse and DDoS attacks.
                       </AlertDescription>
                     </Alert>
-
+                    
                     <Alert>
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>
-                        <strong>Medium Priority:</strong> Add Content Security
-                        Policy (CSP) headers to prevent XSS attacks.
+                        <strong>Medium Priority:</strong> Add Content Security Policy (CSP) headers to prevent XSS attacks.
                       </AlertDescription>
                     </Alert>
-
+                    
                     <Alert>
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>
-                        <strong>Medium Priority:</strong> Implement
-                        comprehensive input validation and sanitization on all
-                        user inputs.
+                        <strong>Medium Priority:</strong> Implement comprehensive input validation and sanitization on all user inputs.
                       </AlertDescription>
                     </Alert>
-
+                    
                     <Alert>
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>
-                        <strong>Low Priority:</strong> Add proper meta tags and
-                        structured data for better SEO performance.
+                        <strong>Low Priority:</strong> Add proper meta tags and structured data for better SEO performance.
                       </AlertDescription>
                     </Alert>
                   </div>
