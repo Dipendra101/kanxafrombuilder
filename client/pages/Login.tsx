@@ -52,6 +52,28 @@ export default function Login() {
     }
   }, []);
 
+  // Function to extend token expiry for remember me
+  const extendTokenExpiry = async (token: string) => {
+    try {
+      const response = await fetch("/api/auth/extend-token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ rememberMe: true }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        return result.token;
+      }
+    } catch (error) {
+      console.error("Failed to extend token expiry:", error);
+    }
+    return null;
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
