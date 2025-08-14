@@ -1,4 +1,4 @@
-import * as nodemailer from 'nodemailer';
+import * as nodemailer from "nodemailer";
 
 interface EmailOptions {
   to: string;
@@ -18,42 +18,51 @@ class EmailService {
     const { EMAIL_USER, EMAIL_PASS } = process.env;
 
     if (!EMAIL_USER || !EMAIL_PASS) {
-      console.warn('⚠️  Email credentials not configured. Email sending will be disabled.');
+      console.warn(
+        "⚠️  Email credentials not configured. Email sending will be disabled.",
+      );
       return;
     }
 
     try {
       this.transporter = nodemailer.createTransport({
-        service: 'gmail',
+        service: "gmail",
         auth: {
           user: EMAIL_USER,
           pass: EMAIL_PASS,
         },
       });
 
-      console.log('✅ Email service initialized');
+      console.log("✅ Email service initialized");
     } catch (error) {
-      console.error('❌ Failed to initialize email service:', error);
+      console.error("❌ Failed to initialize email service:", error);
     }
   }
 
-  async sendVerificationCode(email: string, code: string, type: 'email-change' | 'password-reset' = 'email-change') {
+  async sendVerificationCode(
+    email: string,
+    code: string,
+    type: "email-change" | "password-reset" = "email-change",
+  ) {
     if (!this.transporter) {
       console.log(`📧 [DEMO] Verification code for ${email}: ${code}`);
       return { success: true, demo: true };
     }
 
-    const subject = type === 'email-change' 
-      ? 'Kanxa Safari - Email Change Verification'
-      : 'Kanxa Safari - Password Reset';
+    const subject =
+      type === "email-change"
+        ? "Kanxa Safari - Email Change Verification"
+        : "Kanxa Safari - Password Reset";
 
-    const html = type === 'email-change' 
-      ? this.getEmailChangeTemplate(code)
-      : this.getPasswordResetTemplate(code);
+    const html =
+      type === "email-change"
+        ? this.getEmailChangeTemplate(code)
+        : this.getPasswordResetTemplate(code);
 
-    const text = type === 'email-change'
-      ? `Your email change verification code is: ${code}. This code will expire in 15 minutes.`
-      : `Your password reset code is: ${code}. This code will expire in 15 minutes.`;
+    const text =
+      type === "email-change"
+        ? `Your email change verification code is: ${code}. This code will expire in 15 minutes.`
+        : `Your password reset code is: ${code}. This code will expire in 15 minutes.`;
 
     try {
       const info = await this.transporter.sendMail({
@@ -64,10 +73,10 @@ class EmailService {
         html,
       });
 
-      console.log('📧 Email sent successfully:', info.messageId);
+      console.log("📧 Email sent successfully:", info.messageId);
       return { success: true, messageId: info.messageId };
     } catch (error) {
-      console.error('❌ Failed to send email:', error);
+      console.error("❌ Failed to send email:", error);
       throw error;
     }
   }

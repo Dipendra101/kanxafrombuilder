@@ -678,8 +678,12 @@ export const requestEmailChange: RequestHandler = async (req, res) => {
 
     if (!isDBConnected()) {
       // Mock response for demo mode
-      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-      console.log(`📧 Demo email verification code for ${newEmail}: ${verificationCode}`);
+      const verificationCode = Math.floor(
+        100000 + Math.random() * 900000,
+      ).toString();
+      console.log(
+        `📧 Demo email verification code for ${newEmail}: ${verificationCode}`,
+      );
 
       return res.json({
         success: true,
@@ -708,21 +712,32 @@ export const requestEmailChange: RequestHandler = async (req, res) => {
     }
 
     // Generate verification code
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000,
+    ).toString();
 
     // Store pending email change
     user.verification.emailChangeToken = verificationCode;
-    user.verification.emailChangeExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    user.verification.emailChangeExpires = new Date(
+      Date.now() + 15 * 60 * 1000,
+    ); // 15 minutes
     user.verification.pendingEmail = newEmail;
 
     await user.save();
 
     // Send verification email
     try {
-      await emailService.sendVerificationCode(newEmail, verificationCode, 'email-change');
+      await emailService.sendVerificationCode(
+        newEmail,
+        verificationCode,
+        "email-change",
+      );
       console.log(`📧 Email verification code sent to ${newEmail}`);
     } catch (emailError) {
-      console.error('Failed to send email, but continuing with demo mode:', emailError);
+      console.error(
+        "Failed to send email, but continuing with demo mode:",
+        emailError,
+      );
     }
 
     res.json({

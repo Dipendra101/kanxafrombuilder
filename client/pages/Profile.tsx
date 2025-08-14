@@ -297,7 +297,10 @@ export default function Profile() {
         setNetworkError(true);
         // Keep the default mock data when API fails
         // This ensures the UI still shows something meaningful
-        if (error.message?.includes("Failed to fetch") || error.message?.includes("Network error")) {
+        if (
+          error.message?.includes("Failed to fetch") ||
+          error.message?.includes("Network error")
+        ) {
           console.warn("🔄 Using offline mode due to network issues");
         }
       } finally {
@@ -334,11 +337,11 @@ export default function Profile() {
     }
 
     try {
-      const response = await fetch('/api/auth/change-password', {
-        method: 'POST',
+      const response = await fetch("/api/auth/change-password", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
         body: JSON.stringify({
           currentPassword: passwordForm.currentPassword,
@@ -360,7 +363,7 @@ export default function Profile() {
           confirmPassword: "",
         });
       } else {
-        throw new Error(result.message || 'Password change failed');
+        throw new Error(result.message || "Password change failed");
       }
     } catch (error: any) {
       toast({
@@ -374,11 +377,11 @@ export default function Profile() {
   // Email verification request
   const handleEmailVerificationRequest = async () => {
     try {
-      const response = await fetch('/api/auth/request-email-change', {
-        method: 'POST',
+      const response = await fetch("/api/auth/request-email-change", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
         body: JSON.stringify({
           newEmail: emailForm.newEmail,
@@ -392,9 +395,9 @@ export default function Profile() {
           title: "Verification Code Sent",
           description: `A verification code has been sent to ${emailForm.newEmail}`,
         });
-        setEmailForm(prev => ({ ...prev, step: 2 }));
+        setEmailForm((prev) => ({ ...prev, step: 2 }));
       } else {
-        throw new Error(result.message || 'Failed to send verification code');
+        throw new Error(result.message || "Failed to send verification code");
       }
     } catch (error: any) {
       toast({
@@ -408,11 +411,11 @@ export default function Profile() {
   // Email change with verification
   const handleEmailChange = async () => {
     try {
-      const response = await fetch('/api/auth/change-email', {
-        method: 'POST',
+      const response = await fetch("/api/auth/change-email", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
         body: JSON.stringify({
           newEmail: emailForm.newEmail,
@@ -436,7 +439,7 @@ export default function Profile() {
         // Update user profile with new email
         updateUser({ email: emailForm.newEmail });
       } else {
-        throw new Error(result.message || 'Email change failed');
+        throw new Error(result.message || "Email change failed");
       }
     } catch (error: any) {
       toast({
@@ -449,11 +452,11 @@ export default function Profile() {
 
   // Payment method management
   const addPaymentMethod = (method: any) => {
-    setPaymentMethods(prev => [...prev, { ...method, id: Date.now() }]);
+    setPaymentMethods((prev) => [...prev, { ...method, id: Date.now() }]);
   };
 
   const removePaymentMethod = (id: number) => {
-    setPaymentMethods(prev => prev.filter(method => method.id !== id));
+    setPaymentMethods((prev) => prev.filter((method) => method.id !== id));
     toast({
       title: "Payment Method Removed",
       description: "Payment method has been removed successfully.",
@@ -461,11 +464,11 @@ export default function Profile() {
   };
 
   const setDefaultPaymentMethod = (id: number) => {
-    setPaymentMethods(prev =>
-      prev.map(method => ({
+    setPaymentMethods((prev) =>
+      prev.map((method) => ({
         ...method,
         isDefault: method.id === id,
-      }))
+      })),
     );
     toast({
       title: "Default Payment Updated",
@@ -504,7 +507,8 @@ export default function Profile() {
             </p>
             {networkError && (
               <div className="bg-orange-500/20 border border-orange-300 text-orange-100 px-4 py-2 rounded-lg mt-4 text-sm mx-4 sm:mx-0">
-                <span className="font-medium">⚠️ Offline Mode:</span> Some features may be limited due to network connectivity issues.
+                <span className="font-medium">⚠️ Offline Mode:</span> Some
+                features may be limited due to network connectivity issues.
               </div>
             )}
           </div>
@@ -1190,7 +1194,7 @@ export default function Profile() {
                 type="password"
                 value={passwordForm.currentPassword}
                 onChange={(e) =>
-                  setPasswordForm(prev => ({
+                  setPasswordForm((prev) => ({
                     ...prev,
                     currentPassword: e.target.value,
                   }))
@@ -1205,7 +1209,7 @@ export default function Profile() {
                 type="password"
                 value={passwordForm.newPassword}
                 onChange={(e) =>
-                  setPasswordForm(prev => ({
+                  setPasswordForm((prev) => ({
                     ...prev,
                     newPassword: e.target.value,
                   }))
@@ -1220,7 +1224,7 @@ export default function Profile() {
                 type="password"
                 value={passwordForm.confirmPassword}
                 onChange={(e) =>
-                  setPasswordForm(prev => ({
+                  setPasswordForm((prev) => ({
                     ...prev,
                     confirmPassword: e.target.value,
                   }))
@@ -1296,7 +1300,7 @@ export default function Profile() {
                     type="email"
                     value={emailForm.newEmail}
                     onChange={(e) =>
-                      setEmailForm(prev => ({
+                      setEmailForm((prev) => ({
                         ...prev,
                         newEmail: e.target.value,
                       }))
@@ -1306,8 +1310,9 @@ export default function Profile() {
                 </div>
                 <div className="bg-amber-50 p-3 rounded-lg">
                   <p className="text-sm text-amber-800">
-                    <strong>Important:</strong> Make sure you have access to this email address.
-                    You'll need to verify it before the change takes effect.
+                    <strong>Important:</strong> Make sure you have access to
+                    this email address. You'll need to verify it before the
+                    change takes effect.
                   </p>
                 </div>
               </>
@@ -1320,7 +1325,7 @@ export default function Profile() {
                     type="text"
                     value={emailForm.verificationCode}
                     onChange={(e) =>
-                      setEmailForm(prev => ({
+                      setEmailForm((prev) => ({
                         ...prev,
                         verificationCode: e.target.value,
                       }))
@@ -1331,13 +1336,14 @@ export default function Profile() {
                 </div>
                 <div className="bg-green-50 p-3 rounded-lg">
                   <p className="text-sm text-green-800">
-                    We sent a verification code to <strong>{emailForm.newEmail}</strong>.
-                    Check your inbox and enter the code above.
+                    We sent a verification code to{" "}
+                    <strong>{emailForm.newEmail}</strong>. Check your inbox and
+                    enter the code above.
                   </p>
                 </div>
                 <Button
                   variant="outline"
-                  onClick={() => setEmailForm(prev => ({ ...prev, step: 1 }))}
+                  onClick={() => setEmailForm((prev) => ({ ...prev, step: 1 }))}
                   className="w-full"
                 >
                   Change Email Address
@@ -1390,7 +1396,9 @@ export default function Profile() {
           <div className="space-y-4 py-4">
             {/* Existing Payment Methods */}
             <div className="space-y-3">
-              <h4 className="font-medium text-kanxa-navy">Your Payment Methods</h4>
+              <h4 className="font-medium text-kanxa-navy">
+                Your Payment Methods
+              </h4>
               {paymentMethods.map((method) => (
                 <div
                   key={method.id}
@@ -1399,14 +1407,20 @@ export default function Profile() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-kanxa-light-blue rounded-lg flex items-center justify-center">
                       {method.type === "Khalti" ? (
-                        <span className="text-purple-600 font-bold text-sm">K</span>
+                        <span className="text-purple-600 font-bold text-sm">
+                          K
+                        </span>
                       ) : (
-                        <span className="text-green-600 font-bold text-sm">E</span>
+                        <span className="text-green-600 font-bold text-sm">
+                          E
+                        </span>
                       )}
                     </div>
                     <div>
                       <div className="font-medium">{method.type}</div>
-                      <div className="text-sm text-gray-600">{method.identifier}</div>
+                      <div className="text-sm text-gray-600">
+                        {method.identifier}
+                      </div>
                       {method.expiryDate && (
                         <div className="text-xs text-gray-500">
                           Expires: {method.expiryDate}
@@ -1414,7 +1428,9 @@ export default function Profile() {
                       )}
                     </div>
                     {method.isDefault && (
-                      <Badge className="bg-kanxa-green text-white">Default</Badge>
+                      <Badge className="bg-kanxa-green text-white">
+                        Default
+                      </Badge>
                     )}
                   </div>
                   <div className="flex gap-2">
@@ -1443,7 +1459,9 @@ export default function Profile() {
 
             {/* Add New Payment Method */}
             <div className="space-y-3">
-              <h4 className="font-medium text-kanxa-navy">Add New Payment Method</h4>
+              <h4 className="font-medium text-kanxa-navy">
+                Add New Payment Method
+              </h4>
               <div className="grid grid-cols-2 gap-3">
                 <Button
                   variant="outline"
@@ -1451,7 +1469,9 @@ export default function Profile() {
                   onClick={() => {
                     addPaymentMethod({
                       type: "Khalti",
-                      identifier: "**** **** **** " + Math.floor(1000 + Math.random() * 9000),
+                      identifier:
+                        "**** **** **** " +
+                        Math.floor(1000 + Math.random() * 9000),
                       isDefault: false,
                       expiryDate: "12/26",
                     });
@@ -1484,8 +1504,9 @@ export default function Profile() {
 
             <div className="bg-blue-50 p-3 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Note:</strong> Payment methods are used for quick checkout during bookings.
-                Your default method will be pre-selected at payment.
+                <strong>Note:</strong> Payment methods are used for quick
+                checkout during bookings. Your default method will be
+                pre-selected at payment.
               </p>
             </div>
           </div>
