@@ -4,7 +4,7 @@ import { CheckCircle, ArrowLeft, Gift, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import Layout from "@/components/layout/Layout";
 
 export default function PaymentEsewaSuccess() {

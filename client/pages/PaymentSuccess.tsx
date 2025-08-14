@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import Layout from "@/components/layout/Layout";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 
 interface PaymentVerificationResult {
   success: boolean;

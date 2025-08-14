@@ -74,7 +74,7 @@ import {
 import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { adminAPI, servicesAPI, bookingsAPI, userAPI } from "@/services/api";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import ExportService from "@/services/exportService";
 import PremiumAnalytics from "@/components/analytics/PremiumAnalytics";
 
