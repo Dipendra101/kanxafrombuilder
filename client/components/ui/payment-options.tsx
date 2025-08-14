@@ -66,7 +66,19 @@ export function PaymentOptions({
         }),
       });
 
-      const result = await response.json();
+      // Check if response is ok before reading body
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      let result;
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        // If JSON parsing fails, try to get text response for debugging
+        console.error("Failed to parse JSON response:", parseError);
+        throw new Error("Invalid response format from payment service");
+      }
 
       if (!result.success) {
         throw new Error(result.error || "Payment initiation failed");
