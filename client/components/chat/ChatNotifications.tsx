@@ -201,9 +201,7 @@ export default function ChatNotifications() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                  onClick={() => {
                     toggleDoNotDisturb();
                   }}
                   className="p-1 hover:bg-gray-100"
