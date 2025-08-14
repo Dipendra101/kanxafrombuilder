@@ -49,6 +49,24 @@ export default function Materials() {
   const [sortBy, setSortBy] = useState("name");
   const [showPayment, setShowPayment] = useState(false);
 
+  // Listen for payment completion events
+  useEffect(() => {
+    const handlePaymentCompleted = (event: CustomEvent) => {
+      const { method, service } = event.detail;
+      if (service === "Construction Materials") {
+        console.log(`✅ Payment completed with ${method} for ${service}`);
+        setCart({});
+        setShowPayment(false);
+      }
+    };
+
+    window.addEventListener('paymentCompleted', handlePaymentCompleted as EventListener);
+
+    return () => {
+      window.removeEventListener('paymentCompleted', handlePaymentCompleted as EventListener);
+    };
+  }, []);
+
   const categories = [
     { id: "all", name: "All Materials", icon: "🏗️" },
     { id: "cement", name: "Cement & Concrete", icon: "🧱" },
