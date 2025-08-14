@@ -459,6 +459,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     updateUser,
     refreshUser,
     retryConnection,
+    handleTokenExpiry,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
