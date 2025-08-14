@@ -85,10 +85,11 @@ export function PaymentOptions({
         } else {
           // Demo mode - simulate the payment process
           toast({
-            title: "Demo Payment Mode",
-            description: "Simulating Khalti payment process...",
+            title: "Initiating Khalti Payment",
+            description: "Processing your payment request...",
           });
 
+          // Keep processing state active during simulation
           // Simulate payment delay
           setTimeout(() => {
             toast({
