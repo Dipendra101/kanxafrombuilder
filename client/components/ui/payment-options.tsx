@@ -162,45 +162,15 @@ export function PaymentOptions({
 
       // Handle different payment methods
       if (method === "khalti") {
-        if (result.paymentUrl && result.paymentUrl.includes('khalti.com')) {
-          // Real Khalti - redirect to payment URL
+        // Redirect to Khalti payment URL
+        if (result.paymentUrl) {
           window.location.href = result.paymentUrl;
         } else {
-          // Demo mode - simulate the payment process
-          toast({
-            title: "Initiating Khalti Payment",
-            description: "Processing your payment request...",
-          });
-
-          // Keep processing state active during simulation
-          // Simulate payment delay
-          setTimeout(() => {
-            toast({
-              title: "Payment Successful!",
-              description: "Your order has been processed successfully.",
-            });
-
-            // Call parent callback if provided
-            if (onPaymentSelect) {
-              onPaymentSelect(method);
-            }
-
-            // Clear materials cart if on materials page
-            if (service === "Construction Materials") {
-              // Dispatch custom event to clear cart
-              window.dispatchEvent(new CustomEvent('paymentCompleted', {
-                detail: { method, service }
-              }));
-            }
-
-            setIsProcessing(false);
-            setSelectedMethod("");
-          }, 2000);
-          return;
+          throw new Error("No payment URL received from Khalti");
         }
       } else if (method === "esewa") {
+        // Create form and submit to eSewa
         if (result.paymentUrl && result.config) {
-          // Real eSewa - create form and submit
           const form = document.createElement("form");
           form.method = "POST";
           form.action = result.paymentUrl;
@@ -218,36 +188,7 @@ export function PaymentOptions({
           form.submit();
           document.body.removeChild(form);
         } else {
-          // Demo mode - simulate the payment process
-          toast({
-            title: "Initiating eSewa Payment",
-            description: "Processing your payment request...",
-          });
-
-          // Simulate payment delay
-          setTimeout(() => {
-            toast({
-              title: "Payment Successful!",
-              description: "Your order has been processed successfully.",
-            });
-
-            // Call parent callback if provided
-            if (onPaymentSelect) {
-              onPaymentSelect(method);
-            }
-
-            // Clear materials cart if on materials page
-            if (service === "Construction Materials") {
-              // Dispatch custom event to clear cart
-              window.dispatchEvent(new CustomEvent('paymentCompleted', {
-                detail: { method, service }
-              }));
-            }
-
-            setIsProcessing(false);
-            setSelectedMethod("");
-          }, 2000);
-          return;
+          throw new Error("No payment URL or config received from eSewa");
         }
       }
     } catch (error: any) {
