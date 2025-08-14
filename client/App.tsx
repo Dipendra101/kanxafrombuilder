@@ -52,6 +52,8 @@ import SecurityAudit from "./pages/SecurityAudit";
 import Payment from "./pages/Payment";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailure from "./pages/PaymentFailure";
+import PaymentEsewaSuccess from "./pages/PaymentEsewaSuccess";
+import PaymentEsewaFailure from "./pages/PaymentEsewaFailure";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
