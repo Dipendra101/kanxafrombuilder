@@ -807,7 +807,7 @@ export const changeEmail: RequestHandler = async (req, res) => {
   }
 };
 
-router.post("/request-email-change", requestEmailChange);
-router.post("/change-email", changeEmail);
+router.post("/request-email-change", authenticate, requestEmailChange);
+router.post("/change-email", authenticate, changeEmail);
 
 export default router;
