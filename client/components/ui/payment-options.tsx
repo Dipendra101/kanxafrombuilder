@@ -58,12 +58,13 @@ export function PaymentOptions({
             }),
           });
 
+          const responseData = await response.json();
+
           if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "An API error occurred.");
+            throw new Error(responseData.message || "An API error occurred.");
           }
 
-          const esewaResponse = await response.json();
+          const esewaResponse = responseData;
 
           toast({
             title: "Redirecting to eSewa",
