@@ -136,10 +136,10 @@ export default function Header() {
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <div className="text-sm font-medium leading-none">
-                          Building Materials
+                          {t('header.buildingMaterials')}
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          Cement, blocks, pipes, and more
+                          {t('nav.buildingMaterials.desc')}
                         </p>
                       </Link>
                     </NavigationMenuLink>
@@ -149,10 +149,10 @@ export default function Header() {
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <div className="text-sm font-medium leading-none">
-                          Machinery
+                          {t('header.machinery')}
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          JCBs, mixers, and tractors
+                          {t('nav.machinery.desc')}
                         </p>
                       </Link>
                     </NavigationMenuLink>
@@ -162,13 +162,13 @@ export default function Header() {
 
               <NavigationMenuItem>
                 <Link to="/garage" className={navigationMenuTriggerStyle()}>
-                  Garage & Workshop
+                  {t('header.garage')}
                 </Link>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
                 <Link to="/about" className={navigationMenuTriggerStyle()}>
-                  About
+                  {t('header.about')}
                 </Link>
               </NavigationMenuItem>
             </NavigationMenuList>
@@ -198,7 +198,7 @@ export default function Header() {
             size="icon"
             onClick={toggleLanguage}
             className="hover:bg-accent hover:text-accent-foreground relative"
-            title={language === 'en' ? 'नेपालीमा परिवर्तन गर्नुहोस्' : 'Switch to English'}
+            title={language === 'en' ? 'नेपालीमा परिव���्तन गर्नुहोस्' : 'Switch to English'}
           >
             <Languages className="h-4 w-4" />
             <span className="absolute -bottom-1 -right-1 text-[8px] font-bold bg-primary text-primary-foreground rounded-full w-3 h-3 flex items-center justify-center">
