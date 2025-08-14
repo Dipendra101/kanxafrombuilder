@@ -198,7 +198,7 @@ export default function Header() {
             size="icon"
             onClick={toggleLanguage}
             className="hover:bg-accent hover:text-accent-foreground relative"
-            title={language === 'en' ? 'नेपालीमा परिव���्तन गर्नुहोस्' : 'Switch to English'}
+            title={language === 'en' ? 'नेपालीमा परिवर्तन गर्नुहोस्' : 'Switch to English'}
           >
             <Languages className="h-4 w-4" />
             <span className="absolute -bottom-1 -right-1 text-[8px] font-bold bg-primary text-primary-foreground rounded-full w-3 h-3 flex items-center justify-center">
@@ -231,14 +231,14 @@ export default function Header() {
               <>
                 {user?.role === "admin" && (
                   <Button variant="ghost" asChild>
-                    <Link to="/admin">Admin Panel</Link>
+                    <Link to="/admin">{t('header.adminPanel')}</Link>
                   </Button>
                 )}
                 <span className="text-sm text-kanxa-gray">
-                  Welcome, {user?.name?.split(" ")[0]}!
+                  {t('header.welcome')}, {user?.name?.split(" ")[0]}!
                 </span>
                 <Button variant="ghost" onClick={logout}>
-                  Sign Out
+                  {t('header.signOut')}
                 </Button>
               </>
             ) : isGuest ? (
