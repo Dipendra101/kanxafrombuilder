@@ -62,11 +62,11 @@ export default function Profile() {
     email: user?.email || "",
     phone: user?.phone || "",
     address: user?.address || "",
-    company: "",
+    company: user?.profile?.company || user?.company || "",
     dateJoined: user?.createdAt
       ? new Date(user.createdAt).toISOString().split("T")[0]
       : new Date().toISOString().split("T")[0],
-    bio: "",
+    bio: user?.profile?.bio || user?.bio || "",
   });
 
   // Update profile when user data changes
