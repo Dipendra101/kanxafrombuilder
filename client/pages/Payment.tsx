@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Truck, Bus, Route, Package, MapPin } from "lucide-react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { ArrowLeft, Truck, Bus, Route, Package, MapPin, Lock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Layout from "@/components/layout/Layout";
 import { PaymentOptions } from "@/components/ui/payment-options";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ServiceDetails {
   id: string;
