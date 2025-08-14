@@ -54,8 +54,6 @@ import PaymentFailure from "./pages/PaymentFailure";
 import PaymentEsewaSuccess from "./pages/PaymentEsewaSuccess";
 import PaymentEsewaFailure from "./pages/PaymentEsewaFailure";
 import { AuthProvider } from "./contexts/AuthContext";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
 
