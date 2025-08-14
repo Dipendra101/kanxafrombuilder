@@ -95,8 +95,10 @@ const App = () => (
           }}
         />
         <BrowserRouter>
-          <AuthProvider>
-            <TokenExpiryHandler />
+          <ThemeProvider>
+            <LanguageProvider>
+              <AuthProvider>
+                <TokenExpiryHandler />
             <Routes>
               <Route path="/" element={<Index />} />
 
@@ -167,8 +169,10 @@ const App = () => (
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
+                </Routes>
+              </AuthProvider>
+            </LanguageProvider>
+          </ThemeProvider>
         </BrowserRouter>
       </div>
     </TooltipProvider>
