@@ -233,6 +233,10 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
                 className="w-full bg-kanxa-green hover:bg-kanxa-green/90"
                 disabled={selectedSeats.length === 0}
                 onClick={() => {
+                  if (!isAuthenticated || isGuest) {
+                    navigate("/login");
+                    return;
+                  }
                   const totalAmount = busPrice * selectedSeats.length + 50;
                   const serviceName = `${bus.operator?.name || bus.name || "Bus Service"} - ${selectedSeats.length} seat${selectedSeats.length > 1 ? "s" : ""}`;
                   navigate(
@@ -240,7 +244,14 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
                   );
                 }}
               >
-                Proceed to Payment
+                {!isAuthenticated || isGuest ? (
+                  <>
+                    <Lock className="mr-2 h-4 w-4" />
+                    Login to Pay
+                  </>
+                ) : (
+                  "Proceed to Payment"
+                )}
               </Button>
             </CardContent>
           </Card>
