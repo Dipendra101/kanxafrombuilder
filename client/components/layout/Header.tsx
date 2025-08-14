@@ -47,7 +47,7 @@ export default function Header() {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-kanxa-navy hover:text-kanxa-blue">
-                  Transportation
+                  {t('header.transportation')}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid gap-3 p-6 w-[400px]">
