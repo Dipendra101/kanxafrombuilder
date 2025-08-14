@@ -476,8 +476,8 @@ export default function Profile() {
     });
   };
 
-  // Show guest restriction if user is in guest mode - MUST be after all hooks
-  if (isGuest || !isAuthenticated) {
+  // Show guest restriction if user is not authenticated - MUST be after all hooks
+  if (!isAuthenticated) {
     return (
       <GuestRestriction
         action="access your profile"

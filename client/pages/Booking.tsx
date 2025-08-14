@@ -48,8 +48,8 @@ export default function Booking() {
   const { isGuest, isAuthenticated } = useAuth();
   const [bookingFilter, setBookingFilter] = useState("all");
 
-  // Show guest restriction if user is in guest mode
-  if (isGuest || !isAuthenticated) {
+  // Show guest restriction if user is not authenticated
+  if (!isAuthenticated) {
     return (
       <GuestRestriction
         action="view your bookings"

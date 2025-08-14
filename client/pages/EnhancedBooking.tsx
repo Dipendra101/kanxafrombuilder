@@ -84,8 +84,8 @@ export default function EnhancedBooking() {
   const { user, isAuthenticated, isGuest } = useAuth();
   const { toast } = useToast();
 
-  // Show guest restriction if user is in guest mode
-  if (isGuest || !isAuthenticated) {
+  // Show guest restriction if user is not authenticated
+  if (!isAuthenticated) {
     return (
       <GuestRestriction
         action="make a booking"

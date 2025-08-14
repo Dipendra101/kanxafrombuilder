@@ -44,8 +44,8 @@ export default function Orders() {
   const { isGuest, isAuthenticated } = useAuth();
   const [orderFilter, setOrderFilter] = useState("all");
 
-  // Show guest restriction if user is in guest mode
-  if (isGuest || !isAuthenticated) {
+  // Show guest restriction if user is not authenticated
+  if (!isAuthenticated) {
     return (
       <GuestRestriction
         action="view your orders"
