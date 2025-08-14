@@ -72,10 +72,10 @@ export default function Header() {
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <div className="text-sm font-medium leading-none">
-                          Bus Services
+                          {t('header.busServices')}
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          Daily and nightly bus routes
+                          {t('nav.busServices.desc')}
                         </p>
                       </Link>
                     </NavigationMenuLink>
@@ -85,10 +85,10 @@ export default function Header() {
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <div className="text-sm font-medium leading-none">
-                          Cargo Trucks
+                          {t('header.cargoTrucks')}
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          Freight and logistics services
+                          {t('nav.cargoTrucks.desc')}
                         </p>
                       </Link>
                     </NavigationMenuLink>
@@ -98,10 +98,10 @@ export default function Header() {
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <div className="text-sm font-medium leading-none">
-                          Custom Tours
+                          {t('header.customTours')}
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          Reserved tour services
+                          {t('nav.customTours.desc')}
                         </p>
                       </Link>
                     </NavigationMenuLink>
