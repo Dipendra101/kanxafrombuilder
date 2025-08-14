@@ -12,9 +12,8 @@ console.error = (...args) => {
   originalError.apply(console, args);
 };
 
-import { Toaster } from "@/components/ui/toaster";
-import { createRoot, Root } from "react-dom/client"; // 1. Import the 'Root' type
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from 'react-hot-toast'; // 1. IMPORT react-hot-toast
+import { createRoot, Root } from "react-dom/client"; // 2. Import the 'Root' type
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
