@@ -53,7 +53,6 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailure from "./pages/PaymentFailure";
 import PaymentEsewaSuccess from "./pages/PaymentEsewaSuccess";
 import PaymentEsewaFailure from "./pages/PaymentEsewaFailure";
-import ToastTest from "./pages/ToastTest";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -160,10 +159,9 @@ const App = () => (
               <Route path="/terms" element={<Terms />} />
 
               {/* Test Routes */}
-              <Route path="/test-forms" element={<TestFormSubmission />} />
-              <Route path="/qa-test" element={<TestFormSubmission />} />
-              <Route path="/security-audit" element={<SecurityAudit />} />
-              <Route path="/toast-test" element={<ToastTest />} />
+            <Route path="/test-forms" element={<TestFormSubmission />} />
+            <Route path="/qa-test" element={<TestFormSubmission />} />
+            <Route path="/security-audit" element={<SecurityAudit />} />
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
