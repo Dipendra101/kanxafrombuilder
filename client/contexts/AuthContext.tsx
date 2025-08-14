@@ -65,11 +65,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isGuest, setIsGuest] = useState(false);
   const [networkError, setNetworkError] = useState(false);
 
-  const isAuthenticated = !!user && !!token;
+  const isAuthenticated = !!user && !!token && !isGuest;
 
-  // Function to check if token is expired and handle it gracefully
+  // Production-ready token expiry handler
   const handleTokenExpiry = async (error: any) => {
-    // Check if the error indicates token expiry
     const isTokenExpired =
       error?.status === 401 ||
       error?.message?.includes("token") ||
@@ -77,16 +76,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       error?.message?.includes("expired");
 
     if (isTokenExpired && isAuthenticated) {
-      console.log("🔄 Token expired during API call - switching to guest mode");
+      console.log("🔄 Token expired - logging out user");
 
       // Clear auth data
       localStorage.removeItem("kanxa_token");
       localStorage.removeItem("kanxa_user");
       setToken(null);
       setUser(null);
-
-      // Switch to guest mode automatically
-      await guestLogin();
+      setIsGuest(false);
 
       // Show notification to user
       setTimeout(() => {
@@ -94,24 +91,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           window.dispatchEvent(
             new CustomEvent("tokenExpired", {
               detail: {
-                message:
-                  "Your session expired. You can continue browsing as a guest or log in again.",
+                message: "Your session expired. Please log in again.",
               },
             }),
           );
         }
       }, 500);
 
-      return true; // Indicate that we handled the expiry
+      return true;
     }
 
-    return false; // Not a token expiry error
+    return false;
   };
 
   // Initialize auth state from localStorage
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        setIsLoading(true);
         const storedToken = localStorage.getItem("kanxa_token");
         const storedUser = localStorage.getItem("kanxa_user");
         const storedGuest = localStorage.getItem("kanxa_guest");
@@ -120,17 +117,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setIsGuest(true);
           console.log("ℹ️  Guest mode restored");
         } else if (storedToken && storedUser) {
-          // Try to verify token with graceful fallback
           try {
             console.log("🔄 Verifying stored authentication...");
 
-            // Add timeout to verification to prevent hanging
             const response = await Promise.race([
               authAPI.verifyToken(storedToken),
               new Promise((_, reject) =>
                 setTimeout(
                   () => reject(new Error("Token verification timeout")),
-                  8000,
+                  10000,
                 ),
               ),
             ]);
@@ -141,45 +136,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setNetworkError(false);
               console.log("✅ Auth initialized successfully");
             } else {
-              // Token is invalid/expired - switch to guest mode instead of full logout
-              console.log("🔄 Token expired - switching to guest mode");
+              console.log("🔄 Token expired - clearing auth data");
               localStorage.removeItem("kanxa_token");
               localStorage.removeItem("kanxa_user");
-
-              // Automatically switch to guest mode for better UX
-              await guestLogin();
-              setNetworkError(false);
-
-              // Show user-friendly notification
-              setTimeout(() => {
-                if (typeof window !== "undefined" && window.dispatchEvent) {
-                  window.dispatchEvent(
-                    new CustomEvent("tokenExpired", {
-                      detail: {
-                        message:
-                          "Your session expired. You can continue browsing as a guest or log in again.",
-                      },
-                    }),
-                  );
-                }
-              }, 1000);
+              setToken(null);
+              setUser(null);
             }
-          } catch (tokenError: any) {
-            console.log("⚠️ Auth initialization error:", tokenError.message);
+          } catch (error: any) {
+            console.log("⚠️ Auth initialization error:", error.message);
 
-            // Better network error detection
+            // Check for network errors only
             const isNetworkError =
-              tokenError.message.includes("fetch") ||
-              tokenError.message.includes("Network") ||
-              tokenError.message.includes("timeout") ||
-              tokenError.name === "TypeError" ||
-              tokenError.message.includes("Unable to connect");
+              error.message.includes("fetch") ||
+              error.message.includes("Network") ||
+              error.message.includes("timeout") ||
+              error.name === "TypeError";
 
             if (isNetworkError) {
-              console.log("��� Network issue detected - preserving auth state");
+              console.log("🌐 Network issue detected during auth init");
               setNetworkError(true);
-
-              // Use cached user data during network issues
+              
+              // Use cached data during network issues
               try {
                 const userData = JSON.parse(storedUser);
                 setToken(storedToken);
@@ -187,36 +164,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 console.log("💾 Using cached auth data during network issues");
               } catch (parseError) {
                 console.log("❌ Failed to parse cached user data");
-                // Only clear if we can't parse the data
                 localStorage.removeItem("kanxa_token");
                 localStorage.removeItem("kanxa_user");
-                setNetworkError(false);
               }
             } else {
-              // Token expired during usage - switch to guest mode
-              console.log(
-                "🔄 Token expired during usage - switching to guest mode",
-              );
+              // Clear invalid auth data
+              console.log("🧹 Clearing invalid auth data");
               localStorage.removeItem("kanxa_token");
               localStorage.removeItem("kanxa_user");
-
-              // Automatically switch to guest mode
-              await guestLogin();
-              setNetworkError(false);
-
-              // Show user-friendly notification
-              setTimeout(() => {
-                if (typeof window !== "undefined" && window.dispatchEvent) {
-                  window.dispatchEvent(
-                    new CustomEvent("tokenExpired", {
-                      detail: {
-                        message:
-                          "Your session expired. You can continue browsing as a guest or log in again.",
-                      },
-                    }),
-                  );
-                }
-              }, 1000);
             }
           }
         } else {
@@ -224,12 +179,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       } catch (error) {
         console.error("Failed to initialize auth:", error);
-        // Only clear data if it's not a network-related error
-        if (!(error instanceof TypeError && error.message.includes("fetch"))) {
-          localStorage.removeItem("kanxa_token");
-          localStorage.removeItem("kanxa_user");
-          localStorage.removeItem("kanxa_guest");
-        }
+        // Clear potentially corrupted data
+        localStorage.removeItem("kanxa_token");
+        localStorage.removeItem("kanxa_user");
+        localStorage.removeItem("kanxa_guest");
       } finally {
         setIsLoading(false);
       }
@@ -241,20 +194,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
+      setNetworkError(false);
+      
       const response = await authAPI.login({ email, password });
 
       if (response.success) {
         setUser(response.user);
         setToken(response.token);
+        setIsGuest(false);
 
         // Store in localStorage
         localStorage.setItem("kanxa_token", response.token);
         localStorage.setItem("kanxa_user", JSON.stringify(response.user));
+        localStorage.removeItem("kanxa_guest");
       } else {
         throw new Error(response.message || "Login failed");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
+      
+      // Check for network errors
+      if (error.message?.includes("fetch") || error.message?.includes("Network")) {
+        setNetworkError(true);
+      }
+      
       throw error;
     } finally {
       setIsLoading(false);
@@ -269,62 +232,65 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }) => {
     try {
       setIsLoading(true);
+      setNetworkError(false);
+      
       const response = await authAPI.register(userData);
 
       if (response.success) {
         setUser(response.user);
         setToken(response.token);
+        setIsGuest(false);
 
         // Store in localStorage
         localStorage.setItem("kanxa_token", response.token);
         localStorage.setItem("kanxa_user", JSON.stringify(response.user));
+        localStorage.removeItem("kanxa_guest");
       } else {
         throw new Error(response.message || "Registration failed");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Registration error:", error);
+      
+      // Check for network errors
+      if (error.message?.includes("fetch") || error.message?.includes("Network")) {
+        setNetworkError(true);
+      }
+      
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Production-ready SMS login with real API integration
   const smsLogin = async (phone: string, code: string) => {
     try {
       setIsLoading(true);
+      setNetworkError(false);
 
-      // Simulate SMS verification API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Call real SMS authentication API
+      const response = await authAPI.smsLogin({ phone, code });
 
-      // For demo purposes, accept any 6-digit code
-      if (code.length !== 6) {
-        throw new Error("Invalid verification code");
+      if (response.success) {
+        setUser(response.user);
+        setToken(response.token);
+        setIsGuest(false);
+
+        // Store in localStorage
+        localStorage.setItem("kanxa_token", response.token);
+        localStorage.setItem("kanxa_user", JSON.stringify(response.user));
+        localStorage.removeItem("kanxa_guest");
+      } else {
+        throw new Error(response.message || "SMS verification failed");
       }
-
-      // Create user with phone number
-      const smsUser = {
-        _id: `sms_${Date.now()}`,
-        name: "SMS User",
-        email: "",
-        phone: phone,
-        role: "user",
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      const mockToken = `sms_token_${Date.now()}`;
-
-      setUser(smsUser);
-      setToken(mockToken);
-      setIsGuest(false);
-
-      // Store in localStorage
-      localStorage.setItem("kanxa_token", mockToken);
-      localStorage.setItem("kanxa_user", JSON.stringify(smsUser));
-      localStorage.removeItem("kanxa_guest");
-    } catch (error) {
+    } catch (error: any) {
       console.error("SMS login error:", error);
+      
+      // Check for network errors
+      if (error.message?.includes("fetch") || error.message?.includes("Network")) {
+        setNetworkError(true);
+      }
+      
       throw error;
     } finally {
       setIsLoading(false);
@@ -335,6 +301,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsGuest(true);
     setUser(null);
     setToken(null);
+    setNetworkError(false);
     localStorage.setItem("kanxa_guest", "true");
     localStorage.removeItem("kanxa_token");
     localStorage.removeItem("kanxa_user");
@@ -344,6 +311,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
     setToken(null);
     setIsGuest(false);
+    setNetworkError(false);
     localStorage.removeItem("kanxa_token");
     localStorage.removeItem("kanxa_user");
     localStorage.removeItem("kanxa_guest");
@@ -351,18 +319,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const updateUser = async (userData: Partial<User>) => {
     console.log("🔄 AuthContext: Updating user profile", {
-      userId: user?._id,
+      userId: user?.id,
       updatingFields: Object.keys(userData),
     });
 
     try {
       const response = await userAPI.updateProfile(userData);
-
-      console.log("📝 AuthContext: Profile update response", {
-        success: response.success,
-        demo: response.demo,
-        message: response.message,
-      });
 
       if (response.success && response.user) {
         const updatedUser = response.user;
@@ -370,20 +332,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.setItem("kanxa_user", JSON.stringify(updatedUser));
 
         console.log("✅ AuthContext: User profile updated successfully", {
-          userId: updatedUser._id,
+          userId: updatedUser.id,
           name: updatedUser.name,
         });
       } else {
-        const errorMessage =
-          response.message || "Profile update failed - no user data returned";
+        const errorMessage = response.message || "Profile update failed";
         console.error("❌ AuthContext: Profile update failed:", errorMessage);
         throw new Error(errorMessage);
       }
     } catch (error: any) {
-      console.error("💥 AuthContext: Update user error:", {
-        message: error.message,
-        stack: error.stack,
-      });
+      console.error("💥 AuthContext: Update user error:", error);
+      
+      // Check for network errors
+      if (error.message?.includes("fetch") || error.message?.includes("Network")) {
+        setNetworkError(true);
+      }
+      
       throw error;
     }
   };
@@ -392,19 +356,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await userAPI.getProfile();
 
-      if (response.success) {
+      if (response.success && response.user) {
         setUser(response.user);
         localStorage.setItem("kanxa_user", JSON.stringify(response.user));
-        setNetworkError(false); // Clear network error on successful request
+        setNetworkError(false);
+      } else {
+        throw new Error("Failed to refresh user profile");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Refresh user error:", error);
-      // Check if it's a network error
-      if (error instanceof Error && error.message.includes("Network")) {
+      
+      // Check for network errors
+      if (error.message?.includes("fetch") || error.message?.includes("Network")) {
         setNetworkError(true);
       } else {
-        // If profile fetch fails for other reasons, user might be logged out
-        logout();
+        // If profile fetch fails for other reasons (like 401), handle token expiry
+        await handleTokenExpiry(error);
       }
     }
   };
@@ -414,15 +381,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setNetworkError(false);
 
     const storedToken = localStorage.getItem("kanxa_token");
-    const storedUser = localStorage.getItem("kanxa_user");
 
-    if (storedToken && storedUser) {
+    if (storedToken) {
       try {
-        // Add timeout to retry as well
         const response = await Promise.race([
           authAPI.verifyToken(storedToken),
           new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("Retry timeout")), 5000),
+            setTimeout(() => reject(new Error("Retry timeout")), 8000),
           ),
         ]);
 
@@ -433,31 +398,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           console.log("✅ Connection retry successful");
         } else {
           console.log("❌ Token invalid during retry");
-          setNetworkError(false);
           localStorage.removeItem("kanxa_token");
           localStorage.removeItem("kanxa_user");
           setToken(null);
           setUser(null);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("❌ Connection retry failed:", error);
         setNetworkError(true);
-
-        // Keep using cached data if network still has issues
-        try {
-          const userData = JSON.parse(storedUser);
-          if (!user) {
-            setToken(storedToken);
-            setUser(userData);
-            console.log("💾 Keeping cached auth during retry failure");
-          }
-        } catch (parseError) {
-          console.log("❌ Unable to use cached data");
-        }
       }
     } else {
-      setNetworkError(false);
-      console.log("ℹ️ No stored credentials to retry with");
+      console.log("ℹ️ No stored token to retry with");
     }
   };
 
