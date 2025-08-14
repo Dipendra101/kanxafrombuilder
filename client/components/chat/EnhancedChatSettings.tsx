@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast-simple';
 import ExportService from '@/services/exportService';
 
 interface ChatSettings {
@@ -484,7 +484,7 @@ export default function EnhancedChatSettings({
                   <SelectContent>
                     <SelectItem value="en">English</SelectItem>
                     <SelectItem value="ne">नेपाली (Nepali)</SelectItem>
-                    <SelectItem value="hi">हिन्दी (Hindi)</SelectItem>
+                    <SelectItem value="hi">ह���न्दी (Hindi)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
