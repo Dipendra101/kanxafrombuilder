@@ -58,7 +58,7 @@ const apiRequest = async (
         const responseOk = response.ok;
         const responseStatusText = response.statusText;
 
-        // Read response body immediately and store it
+        // Read response body immediately and store it - no cloning needed
         let responseText: string;
         let data: any;
         let parseSuccess = false;
