@@ -407,11 +407,11 @@ export default function AdminDashboard() {
         console.error("Failed to load dashboard data:", error);
 
         // Check if this is a network error (Failed to fetch)
-        const isNetworkError = error.message && (
-          error.message.includes("Failed to fetch") ||
-          error.message.includes("NetworkError") ||
-          error.message.includes("fetch")
-        );
+        const isNetworkError =
+          error.message &&
+          (error.message.includes("Failed to fetch") ||
+            error.message.includes("NetworkError") ||
+            error.message.includes("fetch"));
 
         if (isNetworkError) {
           console.warn("Network error detected, enabling API failure mode");
@@ -773,35 +773,39 @@ export default function AdminDashboard() {
       <div className="container mx-auto px-4 py-8">
         {/* Demo Mode Banner */}
         {isDemoMode && (
-          <div className={`border rounded-lg p-4 mb-6 ${
-            apiFailure
-              ? "bg-orange-50 border-orange-200"
-              : "bg-blue-50 border-blue-200"
-          }`}>
+          <div
+            className={`border rounded-lg p-4 mb-6 ${
+              apiFailure
+                ? "bg-orange-50 border-orange-200"
+                : "bg-blue-50 border-blue-200"
+            }`}
+          >
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  apiFailure ? "bg-orange-500" : "bg-blue-500"
-                }`}>
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    apiFailure ? "bg-orange-500" : "bg-blue-500"
+                  }`}
+                >
                   <span className="text-white text-sm font-bold">
                     {apiFailure ? "!" : "i"}
                   </span>
                 </div>
               </div>
               <div className="ml-3">
-                <h3 className={`text-lg font-medium ${
-                  apiFailure ? "text-orange-800" : "text-blue-800"
-                }`}>
+                <h3
+                  className={`text-lg font-medium ${
+                    apiFailure ? "text-orange-800" : "text-blue-800"
+                  }`}
+                >
                   {apiFailure
                     ? "Network Error - Demo Mode Active"
-                    : "Demo Mode - Admin Dashboard Preview"
-                  }
+                    : "Demo Mode - Admin Dashboard Preview"}
                 </h3>
                 <p className={apiFailure ? "text-orange-600" : "text-blue-600"}>
                   {apiFailure
                     ? "Unable to connect to server. Displaying demo data. Please check your connection or try refreshing the page."
-                    : "You're viewing the admin dashboard in demo mode. Login with admin@demo.com / demo123 for full functionality."
-                  }
+                    : "You're viewing the admin dashboard in demo mode. Login with admin@demo.com / demo123 for full functionality."}
                 </p>
                 {apiFailure && (
                   <Button

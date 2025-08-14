@@ -159,9 +159,9 @@ const App = () => (
               <Route path="/terms" element={<Terms />} />
 
               {/* Test Routes */}
-            <Route path="/test-forms" element={<TestFormSubmission />} />
-            <Route path="/qa-test" element={<TestFormSubmission />} />
-            <Route path="/security-audit" element={<SecurityAudit />} />
+              <Route path="/test-forms" element={<TestFormSubmission />} />
+              <Route path="/qa-test" element={<TestFormSubmission />} />
+              <Route path="/security-audit" element={<SecurityAudit />} />
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
