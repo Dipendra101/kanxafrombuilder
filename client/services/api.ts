@@ -59,39 +59,49 @@ const apiRequest = async (
         const responseStatusText = response.statusText;
 
         let data: any;
-        
-        try {
-          // Read response body only once
-          const responseText = await response.text();
-          
-          // Try to parse as JSON if there's content
-          if (responseText.trim()) {
-            try {
-              data = JSON.parse(responseText);
-            } catch (jsonError) {
-              console.warn(`⚠️ Non-JSON response from ${url}:`, responseText.slice(0, 100));
-              data = {
-                success: false,
-                message: responseText || `HTTP ${responseStatus}: ${responseStatusText}`,
-                error: "NON_JSON_RESPONSE",
-                rawResponse: responseText,
-              };
-            }
-          } else {
-            // Empty response
-            data = {
-              success: false,
-              message: `HTTP ${responseStatus}: Empty response`,
-              error: "EMPTY_RESPONSE",
-            };
-          }
-        } catch (readError: any) {
-          console.error(`❌ Failed to read response for ${url}:`, readError.message);
+
+        // Check if response body is readable
+        if (!response.body || response.bodyUsed) {
+          console.warn(`⚠️ Response body not readable for ${url} - status: ${responseStatus}`);
           data = {
             success: false,
-            message: `Failed to read response: ${readError.message}`,
-            error: "READ_ERROR",
+            message: `HTTP ${responseStatus}: ${responseStatusText}`,
+            error: "BODY_NOT_READABLE",
           };
+        } else {
+          try {
+            // Read response body only once and ensure it's not already consumed
+            const responseText = await response.text();
+
+            // Try to parse as JSON if there's content
+            if (responseText && responseText.trim()) {
+              try {
+                data = JSON.parse(responseText);
+              } catch (jsonError) {
+                console.warn(`⚠️ Non-JSON response from ${url}:`, responseText.slice(0, 100));
+                data = {
+                  success: false,
+                  message: responseText || `HTTP ${responseStatus}: ${responseStatusText}`,
+                  error: "NON_JSON_RESPONSE",
+                  rawResponse: responseText,
+                };
+              }
+            } else {
+              // Empty response
+              data = {
+                success: false,
+                message: `HTTP ${responseStatus}: Empty response`,
+                error: "EMPTY_RESPONSE",
+              };
+            }
+          } catch (readError: any) {
+            console.error(`❌ Failed to read response for ${url}:`, readError.message);
+            data = {
+              success: false,
+              message: `HTTP ${responseStatus}: ${responseStatusText} - Body read failed`,
+              error: "READ_ERROR",
+            };
+          }
         }
 
         console.log(`📡 API Response: ${responseStatus} ${url}`, {
@@ -131,7 +141,7 @@ const apiRequest = async (
           }
 
           const errorMessage = data.message || `HTTP ${responseStatus}: Request failed`;
-          console.error(`❌ API Error: HTTP ${responseStatus}: ${errorMessage}`);
+          console.error(`��� API Error: HTTP ${responseStatus}: ${errorMessage}`);
           throw new Error(`HTTP ${responseStatus}: ${errorMessage}`);
         }
 
