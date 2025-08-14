@@ -89,6 +89,9 @@ export const updateProfile: RequestHandler = async (req, res) => {
       "preferences",
       "profile",
       "profilePicture",
+      "avatar",
+      "bio",
+      "company",
     ];
 
     const updates: any = {};
