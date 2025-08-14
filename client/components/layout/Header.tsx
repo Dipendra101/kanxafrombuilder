@@ -348,25 +348,25 @@ export default function Header() {
                     to="/transportation"
                     className="text-kanxa-navy hover:text-kanxa-blue"
                   >
-                    Transportation
+                    {t('header.transportation')}
                   </Link>
                   <Link
                     to="/construction"
                     className="text-kanxa-navy hover:text-kanxa-orange"
                   >
-                    Construction
+                    {t('header.construction')}
                   </Link>
                   <Link
                     to="/garage"
                     className="text-kanxa-navy hover:text-kanxa-green"
                   >
-                    Garage & Workshop
+                    {t('header.garage')}
                   </Link>
                   <Link
                     to="/about"
                     className="text-kanxa-navy hover:text-kanxa-blue"
                   >
-                    About
+                    {t('header.about')}
                   </Link>
                 </nav>
               </div>
