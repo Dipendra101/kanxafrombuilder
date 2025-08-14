@@ -135,7 +135,7 @@ const userSchema = new Schema<IUser>(
       smsAlerts: { type: Boolean, default: true },
       emailAlerts: { type: Boolean, default: true },
       language: { type: String, default: "en" },
-      currency: { type: String, default: "NPR" },
+      currency: { type: String, default: "Rs" },
     },
     profile: {
       bio: String,
