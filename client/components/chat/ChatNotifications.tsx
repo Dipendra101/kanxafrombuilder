@@ -341,7 +341,13 @@ export default function ChatNotifications() {
           <TabsContent value="system" className="max-h-80 overflow-y-auto p-0">
             <div className="space-y-1 p-2">
               {/* Sample system notifications */}
-              <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-blue hover:bg-blue-100 cursor-pointer">
+              <div
+                className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-blue hover:bg-blue-100 cursor-pointer transition-colors"
+                onClick={() => {
+                  window.location.href = '/bookings';
+                  setIsOpen(false);
+                }}
+              >
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-kanxa-blue rounded-full flex items-center justify-center">
                     <Calendar className="w-4 h-4 text-white" />
@@ -360,7 +366,13 @@ export default function ChatNotifications() {
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-green hover:bg-green-100 cursor-pointer">
+              <div
+                className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-green hover:bg-green-100 cursor-pointer transition-colors"
+                onClick={() => {
+                  window.location.href = '/profile';
+                  setIsOpen(false);
+                }}
+              >
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-kanxa-green rounded-full flex items-center justify-center">
                     <CreditCard className="w-4 h-4 text-white" />
@@ -379,7 +391,13 @@ export default function ChatNotifications() {
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-orange hover:bg-orange-100 cursor-pointer">
+              <div
+                className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-orange hover:bg-orange-100 cursor-pointer transition-colors"
+                onClick={() => {
+                  window.location.href = '/garage';
+                  setIsOpen(false);
+                }}
+              >
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-kanxa-orange rounded-full flex items-center justify-center">
                     <Wrench className="w-4 h-4 text-white" />
@@ -501,7 +519,10 @@ export default function ChatNotifications() {
                 variant="ghost"
                 size="sm"
                 className="w-full text-xs"
-                onClick={() => (window.location.href = "/chat")}
+                onClick={() => {
+                  window.location.href = "/chat";
+                  setIsOpen(false);
+                }}
               >
                 Open Chat Center
               </Button>
