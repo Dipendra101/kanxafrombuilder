@@ -286,14 +286,20 @@ export default function Profile() {
               status: booking.status || "completed",
             }));
           setRecentActivity(activities);
+          setNetworkError(false); // Clear any previous network errors
         } else {
           // API returned but no data - keep default mock data
           console.log("API returned but no bookings data available");
+          setNetworkError(false);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to load recent activity:", error);
+        setNetworkError(true);
         // Keep the default mock data when API fails
         // This ensures the UI still shows something meaningful
+        if (error.message?.includes("Failed to fetch") || error.message?.includes("Network error")) {
+          console.warn("🔄 Using offline mode due to network issues");
+        }
       } finally {
         setActivityLoading(false);
       }
