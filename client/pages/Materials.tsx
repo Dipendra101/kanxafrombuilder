@@ -372,7 +372,8 @@ export default function Materials() {
           <Alert className="border-orange-200 bg-orange-50">
             <Lock className="h-4 w-4 text-orange-600" />
             <AlertDescription className="text-orange-800">
-              <strong>Guest Mode:</strong> You can browse and add items to cart, but you'll need to{" "}
+              <strong>Guest Mode:</strong> You can browse and add items to cart,
+              but you'll need to{" "}
               <Link to="/login" className="underline font-medium">
                 log in
               </Link>{" "}
@@ -505,14 +506,16 @@ export default function Materials() {
               Please log in to complete your purchase
             </p>
             <p className="text-gray-600 text-sm">
-              You need an account to track orders, manage deliveries, and access customer support.
+              You need an account to track orders, manage deliveries, and access
+              customer support.
             </p>
           </div>
 
           <Alert>
             <ShoppingCart className="h-4 w-4" />
             <AlertDescription>
-              Your cart items will be saved when you log in or create an account.
+              Your cart items will be saved when you log in or create an
+              account.
             </AlertDescription>
           </Alert>
         </div>
@@ -529,9 +532,7 @@ export default function Materials() {
             asChild
             className="flex-1 bg-kanxa-orange hover:bg-kanxa-orange/90"
           >
-            <Link to="/login">
-              Login
-            </Link>
+            <Link to="/login">Login</Link>
           </Button>
         </div>
 
