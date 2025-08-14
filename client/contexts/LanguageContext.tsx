@@ -106,7 +106,7 @@ const translations: Record<Language, Record<string, string>> = {
     'header.adminPanel': 'एडमिन प्यानल',
     'header.welcome': 'स्वागत',
     'header.createAccount': 'खाता बनाउनुहोस्',
-    'header.exitGuestMode': 'ग���स्ट मोडबाट बाहिर निस्कनुहोस्',
+    'header.exitGuestMode': 'गेस्ट मोडबाट बाहिर निस्कनुहोस्',
     
     // Transportation descriptions (Nepali)
     'nav.transportation.desc': 'बस, कार्गो ट्रक र कस्टम टुर बुक गर्नुहोस्',
@@ -124,7 +124,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.contactUs': 'सम्पर्क गर्नुहोस्',
     'common.search': 'खोज्नुहोस्',
     'common.filter': 'फिल्टर',
-    'common.loading': '���ोड हुँदै...',
+    'common.loading': 'लोड हुँदै...',
     'common.error': 'त्रुटि',
     'common.success': 'सफल',
     'common.cancel': 'रद्द गर्नुहोस्',
@@ -139,6 +139,13 @@ const translations: Record<Language, Record<string, string>> = {
     'home.hero.subtitle': 'नेपालभरि यातायात, निर्माण सामग्री र व्यावसायिक सेवाहरूको लागि तपाईंको भरपर्दो साझेदार',
     'home.services.title': 'हाम्रा सेवाहरू',
     'home.services.subtitle': 'तपाईंका सबै यातायात र निर्माण आवश्यकताहरूको लागि व्यापक समाधानहरू',
+    'home.bookNow': 'अहिले बुक गर्नुहोस्',
+    'home.exploreServices': 'सेवाहरू अन्वेषण गर्नुहोस्',
+    'home.whyChooseUs': 'कांक्षा सफारी किन छान्नुहुन्छ?',
+    'home.professionalService': 'व्यावसायिक सेवा',
+    'home.reliableTransport': 'भरपर्दो यातायात',
+    'home.competitivePrices': 'प्रतिस्पर्धी मूल्यहरू',
+    'home.customerSupport': '२४/७ ग्राहक सहयोग',
   },
 };
 
