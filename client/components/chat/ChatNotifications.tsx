@@ -338,7 +338,7 @@ export default function ChatNotifications() {
               <div
                 className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-blue hover:bg-blue-100 cursor-pointer transition-colors"
                 onClick={() => {
-                  window.location.href = '/bookings';
+                  window.location.href = "/bookings";
                   setIsOpen(false);
                 }}
               >
@@ -363,7 +363,7 @@ export default function ChatNotifications() {
               <div
                 className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-green hover:bg-green-100 cursor-pointer transition-colors"
                 onClick={() => {
-                  window.location.href = '/profile';
+                  window.location.href = "/profile";
                   setIsOpen(false);
                 }}
               >
@@ -388,7 +388,7 @@ export default function ChatNotifications() {
               <div
                 className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-orange hover:bg-orange-100 cursor-pointer transition-colors"
                 onClick={() => {
-                  window.location.href = '/garage';
+                  window.location.href = "/garage";
                   setIsOpen(false);
                 }}
               >

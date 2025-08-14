@@ -33,11 +33,17 @@ testCurrencyFix();
 
 console.log("🎉 All fixes implemented successfully!");
 console.log("\nFixed Issues:");
-console.log("1. ✅ Materials checkout now works - proceeds to payment when items in cart");
-console.log("2. ✅ Notifications are now responsive - removed conflicting event handlers");
+console.log(
+  "1. ✅ Materials checkout now works - proceeds to payment when items in cart",
+);
+console.log(
+  "2. ✅ Notifications are now responsive - removed conflicting event handlers",
+);
 console.log("3. ✅ Currency preference default changed to Rs");
 console.log("\nTo test:");
 console.log("- Visit /materials page");
 console.log("- Add items to cart");
 console.log("- Click 'Proceed to Checkout' - should open payment dialog");
-console.log("- Click notification bell - notifications should respond smoothly");
+console.log(
+  "- Click notification bell - notifications should respond smoothly",
+);

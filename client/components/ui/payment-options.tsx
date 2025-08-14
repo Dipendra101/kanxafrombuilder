@@ -47,12 +47,18 @@ export function PaymentOptions({
         description: `Connecting to ${method} payment gateway...`,
       });
 
-      console.log("Initiating payment with:", { amount, service, method, transactionId });
+      console.log("Initiating payment with:", {
+        amount,
+        service,
+        method,
+        transactionId,
+      });
 
       // Check if we're in demo mode (development environment)
-      const isDemoMode = window.location.hostname === 'localhost' ||
-                        window.location.hostname.includes('fly.dev') ||
-                        !window.location.hostname.includes('production');
+      const isDemoMode =
+        window.location.hostname === "localhost" ||
+        window.location.hostname.includes("fly.dev") ||
+        !window.location.hostname.includes("production");
 
       if (isDemoMode) {
         // Use demo mode simulation instead of API call
@@ -77,9 +83,11 @@ export function PaymentOptions({
 
           // Clear materials cart if on materials page
           if (service === "Construction Materials") {
-            window.dispatchEvent(new CustomEvent('paymentCompleted', {
-              detail: { method, service }
-            }));
+            window.dispatchEvent(
+              new CustomEvent("paymentCompleted", {
+                detail: { method, service },
+              }),
+            );
           }
 
           setIsProcessing(false);
@@ -114,7 +122,10 @@ export function PaymentOptions({
       }
 
       console.log("Response status:", response.status);
-      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+      console.log(
+        "Response headers:",
+        Object.fromEntries(response.headers.entries()),
+      );
 
       // Check if response is ok before reading body
       if (!response.ok) {

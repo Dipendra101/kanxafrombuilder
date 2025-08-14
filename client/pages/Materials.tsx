@@ -60,10 +60,16 @@ export default function Materials() {
       }
     };
 
-    window.addEventListener('paymentCompleted', handlePaymentCompleted as EventListener);
+    window.addEventListener(
+      "paymentCompleted",
+      handlePaymentCompleted as EventListener,
+    );
 
     return () => {
-      window.removeEventListener('paymentCompleted', handlePaymentCompleted as EventListener);
+      window.removeEventListener(
+        "paymentCompleted",
+        handlePaymentCompleted as EventListener,
+      );
     };
   }, []);
 
