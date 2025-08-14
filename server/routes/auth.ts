@@ -828,7 +828,91 @@ export const changeEmail: RequestHandler = async (req, res) => {
   }
 };
 
+// @route   POST /api/auth/extend-token
+// @desc    Extend token expiry for remember me
+// @access  Private
+export const extendToken: RequestHandler = async (req, res) => {
+  try {
+    const { rememberMe } = req.body;
+    const user = req.user as any;
+
+    if (!rememberMe) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request",
+      });
+    }
+
+    // Generate new token with extended expiry (30 days)
+    const jwt = require('jsonwebtoken');
+    const JWT_SECRET = process.env.JWT_SECRET || 'kanxasafari_jwt_secret_key';
+
+    const extendedToken = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      JWT_SECRET,
+      { expiresIn: '30d' } // 30 days for remember me
+    );
+
+    res.json({
+      success: true,
+      token: extendedToken,
+    });
+  } catch (error: any) {
+    console.error("Extend token error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to extend token",
+    });
+  }
+};
+
+// @route   GET /api/auth/verify-reset-token
+// @desc    Verify password reset token validity
+// @access  Public
+export const verifyResetToken: RequestHandler = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "Reset token is required",
+      });
+    }
+
+    // Find user with valid reset token
+    const user = await User.findOne({
+      "verification.resetPasswordToken": token,
+      "verification.resetPasswordExpires": { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired reset token",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Reset token is valid",
+    });
+  } catch (error: any) {
+    console.error("Verify reset token error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to verify reset token",
+    });
+  }
+};
+
 router.post("/request-email-change", authenticate, requestEmailChange);
 router.post("/change-email", authenticate, changeEmail);
+router.post("/extend-token", authenticate, extendToken);
+router.get("/verify-reset-token", verifyResetToken);
 
 export default router;
