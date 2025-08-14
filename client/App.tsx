@@ -41,6 +41,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Chat from "./pages/Chat";
+import TokenExpiryHandler from "./components/auth/TokenExpiryHandler";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminDashboardSimple from "./pages/AdminDashboardSimple";
 import AdminTest from "./pages/AdminTest";
