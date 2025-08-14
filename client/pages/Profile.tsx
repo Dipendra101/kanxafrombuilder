@@ -1148,6 +1148,336 @@ export default function Profile() {
           </div>
         </div>
       </section>
+
+      {/* Password Change Dialog */}
+      <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-kanxa-blue" />
+              Change Password
+            </DialogTitle>
+            <DialogDescription>
+              Enter your current password and choose a new secure password.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="current-password">Current Password</Label>
+              <Input
+                id="current-password"
+                type="password"
+                value={passwordForm.currentPassword}
+                onChange={(e) =>
+                  setPasswordForm(prev => ({
+                    ...prev,
+                    currentPassword: e.target.value,
+                  }))
+                }
+                placeholder="Enter current password"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input
+                id="new-password"
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) =>
+                  setPasswordForm(prev => ({
+                    ...prev,
+                    newPassword: e.target.value,
+                  }))
+                }
+                placeholder="Enter new password"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm New Password</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={(e) =>
+                  setPasswordForm(prev => ({
+                    ...prev,
+                    confirmPassword: e.target.value,
+                  }))
+                }
+                placeholder="Confirm new password"
+              />
+            </div>
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Password Requirements:</strong>
+              </p>
+              <ul className="text-xs text-blue-700 mt-1 space-y-1">
+                <li>• At least 6 characters long</li>
+                <li>• Mix of letters and numbers recommended</li>
+                <li>• Avoid using personal information</li>
+              </ul>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setPasswordDialogOpen(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handlePasswordChange}
+              className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90"
+              disabled={
+                !passwordForm.currentPassword ||
+                !passwordForm.newPassword ||
+                !passwordForm.confirmPassword
+              }
+            >
+              Change Password
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Email Change Dialog */}
+      <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-kanxa-blue" />
+              Update Email Address
+            </DialogTitle>
+            <DialogDescription>
+              {emailForm.step === 1
+                ? "Enter your new email address to receive a verification code."
+                : "Enter the verification code sent to your new email address."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {emailForm.step === 1 ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="current-email">Current Email</Label>
+                  <Input
+                    id="current-email"
+                    type="email"
+                    value={user?.email || ""}
+                    disabled
+                    className="bg-gray-50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-email">New Email Address</Label>
+                  <Input
+                    id="new-email"
+                    type="email"
+                    value={emailForm.newEmail}
+                    onChange={(e) =>
+                      setEmailForm(prev => ({
+                        ...prev,
+                        newEmail: e.target.value,
+                      }))
+                    }
+                    placeholder="Enter new email address"
+                  />
+                </div>
+                <div className="bg-amber-50 p-3 rounded-lg">
+                  <p className="text-sm text-amber-800">
+                    <strong>Important:</strong> Make sure you have access to this email address.
+                    You'll need to verify it before the change takes effect.
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="verification-code">Verification Code</Label>
+                  <Input
+                    id="verification-code"
+                    type="text"
+                    value={emailForm.verificationCode}
+                    onChange={(e) =>
+                      setEmailForm(prev => ({
+                        ...prev,
+                        verificationCode: e.target.value,
+                      }))
+                    }
+                    placeholder="Enter 6-digit code"
+                    maxLength={6}
+                  />
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <p className="text-sm text-green-800">
+                    We sent a verification code to <strong>{emailForm.newEmail}</strong>.
+                    Check your inbox and enter the code above.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setEmailForm(prev => ({ ...prev, step: 1 }))}
+                  className="w-full"
+                >
+                  Change Email Address
+                </Button>
+              </>
+            )}
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setEmailDialogOpen(false);
+                setEmailForm({ newEmail: "", verificationCode: "", step: 1 });
+              }}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={
+                emailForm.step === 1
+                  ? handleEmailVerificationRequest
+                  : handleEmailChange
+              }
+              className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90"
+              disabled={
+                emailForm.step === 1
+                  ? !emailForm.newEmail
+                  : !emailForm.verificationCode
+              }
+            >
+              {emailForm.step === 1 ? "Send Verification Code" : "Update Email"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Methods Dialog */}
+      <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-kanxa-blue" />
+              Manage Payment Methods
+            </DialogTitle>
+            <DialogDescription>
+              Add, remove, or set your default payment methods for bookings.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* Existing Payment Methods */}
+            <div className="space-y-3">
+              <h4 className="font-medium text-kanxa-navy">Your Payment Methods</h4>
+              {paymentMethods.map((method) => (
+                <div
+                  key={method.id}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-kanxa-light-blue rounded-lg flex items-center justify-center">
+                      {method.type === "Khalti" ? (
+                        <span className="text-purple-600 font-bold text-sm">K</span>
+                      ) : (
+                        <span className="text-green-600 font-bold text-sm">E</span>
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-medium">{method.type}</div>
+                      <div className="text-sm text-gray-600">{method.identifier}</div>
+                      {method.expiryDate && (
+                        <div className="text-xs text-gray-500">
+                          Expires: {method.expiryDate}
+                        </div>
+                      )}
+                    </div>
+                    {method.isDefault && (
+                      <Badge className="bg-kanxa-green text-white">Default</Badge>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    {!method.isDefault && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setDefaultPaymentMethod(method.id)}
+                      >
+                        Set Default
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => removePaymentMethod(method.id)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Separator />
+
+            {/* Add New Payment Method */}
+            <div className="space-y-3">
+              <h4 className="font-medium text-kanxa-navy">Add New Payment Method</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col gap-2"
+                  onClick={() => {
+                    addPaymentMethod({
+                      type: "Khalti",
+                      identifier: "**** **** **** " + Math.floor(1000 + Math.random() * 9000),
+                      isDefault: false,
+                      expiryDate: "12/26",
+                    });
+                  }}
+                >
+                  <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">K</span>
+                  </div>
+                  <span className="text-sm">Add Khalti</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col gap-2"
+                  onClick={() => {
+                    addPaymentMethod({
+                      type: "eSewa",
+                      identifier: "user@email.com",
+                      isDefault: false,
+                      expiryDate: null,
+                    });
+                  }}
+                >
+                  <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">E</span>
+                  </div>
+                  <span className="text-sm">Add eSewa</span>
+                </Button>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Note:</strong> Payment methods are used for quick checkout during bookings.
+                Your default method will be pre-selected at payment.
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button
+              onClick={() => setPaymentDialogOpen(false)}
+              className="bg-kanxa-blue hover:bg-kanxa-blue/90"
+            >
+              Done
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
