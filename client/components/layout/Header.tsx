@@ -262,13 +262,13 @@ export default function Header() {
             ) : (
               <>
                 <Button variant="ghost" asChild>
-                  <Link to="/login">Sign In</Link>
+                  <Link to="/login">{t('header.signIn')}</Link>
                 </Button>
                 <Button
                   asChild
                   className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy hover:from-kanxa-navy hover:to-kanxa-blue"
                 >
-                  <Link to="/signup">Get Started</Link>
+                  <Link to="/signup">{t('header.getStarted')}</Link>
                 </Button>
               </>
             )}
