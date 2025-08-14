@@ -802,6 +802,16 @@ export default function AdminDashboard() {
                     : "You're viewing the admin dashboard in demo mode. Login with admin@demo.com / demo123 for full functionality."
                   }
                 </p>
+                {apiFailure && (
+                  <Button
+                    onClick={() => window.location.reload()}
+                    className="mt-3 bg-orange-600 hover:bg-orange-700 text-white"
+                    size="sm"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Retry Connection
+                  </Button>
+                )}
               </div>
             </div>
           </div>
