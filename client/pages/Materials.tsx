@@ -16,8 +16,12 @@ import {
   Package,
   Weight,
   Ruler,
+  Lock,
+  User,
 } from "lucide-react";
 import { PaymentOptions } from "@/components/ui/payment-options";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
