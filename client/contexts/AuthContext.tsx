@@ -66,6 +66,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const isAuthenticated = !!user && !!token;
 
+  // Function to check if token is expired and handle it gracefully
+  const handleTokenExpiry = async (error: any) => {
+    // Check if the error indicates token expiry
+    const isTokenExpired =
+      error?.status === 401 ||
+      error?.message?.includes('token') ||
+      error?.message?.includes('unauthorized') ||
+      error?.message?.includes('expired');
+
+    if (isTokenExpired && isAuthenticated) {
+      console.log("🔄 Token expired during API call - switching to guest mode");
+
+      // Clear auth data
+      localStorage.removeItem("kanxa_token");
+      localStorage.removeItem("kanxa_user");
+      setToken(null);
+      setUser(null);
+
+      // Switch to guest mode automatically
+      await guestLogin();
+
+      // Show notification to user
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.dispatchEvent) {
+          window.dispatchEvent(new CustomEvent('tokenExpired', {
+            detail: { message: 'Your session expired. You can continue browsing as a guest or log in again.' }
+          }));
+        }
+      }, 500);
+
+      return true; // Indicate that we handled the expiry
+    }
+
+    return false; // Not a token expiry error
+  };
+
   // Initialize auth state from localStorage
   useEffect(() => {
     const initializeAuth = async () => {
@@ -100,7 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               console.log("✅ Auth initialized successfully");
             } else {
               // Token is invalid/expired - switch to guest mode instead of full logout
-              console.log("���� Token expired - switching to guest mode");
+              console.log("🔄 Token expired - switching to guest mode");
               localStorage.removeItem("kanxa_token");
               localStorage.removeItem("kanxa_user");
 
@@ -129,7 +165,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               tokenError.message.includes("Unable to connect");
 
             if (isNetworkError) {
-              console.log("🌐 Network issue detected - preserving auth state");
+              console.log("��� Network issue detected - preserving auth state");
               setNetworkError(true);
 
               // Use cached user data during network issues
