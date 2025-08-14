@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { ArrowLeft, Truck, Bus, Route, Package, MapPin, Lock, User } from "lucide-react";
+import {
+  ArrowLeft,
+  Truck,
+  Bus,
+  Route,
+  Package,
+  MapPin,
+  Lock,
+  User,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
