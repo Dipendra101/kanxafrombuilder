@@ -285,16 +285,16 @@ export default function Header() {
               {isAuthenticated ? (
                 <>
                   <DropdownMenuItem asChild>
-                    <Link to="/profile">Profile</Link>
+                    <Link to="/profile">{t('header.profile')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/bookings">My Bookings</Link>
+                    <Link to="/bookings">{t('header.myBookings')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/orders">My Orders</Link>
+                    <Link to="/orders">{t('header.myOrders')}</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem onClick={logout}>Sign out</DropdownMenuItem>
+                  <DropdownMenuItem>{t('header.settings')}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={logout}>{t('header.signOut')}</DropdownMenuItem>
                 </>
               ) : isGuest ? (
                 <>
