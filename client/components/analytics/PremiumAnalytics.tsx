@@ -248,7 +248,10 @@ export function PremiumAnalytics() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Select value={timeRange} onValueChange={setTimeRange}>
+          <Select value={timeRange} onValueChange={(value) => {
+            setTimeRange(value);
+            fetchAnalyticsData(value);
+          }}>
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
