@@ -138,6 +138,7 @@ const cargoServices = [
 ];
 
 export default function Transportation() {
+  const { isAuthenticated, isGuest } = useAuth();
   const { toast } = useToast();
   const [selectedTab, setSelectedTab] = useState("buses");
   const [selectedRoute, setSelectedRoute] = useState("all");
