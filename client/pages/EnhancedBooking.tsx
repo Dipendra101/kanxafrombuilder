@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import Layout from "@/components/layout/Layout";
 import { PaymentOptions } from "@/components/ui/payment-options";
 import { useAuth } from "@/contexts/AuthContext";
