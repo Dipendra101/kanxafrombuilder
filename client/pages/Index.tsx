@@ -314,19 +314,19 @@ export default function Index() {
               {
                 name: "Cement",
                 description: "High-grade Portland cement",
-                price: "From NPR 850/bag",
+                price: "From ₨ 850/bag",
                 icon: "🏗️",
               },
               {
                 name: "Steel Rebars",
                 description: "Grade 60 reinforcement bars",
-                price: "From NPR 85/kg",
+                price: "From ₨ 85/kg",
                 icon: "🔗",
               },
               {
                 name: "Concrete Blocks",
                 description: "Standard & custom sizes",
-                price: "From NPR 45/piece",
+                price: "From ₨ 45/piece",
                 icon: "🧱",
               },
               {

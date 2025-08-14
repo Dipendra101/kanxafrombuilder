@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import GuestRestriction from "@/components/auth/GuestRestriction";
 import {
   User,
@@ -35,7 +35,15 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Layout from "@/components/layout/Layout";
+import { bookingsAPI } from "@/services/api";
 
 export default function Profile() {
   const { user, isGuest, isAuthenticated, updateUser, logout } = useAuth();
@@ -44,16 +52,6 @@ export default function Profile() {
   const [isLoading, setIsLoading] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Show guest restriction if user is in guest mode
-  if (isGuest || !isAuthenticated) {
-    return (
-      <GuestRestriction
-        action="access your profile"
-        description="You need to be logged in to view and edit your profile. Create an account to manage your personal information and preferences."
-      />
-    );
-  }
 
   // Default image provided
   const defaultImage =
@@ -65,7 +63,9 @@ export default function Profile() {
     phone: user?.phone || "",
     address: user?.address || "",
     company: "",
-    dateJoined: user?.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    dateJoined: user?.createdAt
+      ? new Date(user.createdAt).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0],
     bio: "",
   });
 
@@ -78,7 +78,9 @@ export default function Profile() {
         phone: user.phone || "",
         address: user.address || "",
         company: "",
-        dateJoined: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        dateJoined: user.createdAt
+          ? new Date(user.createdAt).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
         bio: "",
       });
       setProfilePicture(user.profilePicture || null);
@@ -91,6 +93,30 @@ export default function Profile() {
     serviceReminders: true,
     newsletter: true,
   });
+
+  // Save notification settings to backend
+  const saveNotificationSettings = async (
+    newSettings: typeof notifications,
+  ) => {
+    try {
+      await updateUser({
+        preferences: {
+          notifications: newSettings,
+        },
+      });
+
+      toast({
+        title: "Settings Updated",
+        description: "Your notification preferences have been saved.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to save notification settings.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleSave = async () => {
     setIsLoading(true);
@@ -111,7 +137,8 @@ export default function Profile() {
     } catch (error: any) {
       toast({
         title: "Update Failed",
-        description: error.message || "Failed to update profile. Please try again.",
+        description:
+          error.message || "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -163,7 +190,7 @@ export default function Profile() {
     }
   };
 
-  const recentActivity = [
+  const [recentActivity, setRecentActivity] = useState([
     {
       id: 1,
       type: "booking",
@@ -185,15 +212,279 @@ export default function Profile() {
       date: "2024-01-22",
       status: "upcoming",
     },
-  ];
+  ]);
 
-  const loyaltyStats = {
+  const [loyaltyStats, setLoyaltyStats] = useState({
     totalBookings: 15,
     totalOrders: 8,
     totalSpent: 245000,
     loyaltyPoints: 1250,
     membershipLevel: "Gold",
+  });
+
+  const [activityLoading, setActivityLoading] = useState(false);
+  const [networkError, setNetworkError] = useState(false);
+
+  // Account action dialog states
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+
+  // Password change form
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  // Email change form
+  const [emailForm, setEmailForm] = useState({
+    newEmail: "",
+    verificationCode: "",
+    step: 1, // 1: enter email, 2: verify code
+  });
+
+  // Payment methods state
+  const [paymentMethods, setPaymentMethods] = useState([
+    {
+      id: 1,
+      type: "Khalti",
+      identifier: "**** **** **** 1234",
+      isDefault: true,
+      expiryDate: "12/25",
+    },
+    {
+      id: 2,
+      type: "eSewa",
+      identifier: "example@email.com",
+      isDefault: false,
+      expiryDate: null,
+    },
+  ]);
+
+  // Load recent activity from backend - MUST be before conditional return
+  useEffect(() => {
+    const loadRecentActivity = async () => {
+      if (!user) return;
+
+      setActivityLoading(true);
+      try {
+        const response = await bookingsAPI.getBookings({ limit: 5 });
+        if (response && response.success && response.bookings) {
+          const activities = response.bookings
+            .slice(0, 5)
+            .map((booking: any, index: number) => ({
+              id: booking.id || index + 1,
+              type: booking.type || "booking",
+              description:
+                booking.service?.name ||
+                booking.serviceName ||
+                "Service booking",
+              date: new Date(booking.createdAt || booking.date)
+                .toISOString()
+                .split("T")[0],
+              status: booking.status || "completed",
+            }));
+          setRecentActivity(activities);
+          setNetworkError(false); // Clear any previous network errors
+        } else {
+          // API returned but no data - keep default mock data
+          console.log("API returned but no bookings data available");
+          setNetworkError(false);
+        }
+      } catch (error: any) {
+        console.error("Failed to load recent activity:", error);
+        setNetworkError(true);
+        // Keep the default mock data when API fails
+        // This ensures the UI still shows something meaningful
+        if (
+          error.message?.includes("Failed to fetch") ||
+          error.message?.includes("Network error")
+        ) {
+          console.warn("🔄 Using offline mode due to network issues");
+        }
+      } finally {
+        setActivityLoading(false);
+      }
+    };
+
+    // Only try to load if user is authenticated
+    if (user && !isGuest) {
+      loadRecentActivity();
+    } else {
+      setActivityLoading(false);
+    }
+  }, [user, isGuest]);
+
+  // Password change handler
+  const handlePasswordChange = async () => {
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "New passwords don't match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify({
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Password Updated",
+          description: "Your password has been changed successfully.",
+        });
+        setPasswordDialogOpen(false);
+        setPasswordForm({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        throw new Error(result.message || "Password change failed");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Password Change Failed",
+        description: error.message || "Unable to change password.",
+        variant: "destructive",
+      });
+    }
   };
+
+  // Email verification request
+  const handleEmailVerificationRequest = async () => {
+    try {
+      const response = await fetch("/api/auth/request-email-change", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify({
+          newEmail: emailForm.newEmail,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Verification Code Sent",
+          description: `A verification code has been sent to ${emailForm.newEmail}`,
+        });
+        setEmailForm((prev) => ({ ...prev, step: 2 }));
+      } else {
+        throw new Error(result.message || "Failed to send verification code");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Verification Failed",
+        description: error.message || "Unable to send verification code.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Email change with verification
+  const handleEmailChange = async () => {
+    try {
+      const response = await fetch("/api/auth/change-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify({
+          newEmail: emailForm.newEmail,
+          verificationCode: emailForm.verificationCode,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Email Updated",
+          description: "Your email has been changed successfully.",
+        });
+        setEmailDialogOpen(false);
+        setEmailForm({
+          newEmail: "",
+          verificationCode: "",
+          step: 1,
+        });
+        // Update user profile with new email
+        updateUser({ email: emailForm.newEmail });
+      } else {
+        throw new Error(result.message || "Email change failed");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Email Change Failed",
+        description: error.message || "Unable to change email.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Payment method management
+  const addPaymentMethod = (method: any) => {
+    setPaymentMethods((prev) => [...prev, { ...method, id: Date.now() }]);
+  };
+
+  const removePaymentMethod = (id: number) => {
+    setPaymentMethods((prev) => prev.filter((method) => method.id !== id));
+    toast({
+      title: "Payment Method Removed",
+      description: "Payment method has been removed successfully.",
+    });
+  };
+
+  const setDefaultPaymentMethod = (id: number) => {
+    setPaymentMethods((prev) =>
+      prev.map((method) => ({
+        ...method,
+        isDefault: method.id === id,
+      })),
+    );
+    toast({
+      title: "Default Payment Updated",
+      description: "Default payment method has been updated.",
+    });
+  };
+
+  // Show guest restriction if user is not authenticated - MUST be after all hooks
+  if (!isAuthenticated) {
+    return (
+      <GuestRestriction
+        action="access your profile"
+        description="You need to be logged in to view and edit your profile. Create an account to manage your personal information and preferences."
+      />
+    );
+  }
 
   return (
     <Layout>
@@ -214,6 +505,12 @@ export default function Profile() {
             <p className="text-base sm:text-lg lg:text-xl text-white/90 px-4 sm:px-0">
               Manage your account settings and preferences
             </p>
+            {networkError && (
+              <div className="bg-orange-500/20 border border-orange-300 text-orange-100 px-4 py-2 rounded-lg mt-4 text-sm mx-4 sm:mx-0">
+                <span className="font-medium">⚠️ Offline Mode:</span> Some
+                features may be limited due to network connectivity issues.
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -357,7 +654,11 @@ export default function Profile() {
                           ) : (
                             <Edit className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           )}
-                          {isLoading ? "Saving..." : isEditing ? "Save" : "Edit"}
+                          {isLoading
+                            ? "Saving..."
+                            : isEditing
+                              ? "Save"
+                              : "Edit"}
                         </Button>
                       </CardHeader>
                       <CardContent className="space-y-4">
@@ -525,6 +826,13 @@ export default function Profile() {
                         <Button
                           className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
                           variant="outline"
+                          onClick={() => {
+                            toast({
+                              title: "Coming Soon",
+                              description:
+                                "Payment methods management will be available soon.",
+                            });
+                          }}
                         >
                           <CreditCard className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           Payment Methods
@@ -532,6 +840,13 @@ export default function Profile() {
                         <Button
                           className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
                           variant="outline"
+                          onClick={() => {
+                            toast({
+                              title: "Coming Soon",
+                              description:
+                                "Security settings will be available soon.",
+                            });
+                          }}
                         >
                           <Shield className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           Security Settings
@@ -539,6 +854,21 @@ export default function Profile() {
                         <Button
                           className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
                           variant="outline"
+                          onClick={() => {
+                            // Switch to settings tab
+                            const tabTrigger = document.querySelector(
+                              '[value="settings"]',
+                            ) as HTMLElement;
+                            if (tabTrigger) {
+                              tabTrigger.click();
+                            } else {
+                              toast({
+                                title: "Settings",
+                                description:
+                                  "Navigate to the Settings tab to manage notifications.",
+                              });
+                            }
+                          }}
                         >
                           <Bell className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           Notifications
@@ -641,7 +971,7 @@ export default function Profile() {
                   <Card className="text-center">
                     <CardContent className="p-3 sm:p-4 lg:p-6">
                       <div className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-kanxa-green mb-1 sm:mb-2">
-                        NPR {loyaltyStats.totalSpent.toLocaleString()}
+                        Rs {loyaltyStats.totalSpent.toLocaleString()}
                       </div>
                       <div className="text-xs sm:text-sm text-gray-600">
                         Total Spent
@@ -683,8 +1013,8 @@ export default function Profile() {
                         <div className="bg-kanxa-blue h-2 rounded-full w-3/4"></div>
                       </div>
                       <p className="text-xs sm:text-sm text-gray-600">
-                        Spend NPR 55,000 more to reach Platinum status and
-                        unlock exclusive benefits!
+                        Spend Rs 55,000 more to reach Platinum status and unlock
+                        exclusive benefits!
                       </p>
                     </div>
                   </CardContent>
@@ -713,12 +1043,14 @@ export default function Profile() {
                       </div>
                       <Switch
                         checked={notifications.bookingUpdates}
-                        onCheckedChange={(checked) =>
-                          setNotifications({
+                        onCheckedChange={(checked) => {
+                          const newSettings = {
                             ...notifications,
                             bookingUpdates: checked,
-                          })
-                        }
+                          };
+                          setNotifications(newSettings);
+                          saveNotificationSettings(newSettings);
+                        }}
                         className="flex-shrink-0"
                       />
                     </div>
@@ -734,12 +1066,14 @@ export default function Profile() {
                       </div>
                       <Switch
                         checked={notifications.promotions}
-                        onCheckedChange={(checked) =>
-                          setNotifications({
+                        onCheckedChange={(checked) => {
+                          const newSettings = {
                             ...notifications,
                             promotions: checked,
-                          })
-                        }
+                          };
+                          setNotifications(newSettings);
+                          saveNotificationSettings(newSettings);
+                        }}
                         className="flex-shrink-0"
                       />
                     </div>
@@ -755,12 +1089,14 @@ export default function Profile() {
                       </div>
                       <Switch
                         checked={notifications.serviceReminders}
-                        onCheckedChange={(checked) =>
-                          setNotifications({
+                        onCheckedChange={(checked) => {
+                          const newSettings = {
                             ...notifications,
                             serviceReminders: checked,
-                          })
-                        }
+                          };
+                          setNotifications(newSettings);
+                          saveNotificationSettings(newSettings);
+                        }}
                         className="flex-shrink-0"
                       />
                     </div>
@@ -776,12 +1112,14 @@ export default function Profile() {
                       </div>
                       <Switch
                         checked={notifications.newsletter}
-                        onCheckedChange={(checked) =>
-                          setNotifications({
+                        onCheckedChange={(checked) => {
+                          const newSettings = {
                             ...notifications,
                             newsletter: checked,
-                          })
-                        }
+                          };
+                          setNotifications(newSettings);
+                          saveNotificationSettings(newSettings);
+                        }}
                         className="flex-shrink-0"
                       />
                     </div>
@@ -798,6 +1136,7 @@ export default function Profile() {
                     <Button
                       variant="outline"
                       className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
+                      onClick={() => setPasswordDialogOpen(true)}
                     >
                       <Shield className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Change Password
@@ -805,6 +1144,7 @@ export default function Profile() {
                     <Button
                       variant="outline"
                       className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
+                      onClick={() => setPaymentDialogOpen(true)}
                     >
                       <CreditCard className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Manage Payment Methods
@@ -812,6 +1152,7 @@ export default function Profile() {
                     <Button
                       variant="outline"
                       className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
+                      onClick={() => setEmailDialogOpen(true)}
                     >
                       <Mail className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Update Email Address
@@ -832,6 +1173,353 @@ export default function Profile() {
           </div>
         </div>
       </section>
+
+      {/* Password Change Dialog */}
+      <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-kanxa-blue" />
+              Change Password
+            </DialogTitle>
+            <DialogDescription>
+              Enter your current password and choose a new secure password.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="current-password">Current Password</Label>
+              <Input
+                id="current-password"
+                type="password"
+                value={passwordForm.currentPassword}
+                onChange={(e) =>
+                  setPasswordForm((prev) => ({
+                    ...prev,
+                    currentPassword: e.target.value,
+                  }))
+                }
+                placeholder="Enter current password"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input
+                id="new-password"
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) =>
+                  setPasswordForm((prev) => ({
+                    ...prev,
+                    newPassword: e.target.value,
+                  }))
+                }
+                placeholder="Enter new password"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm New Password</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={(e) =>
+                  setPasswordForm((prev) => ({
+                    ...prev,
+                    confirmPassword: e.target.value,
+                  }))
+                }
+                placeholder="Confirm new password"
+              />
+            </div>
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Password Requirements:</strong>
+              </p>
+              <ul className="text-xs text-blue-700 mt-1 space-y-1">
+                <li>• At least 6 characters long</li>
+                <li>• Mix of letters and numbers recommended</li>
+                <li>• Avoid using personal information</li>
+              </ul>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setPasswordDialogOpen(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handlePasswordChange}
+              className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90"
+              disabled={
+                !passwordForm.currentPassword ||
+                !passwordForm.newPassword ||
+                !passwordForm.confirmPassword
+              }
+            >
+              Change Password
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Email Change Dialog */}
+      <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-kanxa-blue" />
+              Update Email Address
+            </DialogTitle>
+            <DialogDescription>
+              {emailForm.step === 1
+                ? "Enter your new email address to receive a verification code."
+                : "Enter the verification code sent to your new email address."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {emailForm.step === 1 ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="current-email">Current Email</Label>
+                  <Input
+                    id="current-email"
+                    type="email"
+                    value={user?.email || ""}
+                    disabled
+                    className="bg-gray-50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-email">New Email Address</Label>
+                  <Input
+                    id="new-email"
+                    type="email"
+                    value={emailForm.newEmail}
+                    onChange={(e) =>
+                      setEmailForm((prev) => ({
+                        ...prev,
+                        newEmail: e.target.value,
+                      }))
+                    }
+                    placeholder="Enter new email address"
+                  />
+                </div>
+                <div className="bg-amber-50 p-3 rounded-lg">
+                  <p className="text-sm text-amber-800">
+                    <strong>Important:</strong> Make sure you have access to
+                    this email address. You'll need to verify it before the
+                    change takes effect.
+                  </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="verification-code">Verification Code</Label>
+                  <Input
+                    id="verification-code"
+                    type="text"
+                    value={emailForm.verificationCode}
+                    onChange={(e) =>
+                      setEmailForm((prev) => ({
+                        ...prev,
+                        verificationCode: e.target.value,
+                      }))
+                    }
+                    placeholder="Enter 6-digit code"
+                    maxLength={6}
+                  />
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <p className="text-sm text-green-800">
+                    We sent a verification code to{" "}
+                    <strong>{emailForm.newEmail}</strong>. Check your inbox and
+                    enter the code above.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setEmailForm((prev) => ({ ...prev, step: 1 }))}
+                  className="w-full"
+                >
+                  Change Email Address
+                </Button>
+              </>
+            )}
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setEmailDialogOpen(false);
+                setEmailForm({ newEmail: "", verificationCode: "", step: 1 });
+              }}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={
+                emailForm.step === 1
+                  ? handleEmailVerificationRequest
+                  : handleEmailChange
+              }
+              className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90"
+              disabled={
+                emailForm.step === 1
+                  ? !emailForm.newEmail
+                  : !emailForm.verificationCode
+              }
+            >
+              {emailForm.step === 1 ? "Send Verification Code" : "Update Email"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Methods Dialog */}
+      <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-kanxa-blue" />
+              Manage Payment Methods
+            </DialogTitle>
+            <DialogDescription>
+              Add, remove, or set your default payment methods for bookings.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* Existing Payment Methods */}
+            <div className="space-y-3">
+              <h4 className="font-medium text-kanxa-navy">
+                Your Payment Methods
+              </h4>
+              {paymentMethods.map((method) => (
+                <div
+                  key={method.id}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-kanxa-light-blue rounded-lg flex items-center justify-center">
+                      {method.type === "Khalti" ? (
+                        <span className="text-purple-600 font-bold text-sm">
+                          K
+                        </span>
+                      ) : (
+                        <span className="text-green-600 font-bold text-sm">
+                          E
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-medium">{method.type}</div>
+                      <div className="text-sm text-gray-600">
+                        {method.identifier}
+                      </div>
+                      {method.expiryDate && (
+                        <div className="text-xs text-gray-500">
+                          Expires: {method.expiryDate}
+                        </div>
+                      )}
+                    </div>
+                    {method.isDefault && (
+                      <Badge className="bg-kanxa-green text-white">
+                        Default
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    {!method.isDefault && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setDefaultPaymentMethod(method.id)}
+                      >
+                        Set Default
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => removePaymentMethod(method.id)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Separator />
+
+            {/* Add New Payment Method */}
+            <div className="space-y-3">
+              <h4 className="font-medium text-kanxa-navy">
+                Add New Payment Method
+              </h4>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col gap-2"
+                  onClick={() => {
+                    addPaymentMethod({
+                      type: "Khalti",
+                      identifier:
+                        "**** **** **** " +
+                        Math.floor(1000 + Math.random() * 9000),
+                      isDefault: false,
+                      expiryDate: "12/26",
+                    });
+                  }}
+                >
+                  <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">K</span>
+                  </div>
+                  <span className="text-sm">Add Khalti</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col gap-2"
+                  onClick={() => {
+                    addPaymentMethod({
+                      type: "eSewa",
+                      identifier: "user@email.com",
+                      isDefault: false,
+                      expiryDate: null,
+                    });
+                  }}
+                >
+                  <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">E</span>
+                  </div>
+                  <span className="text-sm">Add eSewa</span>
+                </Button>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Note:</strong> Payment methods are used for quick
+                checkout during bookings. Your default method will be
+                pre-selected at payment.
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button
+              onClick={() => setPaymentDialogOpen(false)}
+              className="bg-kanxa-blue hover:bg-kanxa-blue/90"
+            >
+              Done
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }

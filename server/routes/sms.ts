@@ -381,9 +381,85 @@ export const resendSMSCode: RequestHandler = async (req, res) => {
   }
 };
 
+// @route   POST /api/sms/send-reset-code
+// @desc    Send SMS code for password reset
+// @access  Public
+export const sendResetCode: RequestHandler = async (req, res) => {
+  try {
+    const { phone } = req.body;
+
+    if (!phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number is required",
+      });
+    }
+
+    const formattedPhone = formatPhoneNumber(phone);
+
+    if (!isValidSMSNumber(formattedPhone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid phone number format",
+      });
+    }
+
+    // Check if user exists with this phone number
+    const user = await withDB(
+      async () => {
+        return await User.findOne({ phone: formattedPhone });
+      },
+      () => null, // Mock user not found
+    );
+
+    if (!user && isDBConnected()) {
+      return res.status(404).json({
+        success: false,
+        message: "No account found with this phone number",
+      });
+    }
+
+    // Generate verification code
+    const code = generateSMSCode();
+    const expires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    // Store code for this phone number
+    smsCodeStore.set(formattedPhone, {
+      code,
+      expires,
+      attempts: 0,
+    });
+
+    // Send SMS
+    const message = `Your Kanxa Safari password reset code is: ${code}. This code expires in 10 minutes. Do not share this code with anyone.`;
+
+    try {
+      await sendSMS(formattedPhone, message);
+      console.log(`📱 SMS reset code sent to ${formattedPhone}: ${code}`);
+    } catch (smsError) {
+      console.error("SMS sending failed:", smsError);
+      // Continue in demo mode
+    }
+
+    res.json({
+      success: true,
+      message: "Reset code sent to your phone",
+      // Include code in development for testing
+      ...(process.env.NODE_ENV === "development" && { code }),
+    });
+  } catch (error: any) {
+    console.error("Send reset code error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to send reset code",
+    });
+  }
+};
+
 // Set up routes
 router.post("/send-code", sendSMSCode);
 router.post("/verify-code", verifySMSCode);
 router.post("/resend-code", resendSMSCode);
+router.post("/send-reset-code", sendResetCode);
 
 export default router;

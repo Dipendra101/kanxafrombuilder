@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Building,
   Search,
@@ -14,9 +14,14 @@ import {
   Phone,
   Mail,
   Package,
-  Weight,
-  Ruler,
+  Lock,
+  User,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
+import { PaymentOptions } from "@/components/ui/payment-options";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,18 +45,28 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Layout from "@/components/layout/Layout";
+import { servicesAPI } from "@/services/api";
+import { useToast } from "@/hooks/use-toast-simple";
 
 export default function Materials() {
+  const { isAuthenticated } = useAuth();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [cart, setCart] = useState<{ [key: string]: number }>({});
   const [sortBy, setSortBy] = useState("name");
+  const [showPayment, setShowPayment] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [materials, setMaterials] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Dynamic categories based on loaded materials
   const categories = [
     { id: "all", name: "All Materials", icon: "🏗️" },
     { id: "cement", name: "Cement & Concrete", icon: "🧱" },
-    { id: "blocks", name: "Blocks & Bricks", icon: "🟤" },
     { id: "steel", name: "Steel & Rebar", icon: "🔗" },
+    { id: "blocks", name: "Blocks & Bricks", icon: "🟤" },
     { id: "pipes", name: "Pipes & Plumbing", icon: "🚰" },
     { id: "aggregates", name: "Sand & Aggregates", icon: "⛰️" },
     { id: "hardware", name: "Hardware Items", icon: "🔧" },
@@ -59,240 +74,99 @@ export default function Materials() {
     { id: "electrical", name: "Electrical Items", icon: "⚡" },
   ];
 
-  const materials = [
-    {
-      id: "cement-opc-53",
-      name: "OPC 53 Grade Cement",
-      category: "cement",
-      price: 850,
-      unit: "50kg bag",
-      description: "High-grade Ordinary Portland Cement for superior strength",
-      image: "🧱",
-      inStock: true,
-      stockQuantity: 500,
-      brand: "Shree Cement",
-      specifications: { grade: "53", weight: "50kg", type: "OPC" },
-      rating: 4.8,
-      reviews: 124,
-    },
-    {
-      id: "cement-ppc",
-      name: "PPC Cement",
-      category: "cement",
-      price: 780,
-      unit: "50kg bag",
-      description: "Portland Pozzolana Cement for general construction",
-      image: "🧱",
-      inStock: true,
-      stockQuantity: 300,
-      brand: "Himalayan Cement",
-      specifications: { grade: "PPC", weight: "50kg", type: "Blended" },
-      rating: 4.6,
-      reviews: 89,
-    },
-    {
-      id: "rebar-12mm",
-      name: "TMT Steel Rebar 12mm",
-      category: "steel",
-      price: 85,
-      unit: "per kg",
-      description: "High-strength TMT bars for reinforcement",
-      image: "🔗",
-      inStock: true,
-      stockQuantity: 2000,
-      brand: "Kamdhenu Steel",
-      specifications: { diameter: "12mm", grade: "Fe-500", length: "12m" },
-      rating: 4.9,
-      reviews: 203,
-    },
-    {
-      id: "rebar-16mm",
-      name: "TMT Steel Rebar 16mm",
-      category: "steel",
-      price: 88,
-      unit: "per kg",
-      description: "Heavy-duty TMT bars for major construction",
-      image: "🔗",
-      inStock: true,
-      stockQuantity: 1500,
-      brand: "Kamdhenu Steel",
-      specifications: { diameter: "16mm", grade: "Fe-500", length: "12m" },
-      rating: 4.9,
-      reviews: 156,
-    },
-    {
-      id: "concrete-blocks",
-      name: "Concrete Hollow Blocks",
-      category: "blocks",
-      price: 45,
-      unit: "per piece",
-      description: "Standard concrete blocks for wall construction",
-      image: "🟤",
-      inStock: true,
-      stockQuantity: 800,
-      brand: "Local Manufacturer",
-      specifications: {
-        size: "400x200x200mm",
-        type: "Hollow",
-        strength: "M7.5",
-      },
-      rating: 4.5,
-      reviews: 67,
-    },
-    {
-      id: "red-bricks",
-      name: "Red Clay Bricks",
-      category: "blocks",
-      price: 18,
-      unit: "per piece",
-      description: "Traditional fired clay bricks",
-      image: "🧱",
-      inStock: true,
-      stockQuantity: 5000,
-      brand: "Local Kiln",
-      specifications: {
-        size: "230x110x70mm",
-        type: "First Class",
-        absorption: "<20%",
-      },
-      rating: 4.3,
-      reviews: 234,
-    },
-    {
-      id: "pvc-pipe-4inch",
-      name: "PVC Pipe 4 inch",
-      category: "pipes",
-      price: 450,
-      unit: "per meter",
-      description: "High-quality PVC pipes for plumbing",
-      image: "🚰",
-      inStock: true,
-      stockQuantity: 200,
-      brand: "Kisan Pipes",
-      specifications: {
-        diameter: "4 inch",
-        pressure: "6 kg/cm²",
-        length: "6m",
-      },
-      rating: 4.7,
-      reviews: 91,
-    },
-    {
-      id: "water-tank-1000l",
-      name: "Plastic Water Tank 1000L",
-      category: "pipes",
-      price: 12500,
-      unit: "per piece",
-      description: "Food-grade plastic water storage tank",
-      image: "🏺",
-      inStock: true,
-      stockQuantity: 25,
-      brand: "Sintex",
-      specifications: {
-        capacity: "1000L",
-        material: "LLDPE",
-        layers: "3 Layer",
-      },
-      rating: 4.8,
-      reviews: 45,
-    },
-    {
-      id: "sand-river",
-      name: "River Sand",
-      category: "aggregates",
-      price: 1200,
-      unit: "per cubic ft",
-      description: "Clean river sand for construction",
-      image: "⛰���",
-      inStock: true,
-      stockQuantity: 100,
-      brand: "Local Supplier",
-      specifications: {
-        type: "River Sand",
-        fineness: "Fine",
-        purity: "Washed",
-      },
-      rating: 4.4,
-      reviews: 78,
-    },
-    {
-      id: "gravel-20mm",
-      name: "Crushed Gravel 20mm",
-      category: "aggregates",
-      price: 1100,
-      unit: "per cubic ft",
-      description: "Machine crushed gravel for concrete",
-      image: "🪨",
-      inStock: true,
-      stockQuantity: 150,
-      brand: "Local Quarry",
-      specifications: {
-        size: "20mm",
-        type: "Crushed",
-        gradation: "Well graded",
-      },
-      rating: 4.5,
-      reviews: 92,
-    },
-    {
-      id: "gi-sheet",
-      name: "GI Roofing Sheet",
-      category: "roofing",
-      price: 850,
-      unit: "per sq meter",
-      description: "Galvanized iron corrugated roofing sheets",
-      image: "🏠",
-      inStock: true,
-      stockQuantity: 300,
-      brand: "Tata BlueScope",
-      specifications: {
-        thickness: "0.47mm",
-        coating: "Z275",
-        profile: "Corrugated",
-      },
-      rating: 4.6,
-      reviews: 134,
-    },
-    {
-      id: "electrical-wire",
-      name: "Copper Electrical Wire 2.5sq",
-      category: "electrical",
-      price: 280,
-      unit: "per meter",
-      description: "High-quality copper electrical wiring",
-      image: "⚡",
-      inStock: true,
-      stockQuantity: 1000,
-      brand: "Finolex",
-      specifications: {
-        size: "2.5 sq mm",
-        conductor: "Copper",
-        insulation: "PVC",
-      },
-      rating: 4.7,
-      reviews: 167,
-    },
-  ];
+  // Listen for payment completion events
+  useEffect(() => {
+    const handlePaymentCompleted = (event: CustomEvent) => {
+      const { method, service } = event.detail;
+      if (service === "Construction Materials") {
+        console.log(`✅ Payment completed with ${method} for ${service}`);
+        setCart({});
+        setShowPayment(false);
+        toast({
+          title: "Order Confirmed!",
+          description: "Your material order has been placed successfully.",
+          variant: "success",
+        });
+      }
+    };
 
+    window.addEventListener(
+      "paymentCompleted",
+      handlePaymentCompleted as EventListener,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "paymentCompleted",
+        handlePaymentCompleted as EventListener,
+      );
+    };
+  }, [toast]);
+
+  // Fetch materials from API
+  const fetchMaterials = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await servicesAPI.getAllServices({
+        type: "material",
+        limit: 100,
+        isActive: true,
+      });
+
+      setMaterials(response.services || []);
+      console.log(`✅ Loaded ${response.services?.length || 0} materials`);
+    } catch (error: any) {
+      console.error("Failed to fetch materials:", error);
+      setError("Failed to load materials. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to load materials. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Load materials on component mount
+  useEffect(() => {
+    fetchMaterials();
+  }, []);
+
+  // Filter and sort materials
   const filteredMaterials = materials.filter((material) => {
     const matchesSearch =
-      material.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      material.description.toLowerCase().includes(searchTerm.toLowerCase());
+      material.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      material.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      material.materialService?.brand
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+    const materialCategory =
+      material.materialService?.materialType?.toLowerCase() ||
+      material.category?.toLowerCase() ||
+      "";
+
     const matchesCategory =
-      selectedCategory === "all" || material.category === selectedCategory;
+      selectedCategory === "all" ||
+      materialCategory.includes(selectedCategory) ||
+      material.type === selectedCategory;
+
     return matchesSearch && matchesCategory;
   });
 
   const sortedMaterials = [...filteredMaterials].sort((a, b) => {
     switch (sortBy) {
       case "price-low":
-        return a.price - b.price;
+        return (a.pricing?.basePrice || 0) - (b.pricing?.basePrice || 0);
       case "price-high":
-        return b.price - a.price;
+        return (b.pricing?.basePrice || 0) - (a.pricing?.basePrice || 0);
       case "rating":
-        return b.rating - a.rating;
+        return (b.rating?.average || 0) - (a.rating?.average || 0);
       default:
-        return a.name.localeCompare(b.name);
+        return (a.name || "").localeCompare(b.name || "");
     }
   });
 
@@ -321,8 +195,8 @@ export default function Materials() {
 
   const getTotalPrice = () => {
     return Object.entries(cart).reduce((total, [materialId, quantity]) => {
-      const material = materials.find((m) => m.id === materialId);
-      return total + (material ? material.price * quantity : 0);
+      const material = materials.find((m) => m._id === materialId);
+      return total + (material?.pricing?.basePrice || 0) * quantity;
     }, 0);
   };
 
@@ -335,6 +209,21 @@ export default function Materials() {
       </DialogHeader>
 
       <div className="space-y-4">
+        {/* Guest Mode Alert */}
+        {!isAuthenticated && Object.entries(cart).length > 0 && (
+          <Alert className="border-orange-200 bg-orange-50">
+            <Lock className="h-4 w-4 text-orange-600" />
+            <AlertDescription className="text-orange-800">
+              <strong>Please log in to checkout:</strong> You can browse and add
+              items to cart, but you'll need to{" "}
+              <Link to="/login" className="underline font-medium">
+                log in
+              </Link>{" "}
+              to complete your purchase.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {Object.entries(cart).length === 0 ? (
           <div className="text-center py-8">
             <ShoppingCart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
@@ -344,7 +233,7 @@ export default function Materials() {
           <>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {Object.entries(cart).map(([materialId, quantity]) => {
-                const material = materials.find((m) => m.id === materialId);
+                const material = materials.find((m) => m._id === materialId);
                 if (!material) return null;
 
                 return (
@@ -352,14 +241,22 @@ export default function Materials() {
                     key={materialId}
                     className="flex items-center gap-4 p-4 border rounded-lg"
                   >
-                    <div className="text-3xl">{material.image}</div>
+                    <div className="text-3xl">
+                      {material.materialService?.materialType === "Cement"
+                        ? "🧱"
+                        : material.materialService?.materialType === "Steel"
+                          ? "🔗"
+                          : "📦"}
+                    </div>
                     <div className="flex-1">
                       <h4 className="font-medium text-kanxa-navy">
                         {material.name}
                       </h4>
-                      <p className="text-sm text-gray-600">{material.unit}</p>
+                      <p className="text-sm text-gray-600">
+                        {material.pricing?.unit || "per unit"}
+                      </p>
                       <p className="text-sm font-medium text-kanxa-orange">
-                        NPR {material.price.toLocaleString()}
+                        Rs {(material.pricing?.basePrice || 0).toLocaleString()}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -381,7 +278,10 @@ export default function Materials() {
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-kanxa-blue">
-                        NPR {(material.price * quantity).toLocaleString()}
+                        Rs{" "}
+                        {(
+                          (material.pricing?.basePrice || 0) * quantity
+                        ).toLocaleString()}
                       </p>
                     </div>
                   </div>
@@ -395,21 +295,38 @@ export default function Materials() {
               <div className="flex justify-between text-lg font-bold">
                 <span>Total:</span>
                 <span className="text-kanxa-blue">
-                  NPR {getTotalPrice().toLocaleString()}
+                  Rs {getTotalPrice().toLocaleString()}
                 </span>
               </div>
 
               <Alert>
                 <Truck className="h-4 w-4" />
                 <AlertDescription>
-                  Free delivery for orders above NPR 50,000. Delivery charges
+                  Free delivery for orders above Rs 50,000. Delivery charges
                   apply for smaller orders.
                 </AlertDescription>
               </Alert>
 
               <div className="flex gap-4">
-                <Button className="flex-1 bg-kanxa-orange hover:bg-kanxa-orange/90">
-                  Proceed to Checkout
+                <Button
+                  className="flex-1 bg-kanxa-orange hover:bg-kanxa-orange/90"
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      setShowLoginPrompt(true);
+                    } else {
+                      setShowPayment(true);
+                    }
+                  }}
+                  disabled={Object.keys(cart).length === 0}
+                >
+                  {!isAuthenticated ? (
+                    <>
+                      <Lock className="mr-2 h-4 w-4" />
+                      Login to Checkout
+                    </>
+                  ) : (
+                    "Proceed to Checkout"
+                  )}
                 </Button>
                 <Button variant="outline" onClick={() => setCart({})}>
                   Clear Cart
@@ -418,6 +335,133 @@ export default function Materials() {
             </div>
           </>
         )}
+      </div>
+    </DialogContent>
+  );
+
+  const LoginPromptDialog = () => (
+    <DialogContent className="max-w-md">
+      <DialogHeader>
+        <DialogTitle className="text-2xl font-bold text-kanxa-navy flex items-center gap-2">
+          <Lock className="h-6 w-6 text-kanxa-orange" />
+          Login Required
+        </DialogTitle>
+      </DialogHeader>
+
+      <div className="space-y-6">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-kanxa-light-orange rounded-full flex items-center justify-center mx-auto">
+            <User className="h-8 w-8 text-kanxa-orange" />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-lg font-medium text-kanxa-navy">
+              Please log in to complete your purchase
+            </p>
+            <p className="text-gray-600 text-sm">
+              You need an account to track orders, manage deliveries, and access
+              customer support.
+            </p>
+          </div>
+
+          <Alert>
+            <ShoppingCart className="h-4 w-4" />
+            <AlertDescription>
+              Your cart items will be saved when you log in or create an
+              account.
+            </AlertDescription>
+          </Alert>
+        </div>
+
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowLoginPrompt(false)}
+            className="flex-1"
+          >
+            Continue Browsing
+          </Button>
+          <Button
+            asChild
+            className="flex-1 bg-kanxa-orange hover:bg-kanxa-orange/90"
+          >
+            <Link to="/login">Login</Link>
+          </Button>
+        </div>
+
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-kanxa-blue hover:underline font-medium"
+            >
+              Sign up here
+            </Link>
+          </p>
+        </div>
+      </div>
+    </DialogContent>
+  );
+
+  const PaymentDialog = () => (
+    <DialogContent className="max-w-lg">
+      <DialogHeader>
+        <DialogTitle className="text-2xl font-bold text-kanxa-navy">
+          Complete Your Order
+        </DialogTitle>
+      </DialogHeader>
+
+      <div className="space-y-6">
+        {/* Order Summary */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h4 className="font-medium text-kanxa-navy mb-3">Order Summary</h4>
+          <div className="space-y-2">
+            {Object.entries(cart).map(([materialId, quantity]) => {
+              const material = materials.find((m) => m._id === materialId);
+              if (!material) return null;
+
+              return (
+                <div key={materialId} className="flex justify-between text-sm">
+                  <span>
+                    {material.name} x {quantity}
+                  </span>
+                  <span className="font-medium">
+                    Rs{" "}
+                    {(
+                      (material.pricing?.basePrice || 0) * quantity
+                    ).toLocaleString()}
+                  </span>
+                </div>
+              );
+            })}
+            <Separator />
+            <div className="flex justify-between font-bold">
+              <span>Total:</span>
+              <span className="text-kanxa-blue">
+                Rs {getTotalPrice().toLocaleString()}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Options */}
+        <PaymentOptions
+          amount={getTotalPrice()}
+          service="Construction Materials"
+          serviceId="materials-order"
+          bookingId={`materials-${Date.now()}`}
+        />
+
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowPayment(false)}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+        </div>
       </div>
     </DialogContent>
   );
@@ -499,6 +543,16 @@ export default function Materials() {
                 </DialogTrigger>
                 <CartDialog />
               </Dialog>
+
+              {/* Login Prompt Dialog */}
+              <Dialog open={showLoginPrompt} onOpenChange={setShowLoginPrompt}>
+                <LoginPromptDialog />
+              </Dialog>
+
+              {/* Payment Dialog */}
+              <Dialog open={showPayment} onOpenChange={setShowPayment}>
+                <PaymentDialog />
+              </Dialog>
             </div>
           </div>
 
@@ -530,140 +584,172 @@ export default function Materials() {
                 : categories.find((c) => c.id === selectedCategory)?.name}
               ({sortedMaterials.length})
             </h2>
+
+            {isLoading && (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm text-gray-600">
+                  Loading materials...
+                </span>
+              </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {sortedMaterials.map((material) => (
-              <Card
-                key={material.id}
-                className="hover:shadow-lg transition-all duration-300 group"
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="text-4xl mb-2">{material.image}</div>
-                    <div className="text-right">
-                      {material.inStock ? (
-                        <Badge
-                          variant="secondary"
-                          className="bg-green-100 text-green-800"
-                        >
-                          In Stock
-                        </Badge>
-                      ) : (
-                        <Badge variant="destructive">Out of Stock</Badge>
-                      )}
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg text-kanxa-navy leading-tight">
-                    {material.name}
-                  </CardTitle>
-                  <p className="text-sm text-gray-600">{material.brand}</p>
-                </CardHeader>
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {material.description}
-                  </p>
-
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">
-                        {material.rating}
-                      </span>
-                    </div>
-                    <span className="text-xs text-gray-500">
-                      ({material.reviews} reviews)
-                    </span>
-                  </div>
-
-                  <div className="space-y-2 text-sm">
-                    {Object.entries(material.specifications).map(
-                      ([key, value]) => (
-                        <div key={key} className="flex justify-between">
-                          <span className="text-gray-600 capitalize">
-                            {key}:
-                          </span>
-                          <span className="font-medium">{value}</span>
-                        </div>
-                      ),
-                    )}
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-3">
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <p className="text-2xl font-bold text-kanxa-orange">
-                          NPR {material.price.toLocaleString()}
-                        </p>
-                        <p className="text-xs text-gray-500">{material.unit}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500">Stock:</p>
-                        <p className="text-sm font-medium">
-                          {material.stockQuantity}
-                        </p>
-                      </div>
-                    </div>
-
-                    {cart[material.id] ? (
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => removeFromCart(material.id)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="flex-1 text-center font-medium">
-                          {cart[material.id]} in cart
-                        </span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => addToCart(material.id)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90"
-                        onClick={() => addToCart(material.id)}
-                        disabled={!material.inStock}
-                      >
-                        <ShoppingCart className="mr-2 h-4 w-4" />
-                        Add to Cart
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {sortedMaterials.length === 0 && (
+          {!isLoading && sortedMaterials.length === 0 ? (
             <div className="text-center py-12">
               <Building className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-medium text-gray-600 mb-2">
                 No materials found
               </h3>
               <p className="text-gray-500 mb-4">
-                Try adjusting your search or filters
+                {materials.length === 0
+                  ? "No materials are currently available. Please check back later."
+                  : "Try adjusting your search or filters"}
               </p>
               <Button
                 variant="outline"
                 onClick={() => {
                   setSearchTerm("");
                   setSelectedCategory("all");
+                  fetchMaterials();
                 }}
               >
-                Clear Filters
+                {materials.length === 0 ? "Reload Materials" : "Clear Filters"}
               </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {sortedMaterials.map((material) => (
+                <Card
+                  key={material._id}
+                  className="hover:shadow-lg transition-all duration-300 group"
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="text-4xl mb-2">
+                        {material.materialService?.materialType === "Cement"
+                          ? "🧱"
+                          : material.materialService?.materialType === "Steel"
+                            ? "🔗"
+                            : material.materialService?.materialType === "Pipes"
+                              ? "🚰"
+                              : "📦"}
+                      </div>
+                      <div className="text-right">
+                        <Badge
+                          variant="secondary"
+                          className="bg-green-100 text-green-800"
+                        >
+                          In Stock
+                        </Badge>
+                      </div>
+                    </div>
+                    <CardTitle className="text-lg text-kanxa-navy leading-tight">
+                      {material.name}
+                    </CardTitle>
+                    <p className="text-sm text-gray-600">
+                      {material.materialService?.brand || "Quality Brand"}
+                    </p>
+                  </CardHeader>
+
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {material.description}
+                    </p>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">
+                          {material.rating?.average || "4.5"}
+                        </span>
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        ({material.rating?.count || "0"} reviews)
+                      </span>
+                    </div>
+
+                    {material.materialService?.specifications && (
+                      <div className="space-y-2 text-sm">
+                        {Object.entries(material.materialService.specifications)
+                          .slice(0, 3)
+                          .map(([key, value]) => (
+                            <div key={key} className="flex justify-between">
+                              <span className="text-gray-600 capitalize">
+                                {key}:
+                              </span>
+                              <span className="font-medium">{value}</span>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+
+                    <Separator />
+
+                    <div className="space-y-3">
+                      <div className="flex items-end justify-between">
+                        <div>
+                          <p className="text-2xl font-bold text-kanxa-orange">
+                            Rs{" "}
+                            {(
+                              material.pricing?.basePrice || 0
+                            ).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {material.pricing?.unit || "per unit"}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-gray-500">Stock:</p>
+                          <p className="text-sm font-medium">
+                            {material.materialService?.stockQuantity ||
+                              "Available"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {cart[material._id] ? (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => removeFromCart(material._id)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="flex-1 text-center font-medium">
+                            {cart[material._id]} in cart
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => addToCart(material._id)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90"
+                          onClick={() => addToCart(material._id)}
+                        >
+                          <ShoppingCart className="mr-2 h-4 w-4" />
+                          Add to Cart
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
         </div>
@@ -686,7 +772,7 @@ export default function Materials() {
               {
                 icon: <Truck className="h-8 w-8 text-kanxa-orange" />,
                 title: "Free Delivery",
-                description: "Free delivery for orders above NPR 50,000",
+                description: "Free delivery for orders above Rs 50,000",
               },
               {
                 icon: <Shield className="h-8 w-8 text-kanxa-blue" />,
@@ -733,7 +819,7 @@ export default function Materials() {
               </div>
               <div className="text-left">
                 <p className="font-semibold">Call Us</p>
-                <p className="text-white/90">+977-XXX-XXXXXX</p>
+                <p className="text-white/90">+977-9800000000</p>
               </div>
             </div>
 

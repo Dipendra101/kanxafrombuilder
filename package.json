@@ -21,11 +21,15 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.0",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.1",
+    "react-hot-toast": "^2.5.2",
+    "twilio": "^5.8.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

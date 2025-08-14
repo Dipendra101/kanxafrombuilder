@@ -3,12 +3,80 @@ import Booking, { IBooking } from "../models/Booking";
 import Service from "../models/Service";
 import User from "../models/User";
 import { authenticate, adminOnly, authorize } from "../middleware/auth";
-import connectDB from "../config/database";
+import { withDB, isDBConnected } from "../config/database";
 
 const router = Router();
 
-// Connect to database
-connectDB();
+// Mock booking data for when database is unavailable
+const mockBookings = [
+  {
+    _id: "mock_booking_1",
+    bookingNumber: "KB001",
+    user: {
+      _id: "mock_user_1",
+      name: "Ram Kumar Sharma",
+      email: "ram@example.com",
+      phone: "+977-9841234567"
+    },
+    service: {
+      _id: "mock_service_1",
+      name: "Kathmandu to Pokhara Bus",
+      type: "bus",
+      description: "Comfortable AC bus service",
+      images: ["/placeholder.svg"],
+      pricing: { basePrice: 800, currency: "NPR" }
+    },
+    status: "confirmed",
+    type: "bus",
+    contactInfo: {
+      name: "Ram Kumar Sharma",
+      phone: "+977-9841234567",
+      email: "ram@example.com"
+    },
+    serviceDetails: {
+      departureDate: new Date(),
+      passengers: 2,
+      preferences: {}
+    },
+    pricing: {
+      baseAmount: 800,
+      taxes: { vat: 104, serviceTax: 0, others: [] },
+      discounts: [],
+      totalAmount: 904,
+      currency: "NPR"
+    },
+    payment: {
+      status: "completed",
+      method: "khalti",
+      paidAmount: 904,
+      dueAmount: 0,
+      refundAmount: 0,
+      transactions: []
+    },
+    schedule: {
+      requestedDate: new Date(),
+      confirmedAt: new Date(),
+      startDate: new Date(),
+      endDate: null,
+      completedAt: null,
+      cancelledAt: null
+    },
+    statusHistory: [
+      {
+        status: "pending",
+        timestamp: new Date(),
+        notes: "Booking created"
+      },
+      {
+        status: "confirmed",
+        timestamp: new Date(),
+        notes: "Payment completed"
+      }
+    ],
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+];
 
 // @route   POST /api/bookings
 // @desc    Create a new booking
@@ -21,78 +89,105 @@ export const createBooking: RequestHandler = async (req, res) => {
       ...req.body
     };
 
-    // Validate service exists and is available
-    const service = await Service.findById(bookingData.service);
-    if (!service) {
-      return res.status(404).json({
-        success: false,
-        message: 'Service not found'
-      });
-    }
+    const booking = await withDB(
+      async () => {
+        // Validate service exists and is available
+        const service = await Service.findById(bookingData.service);
+        if (!service) {
+          throw new Error('Service not found');
+        }
 
-    if (!service.isActive || !service.isAvailable) {
-      return res.status(400).json({
-        success: false,
-        message: 'Service is not available for booking'
-      });
-    }
+        if (!service.isActive || !service.isAvailable) {
+          throw new Error('Service is not available for booking');
+        }
 
-    // Calculate pricing
-    const baseAmount = service.pricing.basePrice;
-    const vatAmount = (baseAmount * (service.pricing.taxes?.vat || 13)) / 100;
-    const serviceTaxAmount = (baseAmount * (service.pricing.taxes?.serviceTax || 0)) / 100;
-    
-    const totalAmount = baseAmount + vatAmount + serviceTaxAmount;
+        // Calculate pricing
+        const baseAmount = service.pricing.basePrice;
+        const vatAmount = (baseAmount * (service.pricing.taxes?.vat || 13)) / 100;
+        const serviceTaxAmount = (baseAmount * (service.pricing.taxes?.serviceTax || 0)) / 100;
 
-    // Set pricing details
-    bookingData.pricing = {
-      baseAmount,
-      taxes: {
-        vat: vatAmount,
-        serviceTax: serviceTaxAmount,
-        others: []
+        const totalAmount = baseAmount + vatAmount + serviceTaxAmount;
+
+        // Set pricing details
+        bookingData.pricing = {
+          baseAmount,
+          taxes: {
+            vat: vatAmount,
+            serviceTax: serviceTaxAmount,
+            others: []
+          },
+          discounts: bookingData.pricing?.discounts || [],
+          totalAmount,
+          currency: service.pricing.currency
+        };
+
+        // Set payment details
+        bookingData.payment = {
+          status: 'pending',
+          transactions: [],
+          dueAmount: totalAmount,
+          paidAmount: 0,
+          refundAmount: 0
+        };
+
+        // Initialize status history
+        bookingData.statusHistory = [{
+          status: 'pending',
+          timestamp: new Date(),
+          updatedBy: userId,
+          notes: 'Booking created'
+        }];
+
+        const newBooking = new Booking(bookingData);
+        await newBooking.save();
+
+        // Populate related data
+        const populatedBooking = await Booking.findById(newBooking._id)
+          .populate('user', 'name email phone')
+          .populate('service', 'name type description images pricing');
+
+        // Update service analytics
+        service.analytics.bookings += 1;
+        await service.save();
+
+        return populatedBooking;
       },
-      discounts: bookingData.pricing?.discounts || [],
-      totalAmount,
-      currency: service.pricing.currency
-    };
-
-    // Set payment details
-    bookingData.payment = {
-      status: 'pending',
-      transactions: [],
-      dueAmount: totalAmount,
-      paidAmount: 0,
-      refundAmount: 0
-    };
-
-    // Initialize status history
-    bookingData.statusHistory = [{
-      status: 'pending',
-      timestamp: new Date(),
-      updatedBy: userId,
-      notes: 'Booking created'
-    }];
-
-    const booking = new Booking(bookingData);
-    await booking.save();
-
-    // Populate related data
-    const populatedBooking = await Booking.findById(booking._id)
-      .populate('user', 'name email phone')
-      .populate('service', 'name type description images pricing');
-
-    // Update service analytics
-    service.analytics.bookings += 1;
-    await service.save();
+      // Fallback mock booking
+      {
+        _id: `mock_booking_${Date.now()}`,
+        bookingNumber: `KB${String(Date.now()).slice(-6)}`,
+        user: { _id: userId, name: "Demo User", email: "demo@example.com", phone: "+977-9841234567" },
+        service: { _id: bookingData.service, name: "Demo Service", type: "bus", description: "Demo service", images: [], pricing: { basePrice: 800, currency: "NPR" } },
+        status: "pending",
+        ...bookingData,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    );
 
     res.status(201).json({
       success: true,
-      message: 'Booking created successfully',
-      booking: populatedBooking
+      message: 'Booking created successfully' + (!isDBConnected() ? ' (demo mode)' : ''),
+      booking,
+      demo: !isDBConnected()
     });
   } catch (error: any) {
     console.error('Create booking error:', error);
+
+    if (error.message === 'Service not found') {
+      return res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+
+    if (error.message === 'Service is not available for booking') {
+      return res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: 'Failed to create booking',
@@ -116,32 +211,44 @@ export const getUserBookings: RequestHandler = async (req, res) => {
       sortOrder = 'desc'
     } = req.query;
 
-    const query: any = { user: userId };
+    const result = await withDB(
+      async () => {
+        const query: any = { user: userId };
 
-    if (status) query.status = status;
-    if (type) query.type = type;
+        if (status) query.status = status;
+        if (type) query.type = type;
 
-    const sort: any = {};
-    sort[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
+        const sort: any = {};
+        sort[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
 
-    const bookings = await Booking.find(query)
-      .populate('service', 'name type description images pricing')
-      .sort(sort)
-      .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit))
-      .exec();
+        const bookings = await Booking.find(query)
+          .populate('service', 'name type description images pricing')
+          .sort(sort)
+          .limit(Number(limit))
+          .skip((Number(page) - 1) * Number(limit))
+          .exec();
 
-    const total = await Booking.countDocuments(query);
+        const total = await Booking.countDocuments(query);
+
+        return { bookings, total };
+      },
+      // Fallback mock data
+      {
+        bookings: mockBookings.filter(b => b.user._id === userId),
+        total: mockBookings.filter(b => b.user._id === userId).length
+      }
+    );
 
     res.json({
       success: true,
-      bookings,
+      bookings: result.bookings,
       pagination: {
         page: Number(page),
         limit: Number(limit),
-        total,
-        pages: Math.ceil(total / Number(limit))
-      }
+        total: result.total,
+        pages: Math.ceil(result.total / Number(limit))
+      },
+      demo: !isDBConnected()
     });
   } catch (error: any) {
     console.error('Get user bookings error:', error);
@@ -169,46 +276,58 @@ export const getAllBookings: RequestHandler = async (req, res) => {
       sortOrder = 'desc'
     } = req.query;
 
-    const query: any = {};
+    const result = await withDB(
+      async () => {
+        const query: any = {};
 
-    if (status) query.status = status;
-    if (type) query.type = type;
-    if (userId) query.user = userId;
-    if (paymentStatus) query['payment.status'] = paymentStatus;
+        if (status) query.status = status;
+        if (type) query.type = type;
+        if (userId) query.user = userId;
+        if (paymentStatus) query['payment.status'] = paymentStatus;
 
-    // Search by booking number or contact info
-    if (search) {
-      query.$or = [
-        { bookingNumber: { $regex: search, $options: 'i' } },
-        { 'contactInfo.name': { $regex: search, $options: 'i' } },
-        { 'contactInfo.phone': { $regex: search, $options: 'i' } },
-        { 'contactInfo.email': { $regex: search, $options: 'i' } }
-      ];
-    }
+        // Search by booking number or contact info
+        if (search) {
+          query.$or = [
+            { bookingNumber: { $regex: search, $options: 'i' } },
+            { 'contactInfo.name': { $regex: search, $options: 'i' } },
+            { 'contactInfo.phone': { $regex: search, $options: 'i' } },
+            { 'contactInfo.email': { $regex: search, $options: 'i' } }
+          ];
+        }
 
-    const sort: any = {};
-    sort[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
+        const sort: any = {};
+        sort[sortBy as string] = sortOrder === 'asc' ? 1 : -1;
 
-    const bookings = await Booking.find(query)
-      .populate('user', 'name email phone')
-      .populate('service', 'name type description images pricing')
-      .populate('assignedTo', 'name email')
-      .sort(sort)
-      .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit))
-      .exec();
+        const bookings = await Booking.find(query)
+          .populate('user', 'name email phone')
+          .populate('service', 'name type description images pricing')
+          .populate('assignedTo', 'name email')
+          .sort(sort)
+          .limit(Number(limit))
+          .skip((Number(page) - 1) * Number(limit))
+          .exec();
 
-    const total = await Booking.countDocuments(query);
+        const total = await Booking.countDocuments(query);
+
+        return { bookings, total };
+      },
+      // Fallback mock data
+      {
+        bookings: mockBookings.slice(0, Number(limit)),
+        total: mockBookings.length
+      }
+    );
 
     res.json({
       success: true,
-      bookings,
+      bookings: result.bookings,
       pagination: {
         page: Number(page),
         limit: Number(limit),
-        total,
-        pages: Math.ceil(total / Number(limit))
-      }
+        total: result.total,
+        pages: Math.ceil(result.total / Number(limit))
+      },
+      demo: !isDBConnected()
     });
   } catch (error: any) {
     console.error('Get all bookings error:', error);
@@ -562,48 +681,72 @@ export const cancelBooking: RequestHandler = async (req, res) => {
 // @access  Private/Admin
 export const getBookingStats: RequestHandler = async (req, res) => {
   try {
-    const stats = await Booking.aggregate([
+    const stats = await withDB(
+      async () => {
+        const result = await Booking.aggregate([
+          {
+            $facet: {
+              totalBookings: [{ $count: "count" }],
+              bookingsByStatus: [
+                { $group: { _id: "$status", count: { $sum: 1 } } }
+              ],
+              bookingsByType: [
+                { $group: { _id: "$type", count: { $sum: 1 } } }
+              ],
+              revenue: [
+                { $group: { _id: null, totalRevenue: { $sum: "$payment.paidAmount" } } }
+              ],
+              pendingRevenue: [
+                { $group: { _id: null, pendingRevenue: { $sum: "$payment.dueAmount" } } }
+              ],
+              recentBookings: [
+                { $match: { createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } },
+                { $count: "count" }
+              ]
+            }
+          }
+        ]);
+
+        return {
+          totalBookings: result[0].totalBookings[0]?.count || 0,
+          totalRevenue: result[0].revenue[0]?.totalRevenue || 0,
+          pendingRevenue: result[0].pendingRevenue[0]?.pendingRevenue || 0,
+          recentBookings: result[0].recentBookings[0]?.count || 0,
+          bookingsByStatus: result[0].bookingsByStatus.reduce((acc: any, item: any) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {}),
+          bookingsByType: result[0].bookingsByType.reduce((acc: any, item: any) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {})
+        };
+      },
+      // Fallback mock stats
       {
-        $facet: {
-          totalBookings: [{ $count: "count" }],
-          bookingsByStatus: [
-            { $group: { _id: "$status", count: { $sum: 1 } } }
-          ],
-          bookingsByType: [
-            { $group: { _id: "$type", count: { $sum: 1 } } }
-          ],
-          revenue: [
-            { $group: { _id: null, totalRevenue: { $sum: "$payment.paidAmount" } } }
-          ],
-          pendingRevenue: [
-            { $group: { _id: null, pendingRevenue: { $sum: "$payment.dueAmount" } } }
-          ],
-          recentBookings: [
-            { $match: { createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } },
-            { $count: "count" }
-          ]
+        totalBookings: 2843,
+        totalRevenue: 1250000,
+        pendingRevenue: 75000,
+        recentBookings: 156,
+        bookingsByStatus: {
+          pending: 45,
+          confirmed: 120,
+          completed: 2598,
+          cancelled: 80
+        },
+        bookingsByType: {
+          bus: 2100,
+          tour: 450,
+          cargo: 200,
+          construction: 93
         }
       }
-    ]);
-
-    const result = {
-      totalBookings: stats[0].totalBookings[0]?.count || 0,
-      totalRevenue: stats[0].revenue[0]?.totalRevenue || 0,
-      pendingRevenue: stats[0].pendingRevenue[0]?.pendingRevenue || 0,
-      recentBookings: stats[0].recentBookings[0]?.count || 0,
-      bookingsByStatus: stats[0].bookingsByStatus.reduce((acc: any, item: any) => {
-        acc[item._id] = item.count;
-        return acc;
-      }, {}),
-      bookingsByType: stats[0].bookingsByType.reduce((acc: any, item: any) => {
-        acc[item._id] = item.count;
-        return acc;
-      }, {})
-    };
+    );
 
     res.json({
       success: true,
-      stats: result
+      stats,
+      demo: !isDBConnected()
     });
   } catch (error: any) {
     console.error('Get booking stats error:', error);

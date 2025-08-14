@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Armchair, Gauge, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Armchair, Gauge, X, Lock } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -44,8 +46,13 @@ const Seat = ({
 };
 
 export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
+  const { isAuthenticated, isGuest } = useAuth();
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
   const occupiedSeats = [2, 5, 8, 12, 15, 23, 28, 31, 37, 42];
+  const navigate = useNavigate();
+
+  // Get price with fallback
+  const busPrice = bus?.price || bus?.pricing?.basePrice || 800;
 
   // Safety check to ensure we have bus data
   if (!bus) {
@@ -202,20 +209,20 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
                 <div className="flex justify-between">
                   <span>Seat(s) ({selectedSeats.length})</span>
                   <span>
-                    NPR {(bus.price * selectedSeats.length).toLocaleString()}
+                    Rs {(busPrice * selectedSeats.length).toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Service Fee</span>
-                  <span>NPR 50</span>
+                  <span>Rs 50</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
                   <span className="text-kanxa-blue">
-                    NPR{" "}
-                    {(bus.price * selectedSeats.length + 50 > 50
-                      ? bus.price * selectedSeats.length + 50
+                    Rs{" "}
+                    {(busPrice * selectedSeats.length + 50 > 50
+                      ? busPrice * selectedSeats.length + 50
                       : 0
                     ).toLocaleString()}
                   </span>
@@ -225,8 +232,26 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
               <Button
                 className="w-full bg-kanxa-green hover:bg-kanxa-green/90"
                 disabled={selectedSeats.length === 0}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    navigate("/login");
+                    return;
+                  }
+                  const totalAmount = busPrice * selectedSeats.length + 50;
+                  const serviceName = `${bus.operator?.name || bus.name || "Bus Service"} - ${selectedSeats.length} seat${selectedSeats.length > 1 ? "s" : ""}`;
+                  navigate(
+                    `/payment?service=${bus.id}&type=bus&amount=${totalAmount}&seats=${selectedSeats.join(",")}&serviceName=${encodeURIComponent(serviceName)}`,
+                  );
+                }}
               >
-                Proceed to Payment
+                {!isAuthenticated ? (
+                  <>
+                    <Lock className="mr-2 h-4 w-4" />
+                    Login to Pay
+                  </>
+                ) : (
+                  "Proceed to Payment"
+                )}
               </Button>
             </CardContent>
           </Card>

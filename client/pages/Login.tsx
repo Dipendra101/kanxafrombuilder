@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SmsLogin from "@/components/auth/SmsLogin";
 import {
@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import { useAuth } from "@/contexts/AuthContext";
 import { authAPI } from "@/services/api";
 
@@ -40,6 +40,39 @@ export default function Login() {
     password: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Load remembered email on component mount
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem("kanxa_remembered_email");
+    const rememberFlag = localStorage.getItem("kanxa_remember");
+
+    if (rememberedEmail && rememberFlag === "true") {
+      setFormData((prev) => ({ ...prev, email: rememberedEmail }));
+      setRememberMe(true);
+    }
+  }, []);
+
+  // Function to extend token expiry for remember me
+  const extendTokenExpiry = async (token: string) => {
+    try {
+      const response = await fetch("/api/auth/extend-token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ rememberMe: true }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        return result.token;
+      }
+    } catch (error) {
+      console.error("Failed to extend token expiry:", error);
+    }
+    return null;
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -99,9 +132,19 @@ export default function Login() {
         ),
       });
 
-      // Store remember me preference
+      // Store remember me preference and email
       if (rememberMe) {
         localStorage.setItem("kanxa_remember", "true");
+        localStorage.setItem("kanxa_remembered_email", formData.email);
+        // Set longer token expiry for remember me (30 days instead of 7)
+        const extendedToken = await extendTokenExpiry(loginResponse.token);
+        if (extendedToken) {
+          localStorage.setItem("authToken", extendedToken);
+        }
+      } else {
+        // Clear remember me data if unchecked
+        localStorage.removeItem("kanxa_remember");
+        localStorage.removeItem("kanxa_remembered_email");
       }
 
       // Redirect based on user role from login response

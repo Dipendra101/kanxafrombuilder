@@ -37,6 +37,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -189,6 +190,10 @@ export default function Tours() {
         <DialogTitle className="text-2xl font-bold text-kanxa-navy">
           Custom Tour Request
         </DialogTitle>
+        <DialogDescription>
+          Fill out this form to request a customized tour package tailored to
+          your preferences
+        </DialogDescription>
       </DialogHeader>
 
       <div className="space-y-6">
@@ -318,7 +323,7 @@ export default function Tours() {
             </div>
 
             <div>
-              <Label htmlFor="budget">Budget Range (NPR)</Label>
+              <Label htmlFor="budget">Budget Range (Rs)</Label>
               <Select
                 value={tourForm.budget}
                 onValueChange={(value) =>
@@ -329,13 +334,13 @@ export default function Tours() {
                   <SelectValue placeholder="Select budget range" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="under-20k">Under NPR 20,000</SelectItem>
-                  <SelectItem value="20k-50k">NPR 20,000 - 50,000</SelectItem>
-                  <SelectItem value="50k-100k">NPR 50,000 - 100,000</SelectItem>
+                  <SelectItem value="under-20k">Under Rs 20,000</SelectItem>
+                  <SelectItem value="20k-50k">Rs 20,000 - 50,000</SelectItem>
+                  <SelectItem value="50k-100k">Rs 50,000 - 100,000</SelectItem>
                   <SelectItem value="100k-200k">
-                    NPR 100,000 - 200,000
+                    Rs 100,000 - 200,000
                   </SelectItem>
-                  <SelectItem value="200k+">NPR 200,000+</SelectItem>
+                  <SelectItem value="200k+">Rs 200,000+</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -378,7 +383,7 @@ export default function Tours() {
                         </div>
                       </Label>
                       <span className="text-sm font-medium text-kanxa-blue">
-                        NPR {vehicle.price.toLocaleString()}/day
+                        Rs {vehicle.price.toLocaleString()}/day
                       </span>
                     </div>
                   ))}
@@ -621,7 +626,7 @@ export default function Tours() {
                       <div>
                         <p className="text-sm text-gray-600">Starting from</p>
                         <p className="text-lg font-bold text-kanxa-green">
-                          NPR {destination.basePrice.toLocaleString()}
+                          Rs {destination.basePrice.toLocaleString()}
                         </p>
                       </div>
                       <Dialog>

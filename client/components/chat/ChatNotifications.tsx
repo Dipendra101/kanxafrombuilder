@@ -72,7 +72,7 @@ export default function ChatNotifications() {
         priority: "medium" as const,
       },
     ];
-    
+
     // This would normally come from your notification service
   }, []);
 
@@ -190,7 +190,8 @@ export default function ChatNotifications() {
 
       <DropdownMenuContent
         align="end"
-        className="w-80 max-h-96 overflow-hidden p-0"
+        className="w-80 max-h-96 overflow-hidden p-0 z-50"
+        sideOffset={8}
       >
         <Tabs defaultValue="notifications" className="w-full">
           <div className="px-4 py-3 border-b">
@@ -200,8 +201,10 @@ export default function ChatNotifications() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={toggleDoNotDisturb}
-                  className="p-1"
+                  onClick={() => {
+                    toggleDoNotDisturb();
+                  }}
+                  className="p-1 hover:bg-gray-100"
                 >
                   {settings.doNotDisturb ? (
                     <Moon className="w-4 h-4 text-purple-600" />
@@ -213,8 +216,10 @@ export default function ChatNotifications() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={clearAll}
-                    className="text-xs"
+                    onClick={() => {
+                      clearAll();
+                    }}
+                    className="text-xs hover:bg-gray-100"
                   >
                     Clear all
                   </Button>
@@ -223,7 +228,8 @@ export default function ChatNotifications() {
             </div>
 
             <div className="text-xs text-gray-500 mb-2">
-              All your notifications from bookings, orders, chat messages, and system updates
+              All your notifications from bookings, orders, chat messages, and
+              system updates
             </div>
 
             {/* Tabs for different notification types */}
@@ -260,10 +266,14 @@ export default function ChatNotifications() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-900">Booking Confirmed</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        Booking Confirmed
+                      </p>
                       <span className="text-xs text-gray-500">5m</span>
                     </div>
-                    <p className="text-sm text-gray-700 mt-1">Your bus seat has been reserved for Lamjung → Kathmandu</p>
+                    <p className="text-sm text-gray-700 mt-1">
+                      Your bus seat has been reserved for Lamjung → Kathmandu
+                    </p>
                   </div>
                 </div>
 
@@ -275,10 +285,14 @@ export default function ChatNotifications() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-700">Payment Received</p>
+                      <p className="text-sm font-medium text-gray-700">
+                        Payment Received
+                      </p>
                       <span className="text-xs text-gray-500">1h</span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">Tour request payment processed successfully</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Tour request payment processed successfully
+                    </p>
                   </div>
                 </div>
               </div>
@@ -318,13 +332,16 @@ export default function ChatNotifications() {
             )}
           </TabsContent>
 
-          <TabsContent
-            value="system"
-            className="max-h-80 overflow-y-auto p-0"
-          >
+          <TabsContent value="system" className="max-h-80 overflow-y-auto p-0">
             <div className="space-y-1 p-2">
               {/* Sample system notifications */}
-              <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-blue hover:bg-blue-100 cursor-pointer">
+              <div
+                className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-blue hover:bg-blue-100 cursor-pointer transition-colors"
+                onClick={() => {
+                  window.location.href = "/bookings";
+                  setIsOpen(false);
+                }}
+              >
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-kanxa-blue rounded-full flex items-center justify-center">
                     <Calendar className="w-4 h-4 text-white" />
@@ -332,14 +349,24 @@ export default function ChatNotifications() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-900">Booking Confirmed</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Booking Confirmed
+                    </p>
                     <span className="text-xs text-gray-500">2h</span>
                   </div>
-                  <p className="text-sm text-gray-700 mt-1">Your bus seat to Kathmandu has been reserved</p>
+                  <p className="text-sm text-gray-700 mt-1">
+                    Your bus seat to Kathmandu has been reserved
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-green hover:bg-green-100 cursor-pointer">
+              <div
+                className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-green hover:bg-green-100 cursor-pointer transition-colors"
+                onClick={() => {
+                  window.location.href = "/profile";
+                  setIsOpen(false);
+                }}
+              >
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-kanxa-green rounded-full flex items-center justify-center">
                     <CreditCard className="w-4 h-4 text-white" />
@@ -347,14 +374,24 @@ export default function ChatNotifications() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-900">Payment Received</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Payment Received
+                    </p>
                     <span className="text-xs text-gray-500">1d</span>
                   </div>
-                  <p className="text-sm text-gray-700 mt-1">Tour request payment processed successfully</p>
+                  <p className="text-sm text-gray-700 mt-1">
+                    Tour request payment processed successfully
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-orange hover:bg-orange-100 cursor-pointer">
+              <div
+                className="flex items-start space-x-3 p-3 rounded-lg bg-kanxa-light-orange hover:bg-orange-100 cursor-pointer transition-colors"
+                onClick={() => {
+                  window.location.href = "/garage";
+                  setIsOpen(false);
+                }}
+              >
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-kanxa-orange rounded-full flex items-center justify-center">
                     <Wrench className="w-4 h-4 text-white" />
@@ -362,10 +399,14 @@ export default function ChatNotifications() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-900">Service Complete</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Service Complete
+                    </p>
                     <span className="text-xs text-gray-500">2d</span>
                   </div>
-                  <p className="text-sm text-gray-700 mt-1">Your tractor maintenance has been completed</p>
+                  <p className="text-sm text-gray-700 mt-1">
+                    Your tractor maintenance has been completed
+                  </p>
                 </div>
               </div>
             </div>
@@ -472,7 +513,10 @@ export default function ChatNotifications() {
                 variant="ghost"
                 size="sm"
                 className="w-full text-xs"
-                onClick={() => (window.location.href = "/chat")}
+                onClick={() => {
+                  window.location.href = "/chat";
+                  setIsOpen(false);
+                }}
               >
                 Open Chat Center
               </Button>

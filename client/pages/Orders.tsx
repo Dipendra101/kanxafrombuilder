@@ -31,6 +31,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -43,8 +44,8 @@ export default function Orders() {
   const { isGuest, isAuthenticated } = useAuth();
   const [orderFilter, setOrderFilter] = useState("all");
 
-  // Show guest restriction if user is in guest mode
-  if (isGuest || !isAuthenticated) {
+  // Show guest restriction if user is not authenticated
+  if (!isAuthenticated) {
     return (
       <GuestRestriction
         action="view your orders"
@@ -196,6 +197,10 @@ export default function Orders() {
           <Package className="h-6 w-6 text-kanxa-orange" />
           Order Details - {order.id}
         </DialogTitle>
+        <DialogDescription>
+          View complete order information including items, pricing, and delivery
+          details
+        </DialogDescription>
       </DialogHeader>
 
       <div className="space-y-6">
@@ -217,7 +222,7 @@ export default function Orders() {
           <div>
             <p className="text-sm font-medium text-gray-600">Total Amount</p>
             <p className="font-semibold text-kanxa-orange">
-              NPR {order.total.toLocaleString()}
+              Rs {order.total.toLocaleString()}
             </p>
           </div>
           <div>
@@ -240,13 +245,13 @@ export default function Orders() {
                 <div className="flex-1">
                   <h4 className="font-medium text-kanxa-navy">{item.name}</h4>
                   <p className="text-sm text-gray-600">
-                    {item.quantity} {item.unit} × NPR{" "}
+                    {item.quantity} {item.unit} × Rs{" "}
                     {item.price.toLocaleString()}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-kanxa-orange">
-                    NPR {(item.quantity * item.price).toLocaleString()}
+                    Rs {(item.quantity * item.price).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -365,7 +370,7 @@ export default function Orders() {
             <Card className="text-center">
               <CardContent className="p-6">
                 <div className="text-3xl font-bold text-kanxa-navy mb-2">
-                  NPR{" "}
+                  Rs{" "}
                   {orders.reduce((sum, o) => sum + o.total, 0).toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-600">Total Value</div>
@@ -425,7 +430,7 @@ export default function Orders() {
                         </span>
                       </Badge>
                       <p className="text-lg font-bold text-kanxa-orange mt-1">
-                        NPR {order.total.toLocaleString()}
+                        Rs {order.total.toLocaleString()}
                       </p>
                     </div>
                   </div>

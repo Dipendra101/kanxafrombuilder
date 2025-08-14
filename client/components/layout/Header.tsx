@@ -174,10 +174,6 @@ export default function Header() {
         {/* Right side actions */}
         <div className="flex items-center space-x-2 sm:space-x-4">
           <Button variant="ghost" size="icon" className="hidden sm:flex">
-            <Search className="h-4 w-4" />
-          </Button>
-
-          <Button variant="ghost" size="icon" className="hidden sm:flex">
             <Phone className="h-4 w-4" />
           </Button>
 
@@ -200,13 +196,13 @@ export default function Header() {
           <div className="hidden md:flex items-center space-x-2">
             {isAuthenticated ? (
               <>
-                {user?.role === 'admin' && (
+                {user?.role === "admin" && (
                   <Button variant="ghost" asChild>
                     <Link to="/admin">Admin Panel</Link>
                   </Button>
                 )}
                 <span className="text-sm text-kanxa-gray">
-                  Welcome, {user?.name?.split(' ')[0]}!
+                  Welcome, {user?.name?.split(" ")[0]}!
                 </span>
                 <Button variant="ghost" onClick={logout}>
                   Sign Out
@@ -214,7 +210,10 @@ export default function Header() {
               </>
             ) : isGuest ? (
               <>
-                <Badge variant="outline" className="text-orange-600 border-orange-300">
+                <Badge
+                  variant="outline"
+                  className="text-orange-600 border-orange-300"
+                >
                   Guest Mode
                 </Badge>
                 <Button variant="ghost" asChild>
@@ -267,7 +266,9 @@ export default function Header() {
               ) : isGuest ? (
                 <>
                   <DropdownMenuItem disabled>
-                    <Badge variant="outline" className="text-orange-600">Guest Mode</Badge>
+                    <Badge variant="outline" className="text-orange-600">
+                      Guest Mode
+                    </Badge>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/login">Sign In</Link>
@@ -275,7 +276,9 @@ export default function Header() {
                   <DropdownMenuItem asChild>
                     <Link to="/signup">Create Account</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={logout}>Exit Guest Mode</DropdownMenuItem>
+                  <DropdownMenuItem onClick={logout}>
+                    Exit Guest Mode
+                  </DropdownMenuItem>
                 </>
               ) : (
                 <>

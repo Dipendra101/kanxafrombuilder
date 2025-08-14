@@ -163,7 +163,7 @@ export function EnhancedToast({
     if (metadata.orderId) items.push(`Order: ${metadata.orderId}`);
     if (metadata.bookingId) items.push(`Booking: ${metadata.bookingId}`);
     if (metadata.amount)
-      items.push(`Amount: NPR ${metadata.amount.toLocaleString()}`);
+      items.push(`Amount: Rs ${metadata.amount.toLocaleString()}`);
     if (metadata.timestamp) {
       items.push(`Time: ${metadata.timestamp.toLocaleTimeString()}`);
     }
@@ -342,7 +342,7 @@ export function useNotifications() {
 
   // Category-specific notifications
   const showBookingSuccess = (bookingId: string, details?: string) => {
-    return showSuccess("Booking Confirmed! 🎉", {
+    return showSuccess("Booking Confirmed! ��", {
       description: details || "Your booking has been successfully confirmed.",
       category: "transportation",
       metadata: {
@@ -374,7 +374,7 @@ export function useNotifications() {
 
   const showPaymentSuccess = (amount: number, method: string) => {
     return showSuccess("Payment Successful! 💳", {
-      description: `Payment of NPR ${amount.toLocaleString()} via ${method} completed.`,
+      description: `Payment of Rs ${amount.toLocaleString()} via ${method} completed.`,
       category: "account",
       metadata: {
         amount,

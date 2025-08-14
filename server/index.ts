@@ -8,6 +8,7 @@ import userRoutes from "./routes/users";
 import serviceRoutes from "./routes/services";
 import bookingRoutes from "./routes/bookings";
 import adminRoutes from "./routes/admin";
+import paymentRoutes from "./routes/payments";
 import connectDB from "./config/database";
 
 export function createServer() {
@@ -30,11 +31,17 @@ export function createServer() {
   // Middleware
   app.use(
     cors({
-      origin: [
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://localhost:8080",
-      ],
+      origin:
+        process.env.NODE_ENV === "production"
+          ? [
+              process.env.BASE_URL || "https://your-domain.com",
+              // Add your production domains here
+            ]
+          : [
+              "http://localhost:3000",
+              "http://localhost:5173",
+              "http://localhost:8080",
+            ],
       credentials: true,
     }),
   );
@@ -73,6 +80,7 @@ export function createServer() {
   app.use("/api/services", serviceRoutes);
   app.use("/api/bookings", bookingRoutes);
   app.use("/api/admin", adminRoutes);
+  app.use("/api/payments", paymentRoutes);
 
   // Admin routes
   app.get("/api/admin/dashboard", async (req, res) => {

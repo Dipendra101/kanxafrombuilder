@@ -15,7 +15,7 @@ const getMockUser = (userId: string) => ({
   isActive: true,
   createdAt: new Date(),
   updatedAt: new Date(),
-  toJSON: function() {
+  toJSON: function () {
     return {
       _id: this._id,
       name: this.name,
@@ -46,7 +46,7 @@ export const getProfile: RequestHandler = async (req, res) => {
       (() => {
         console.log("⚠️  Database unavailable, returning mock user profile");
         return getMockUser(req.user.userId);
-      })()
+      })(),
     );
 
     if (!user) {
@@ -99,7 +99,11 @@ export const updateProfile: RequestHandler = async (req, res) => {
     });
 
     // Validate phone if being updated
-    if (updates.phone && !/^\+977[0-9]{10}$/.test(updates.phone) && !/^[0-9]{10}$/.test(updates.phone)) {
+    if (
+      updates.phone &&
+      !/^\+977[0-9]{10}$/.test(updates.phone) &&
+      !/^[0-9]{10}$/.test(updates.phone)
+    ) {
       return res.status(400).json({
         success: false,
         message: "Please provide a valid phone number",
@@ -131,18 +135,30 @@ export const updateProfile: RequestHandler = async (req, res) => {
           { new: true, runValidators: true },
         );
 
+        if (!updatedUser) {
+          throw new Error("User not found or update failed");
+        }
+
+        console.log(`✅ Profile updated successfully for user ${userId}`);
         return updatedUser;
       },
-      // Fallback: Return updated mock user
+      // Fallback: Return updated mock user with proper structure
       (() => {
-        console.log("⚠️  Database unavailable, returning mock updated profile");
-        const mockUser = getMockUser(userId);
-        // Apply updates to mock user
-        Object.keys(updates).forEach(key => {
-          (mockUser as any)[key] = updates[key];
-        });
+        console.log(
+          "⚠️  Database unavailable, simulating profile update in demo mode",
+        );
+        const mockUser = {
+          ...getMockUser(userId),
+          ...updates,
+          updatedAt: new Date(),
+        };
+
+        // Simulate successful update for demo
+        console.log(
+          `🔄 Demo mode: Profile update simulated for ${mockUser.name}`,
+        );
         return mockUser;
-      })()
+      })(),
     );
 
     if (!user) {
@@ -152,11 +168,32 @@ export const updateProfile: RequestHandler = async (req, res) => {
       });
     }
 
+    // Ensure user object exists
+    if (!user) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update profile - user object is null",
+      });
+    }
+
+    const responseUser = user.toJSON ? user.toJSON() : user;
+    const isDemoMode = !isDBConnected();
+
+    console.log(`📤 Sending profile update response:`, {
+      success: true,
+      demo: isDemoMode,
+      userId: responseUser._id,
+      updatedFields: Object.keys(updates),
+    });
+
     res.json({
       success: true,
-      message: "Profile updated successfully" + (!isDBConnected() ? " (demo mode)" : ""),
-      user: user.toJSON ? user.toJSON() : user,
-      demo: !isDBConnected(),
+      message:
+        "Profile updated successfully" + (isDemoMode ? " (demo mode)" : ""),
+      user: responseUser,
+      demo: isDemoMode,
+      updatedFields: Object.keys(updates),
+      timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
     console.error("Update profile error:", error);
@@ -194,28 +231,48 @@ export const deactivateAccount: RequestHandler = async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    const user = await User.findByIdAndUpdate(
-      userId,
+    const user = await withDB(
+      async () => {
+        const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          {
+            isActive: false,
+            lastActivity: new Date(),
+          },
+          { new: true },
+        );
+
+        if (!updatedUser) {
+          throw new Error("User not found");
+        }
+
+        return updatedUser;
+      },
+      // Fallback for demo mode
       {
+        _id: userId,
         isActive: false,
         lastActivity: new Date(),
       },
-      { new: true },
     );
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
 
     res.json({
       success: true,
-      message: "Account deactivated successfully",
+      message:
+        "Account deactivated successfully" +
+        (!isDBConnected() ? " (demo mode)" : ""),
+      demo: !isDBConnected(),
     });
   } catch (error: any) {
     console.error("Deactivate account error:", error);
+
+    if (error.message === "User not found") {
+      return res.status(404).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: "Failed to deactivate account",
@@ -238,47 +295,88 @@ export const getAllUsers: RequestHandler = async (req, res) => {
       sortOrder = "desc",
     } = req.query;
 
-    const query: any = {};
+    const result = await withDB(
+      async () => {
+        const query: any = {};
 
-    // Search by name or email
-    if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-      ];
-    }
+        // Search by name or email
+        if (search) {
+          query.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { email: { $regex: search, $options: "i" } },
+          ];
+        }
 
-    // Filter by role
-    if (role) {
-      query.role = role;
-    }
+        // Filter by role
+        if (role) {
+          query.role = role;
+        }
 
-    // Filter by active status
-    if (isActive !== "") {
-      query.isActive = isActive === "true";
-    }
+        // Filter by active status
+        if (isActive !== "") {
+          query.isActive = isActive === "true";
+        }
 
-    const sort: any = {};
-    sort[sortBy as string] = sortOrder === "asc" ? 1 : -1;
+        const sort: any = {};
+        sort[sortBy as string] = sortOrder === "asc" ? 1 : -1;
 
-    const users = await User.find(query)
-      .sort(sort)
-      .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit))
-      .select("-password -verification")
-      .exec();
+        const users = await User.find(query)
+          .sort(sort)
+          .limit(Number(limit))
+          .skip((Number(page) - 1) * Number(limit))
+          .select("-password -verification")
+          .exec();
 
-    const total = await User.countDocuments(query);
+        const total = await User.countDocuments(query);
+
+        return { users, total };
+      },
+      // Fallback mock data
+      {
+        users: [
+          {
+            _id: "mock_user_1",
+            name: "Ram Kumar Sharma",
+            email: "ram@example.com",
+            phone: "+977-9841234567",
+            role: "user",
+            isActive: true,
+            createdAt: new Date(),
+            lastLogin: new Date(),
+          },
+          {
+            _id: "mock_user_2",
+            name: "Sita Devi Thapa",
+            email: "sita@example.com",
+            phone: "+977-9841234568",
+            role: "user",
+            isActive: true,
+            createdAt: new Date(),
+          },
+          {
+            _id: "mock_user_3",
+            name: "Hari Bahadur Gurung",
+            email: "hari@example.com",
+            phone: "+977-9841234569",
+            role: "admin",
+            isActive: true,
+            createdAt: new Date(),
+          },
+        ],
+        total: 3,
+      },
+    );
 
     res.json({
       success: true,
-      users,
+      users: result.users,
       pagination: {
         page: Number(page),
         limit: Number(limit),
-        total,
-        pages: Math.ceil(total / Number(limit)),
+        total: result.total,
+        pages: Math.ceil(result.total / Number(limit)),
       },
+      demo: !isDBConnected(),
     });
   } catch (error: any) {
     console.error("Get all users error:", error);
@@ -300,12 +398,28 @@ export const getUserById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const user = await User.findById(id)
-      .populate({
-        path: "loginHistory",
-        options: { sort: { timestamp: -1 }, limit: 10 },
-      })
-      .select("-password");
+    const user = await withDB(
+      async () => {
+        const foundUser = await User.findById(id)
+          .populate({
+            path: "loginHistory",
+            options: { sort: { timestamp: -1 }, limit: 10 },
+          })
+          .select("-password");
+        return foundUser;
+      },
+      // Fallback mock user
+      {
+        _id: id,
+        name: "Mock User",
+        email: "mock@example.com",
+        phone: "+977-9841234567",
+        role: "user",
+        isActive: true,
+        createdAt: new Date(),
+        loginHistory: [],
+      },
+    );
 
     if (!user) {
       return res.status(404).json({
@@ -316,7 +430,8 @@ export const getUserById: RequestHandler = async (req, res) => {
 
     res.json({
       success: true,
-      user: user.toJSON(),
+      user: user.toJSON ? user.toJSON() : user,
+      demo: !isDBConnected(),
     });
   } catch (error: any) {
     console.error("Get user by ID error:", error);
@@ -373,48 +488,60 @@ export const updateUserById: RequestHandler = async (req, res) => {
       });
     }
 
-    // Check for duplicate email/phone
-    if (updates.email || updates.phone) {
-      const duplicateQuery: any = { _id: { $ne: id } };
-      if (updates.email) duplicateQuery.email = updates.email;
-      if (updates.phone) duplicateQuery.phone = updates.phone;
+    const user = await withDB(
+      async () => {
+        // Check for duplicate email/phone
+        if (updates.email || updates.phone) {
+          const existingUser = await User.findOne({
+            $or: [
+              updates.email ? { email: updates.email, _id: { $ne: id } } : {},
+              updates.phone ? { phone: updates.phone, _id: { $ne: id } } : {},
+            ].filter((obj) => Object.keys(obj).length > 0),
+          });
 
-      const existingUser = await User.findOne({
-        $or: [
-          updates.email ? { email: updates.email, _id: { $ne: id } } : {},
-          updates.phone ? { phone: updates.phone, _id: { $ne: id } } : {},
-        ].filter((obj) => Object.keys(obj).length > 0),
-      });
+          if (existingUser) {
+            const field =
+              existingUser.email === updates.email ? "email" : "phone";
+            throw new Error(`User already exists with this ${field}`);
+          }
+        }
 
-      if (existingUser) {
-        const field = existingUser.email === updates.email ? "email" : "phone";
-        return res.status(409).json({
-          success: false,
-          message: `User already exists with this ${field}`,
-        });
-      }
-    }
+        const updatedUser = await User.findByIdAndUpdate(
+          id,
+          { $set: updates },
+          { new: true, runValidators: true },
+        ).select("-password");
 
-    const user = await User.findByIdAndUpdate(
-      id,
-      { $set: updates },
-      { new: true, runValidators: true },
-    ).select("-password");
+        if (!updatedUser) {
+          throw new Error("User not found");
+        }
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+        return updatedUser;
+      },
+      // Fallback mock user
+      {
+        _id: id,
+        ...updates,
+        updatedAt: new Date(),
+      },
+    );
 
     res.json({
       success: true,
-      message: "User updated successfully",
-      user: user.toJSON(),
+      message:
+        "User updated successfully" + (!isDBConnected() ? " (demo mode)" : ""),
+      user: user.toJSON ? user.toJSON() : user,
+      demo: !isDBConnected(),
     });
   } catch (error: any) {
     console.error("Update user by ID error:", error);
+
+    if (error.message.includes("already exists")) {
+      return res.status(409).json({
+        success: false,
+        message: error.message,
+      });
+    }
 
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
@@ -446,21 +573,34 @@ export const deleteUser: RequestHandler = async (req, res) => {
       });
     }
 
-    const user = await User.findByIdAndDelete(id);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+    const user = await withDB(
+      async () => {
+        const deletedUser = await User.findByIdAndDelete(id);
+        if (!deletedUser) {
+          throw new Error("User not found");
+        }
+        return deletedUser;
+      },
+      // Fallback for demo mode
+      { deleted: true },
+    );
 
     res.json({
       success: true,
-      message: "User deleted successfully",
+      message:
+        "User deleted successfully" + (!isDBConnected() ? " (demo mode)" : ""),
+      demo: !isDBConnected(),
     });
   } catch (error: any) {
     console.error("Delete user error:", error);
+
+    if (error.message === "User not found") {
+      return res.status(404).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: "Failed to delete user",
@@ -473,47 +613,67 @@ export const deleteUser: RequestHandler = async (req, res) => {
 // @access  Private/Admin
 export const getUserStats: RequestHandler = async (req, res) => {
   try {
-    const stats = await User.aggregate([
-      {
-        $facet: {
-          totalUsers: [{ $count: "count" }],
-          activeUsers: [{ $match: { isActive: true } }, { $count: "count" }],
-          usersByRole: [{ $group: { _id: "$role", count: { $sum: 1 } } }],
-          recentUsers: [
-            {
-              $match: {
-                createdAt: {
-                  $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+    const stats = await withDB(
+      async () => {
+        const result = await User.aggregate([
+          {
+            $facet: {
+              totalUsers: [{ $count: "count" }],
+              activeUsers: [
+                { $match: { isActive: true } },
+                { $count: "count" },
+              ],
+              usersByRole: [{ $group: { _id: "$role", count: { $sum: 1 } } }],
+              recentUsers: [
+                {
+                  $match: {
+                    createdAt: {
+                      $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+                    },
+                  },
                 },
-              },
+                { $count: "count" },
+              ],
+              verifiedUsers: [
+                { $match: { isEmailVerified: true } },
+                { $count: "count" },
+              ],
             },
-            { $count: "count" },
-          ],
-          verifiedUsers: [
-            { $match: { isEmailVerified: true } },
-            { $count: "count" },
-          ],
+          },
+        ]);
+
+        return {
+          totalUsers: result[0].totalUsers[0]?.count || 0,
+          activeUsers: result[0].activeUsers[0]?.count || 0,
+          inactiveUsers:
+            (result[0].totalUsers[0]?.count || 0) -
+            (result[0].activeUsers[0]?.count || 0),
+          recentUsers: result[0].recentUsers[0]?.count || 0,
+          verifiedUsers: result[0].verifiedUsers[0]?.count || 0,
+          usersByRole: result[0].usersByRole.reduce((acc: any, item: any) => {
+            acc[item._id] = item.count;
+            return acc;
+          }, {}),
+        };
+      },
+      // Fallback mock stats
+      {
+        totalUsers: 1247,
+        activeUsers: 1156,
+        inactiveUsers: 91,
+        recentUsers: 45,
+        verifiedUsers: 892,
+        usersByRole: {
+          user: 1200,
+          admin: 47,
         },
       },
-    ]);
-
-    const result = {
-      totalUsers: stats[0].totalUsers[0]?.count || 0,
-      activeUsers: stats[0].activeUsers[0]?.count || 0,
-      inactiveUsers:
-        (stats[0].totalUsers[0]?.count || 0) -
-        (stats[0].activeUsers[0]?.count || 0),
-      recentUsers: stats[0].recentUsers[0]?.count || 0,
-      verifiedUsers: stats[0].verifiedUsers[0]?.count || 0,
-      usersByRole: stats[0].usersByRole.reduce((acc: any, item: any) => {
-        acc[item._id] = item.count;
-        return acc;
-      }, {}),
-    };
+    );
 
     res.json({
       success: true,
-      stats: result,
+      stats,
+      demo: !isDBConnected(),
     });
   } catch (error: any) {
     console.error("Get user stats error:", error);

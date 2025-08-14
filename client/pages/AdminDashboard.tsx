@@ -15,6 +15,7 @@ import {
   Download,
   Bell,
   Settings,
+  RefreshCw,
   BarChart3,
   PieChart,
   Activity,
@@ -43,6 +44,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -73,7 +75,9 @@ import {
 import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { adminAPI, servicesAPI, bookingsAPI, userAPI } from "@/services/api";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
+import ExportService from "@/services/exportService";
+import PremiumAnalytics from "@/components/analytics/PremiumAnalytics";
 
 interface DashboardStats {
   totalUsers: number;
@@ -136,7 +140,7 @@ interface Service {
 }
 
 export default function AdminDashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isGuest } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -157,10 +161,10 @@ export default function AdminDashboard() {
   const [allServices, setAllServices] = useState<Service[]>([]);
   const [allBookings, setAllBookings] = useState<RecentBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Check admin access - allow demo mode for UI preview
-  const isDemoMode = !isAuthenticated || !user;
-  const isAdmin = user?.role === "admin";
+  // Production-ready admin access check
+  const isAdmin = isAuthenticated && !isGuest && user?.role === "admin";
   const [activeTab, setActiveTab] = useState("overview");
 
   // Modal states
@@ -188,236 +192,64 @@ export default function AdminDashboard() {
     isActive: true,
   });
 
-  // Load dashboard data
+  // Search and filter states
+  const [userSearch, setUserSearch] = useState("");
+  const [serviceSearch, setServiceSearch] = useState("");
+  const [bookingSearch, setBookingSearch] = useState("");
+
+  // Load dashboard data with production-ready error handling
   useEffect(() => {
     const loadDashboardData = async () => {
+      if (!isAdmin) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
+        setError(null);
 
-        // In demo mode, skip API calls and use mock data
-        if (isDemoMode) {
-          console.log("Loading dashboard in demo mode");
+        console.log("Loading admin dashboard data...");
 
-          // Use demo data directly without API calls
-          setStats({
-            totalUsers: 125,
-            totalServices: 25,
-            totalBookings: 340,
-            totalRevenue: 125000,
-            recentUsers: 8,
-            activeServices: 22,
-            pendingBookings: 12,
-            monthlyRevenue: 25000,
-          });
-
-          // Set demo users
-          const demoUsers = [
-            {
-              _id: "demo1",
-              name: "John Doe",
-              email: "john@example.com",
-              phone: "+977-980-123456",
-              role: "user",
-              isActive: true,
-              createdAt: new Date().toISOString(),
-            },
-            {
-              _id: "demo2",
-              name: "Jane Smith",
-              email: "jane@example.com",
-              phone: "+977-981-234567",
-              role: "user",
-              isActive: true,
-              createdAt: new Date().toISOString(),
-            },
-          ];
-          setAllUsers(demoUsers);
-          setRecentUsers(demoUsers);
-
-          // Set demo services
-          const demoServices = [
-            {
-              _id: "service1",
-              name: "Bus Transportation",
-              type: "transportation",
-              category: "bus",
-              isActive: true,
-              isFeatured: true,
-              pricing: { basePrice: 500, currency: "NPR" },
-            },
-            {
-              _id: "service2",
-              name: "Cargo Service",
-              type: "transportation",
-              category: "cargo",
-              isActive: true,
-              isFeatured: false,
-              pricing: { basePrice: 1000, currency: "NPR" },
-            },
-          ];
-          setAllServices(demoServices);
-
-          // Set demo bookings
-          const demoBookings = [
-            {
-              _id: "booking1",
-              user: demoUsers[0],
-              service: demoServices[0],
-              totalAmount: 1500,
-              status: "confirmed",
-              createdAt: new Date().toISOString(),
-              bookingDate: new Date().toISOString(),
-            },
-          ];
-          setRecentBookings(demoBookings);
-          setAllBookings(demoBookings);
-
-          setIsLoading(false);
-          return;
-        }
-
-        // For authenticated admin users, try API calls with better error handling
-        console.log("Loading dashboard with API calls");
         const [
           dashboardResponse,
           usersResponse,
           servicesResponse,
           bookingsResponse,
-        ] = await Promise.allSettled([
-          adminAPI.getDashboard().catch(err => {
-            console.warn("Dashboard API failed:", err.message);
-            return { data: null };
-          }),
-          userAPI.getAllUsers().catch(err => {
-            console.warn("Users API failed:", err.message);
-            return { users: [] };
-          }),
-          servicesAPI.getAllServices({ limit: 100 }).catch(err => {
-            console.warn("Services API failed:", err.message);
-            return { services: [] };
-          }),
-          bookingsAPI.getAllBookings({ limit: 100 }).catch(err => {
-            console.warn("Bookings API failed:", err.message);
-            return { bookings: [] };
-          }),
+        ] = await Promise.all([
+          adminAPI.getDashboard(),
+          userAPI.getAllUsers(),
+          servicesAPI.getAllServices({ limit: 100 }),
+          bookingsAPI.getAllBookings({ limit: 100 }),
         ]);
 
-        // Handle dashboard stats
-        if (dashboardResponse.status === "fulfilled") {
-          setStats(dashboardResponse.value.data);
-        } else {
-          // Fallback stats if API fails
-          setStats({
-            totalUsers: 125,
-            totalServices: 25,
-            totalBookings: 340,
-            totalRevenue: 125000,
-            recentUsers: 8,
-            activeServices: 22,
-            pendingBookings: 12,
-            monthlyRevenue: 25000,
-          });
-        }
+        // Set stats
+        setStats(dashboardResponse.data);
 
-        // Handle users data
-        if (usersResponse.status === "fulfilled") {
-          const users = usersResponse.value.users || [];
-          setAllUsers(users);
-          setRecentUsers(users.slice(0, 5));
-        } else {
-          // Fallback users
-          const mockUsers = [
-            {
-              _id: "1",
-              name: "Ram Kumar Sharma",
-              email: "ram@example.com",
-              phone: "9841234567",
-              role: "user",
-              isActive: true,
-              createdAt: new Date().toISOString(),
-              lastLogin: new Date().toISOString(),
-            },
-            {
-              _id: "2",
-              name: "Sita Devi Thapa",
-              email: "sita@example.com",
-              phone: "9841234568",
-              role: "user",
-              isActive: true,
-              createdAt: new Date().toISOString(),
-            },
-          ];
-          setAllUsers(mockUsers);
-          setRecentUsers(mockUsers);
-        }
+        // Set users
+        const users = usersResponse.users || [];
+        setAllUsers(users);
+        setRecentUsers(users.slice(0, 5));
 
-        // Handle services data
-        if (servicesResponse.status === "fulfilled") {
-          const services = servicesResponse.value.services || [];
-          setAllServices(services);
-        } else {
-          // Fallback services
-          const mockServices = [
-            {
-              _id: "1",
-              name: "Kathmandu to Pokhara Bus",
-              description: "Comfortable AC bus service",
-              type: "bus",
-              category: "Transportation",
-              pricing: { basePrice: 800, currency: "NPR" },
-              isActive: true,
-              isFeatured: true,
-              rating: { average: 4.5, count: 120 },
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            },
-          ];
-          setAllServices(mockServices);
-        }
+        // Set services
+        const services = servicesResponse.services || [];
+        setAllServices(services);
 
-        // Handle bookings data
-        if (bookingsResponse.status === "fulfilled") {
-          const bookings = bookingsResponse.value.bookings || [];
-          setAllBookings(bookings);
-          setRecentBookings(bookings.slice(0, 5));
-        } else {
-          // Fallback bookings
-          const mockBookings = [
-            {
-              _id: "1",
-              user: { _id: "1", name: "Ram Kumar", email: "ram@example.com" },
-              service: { _id: "1", name: "Kathmandu Bus", type: "bus" },
-              totalAmount: 800,
-              status: "confirmed",
-              createdAt: new Date().toISOString(),
-              bookingDate: new Date().toISOString(),
-            },
-          ];
-          setAllBookings(mockBookings);
-          setRecentBookings(mockBookings);
-        }
-      } catch (error) {
+        // Set bookings
+        const bookings = bookingsResponse.bookings || [];
+        setAllBookings(bookings);
+        setRecentBookings(bookings.slice(0, 5));
+
+        console.log("Dashboard data loaded successfully");
+      } catch (error: any) {
         console.error("Failed to load dashboard data:", error);
+        setError(error.message || "Failed to load dashboard data");
 
-        // Only show error toast for authenticated users, not in demo mode
-        if (!isDemoMode) {
-          toast({
-            title: "Error",
-            description: "Failed to load dashboard data. Using demo data.",
-            variant: "destructive",
-          });
-        }
-
-        // Fallback to demo data
-        setStats({
-          totalUsers: 125,
-          totalServices: 25,
-          totalBookings: 340,
-          totalRevenue: 125000,
-          recentUsers: 8,
-          activeServices: 22,
-          pendingBookings: 12,
-          monthlyRevenue: 25000,
+        toast({
+          title: "Error",
+          description:
+            "Failed to load dashboard data. Please try refreshing the page.",
+          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
@@ -425,28 +257,28 @@ export default function AdminDashboard() {
     };
 
     loadDashboardData();
-  }, [toast, isDemoMode]);
+  }, [isAdmin, toast]);
 
+  // Redirect non-admin users
   useEffect(() => {
-    // Only redirect if user is authenticated but not admin (allow demo mode)
-    if (!isLoading && isAuthenticated && user && user.role !== "admin") {
-      toast({
-        title: "Access Denied",
-        description: "Admin privileges required to access this page.",
-        variant: "destructive",
-      });
+    if (
+      !isLoading &&
+      (!isAuthenticated || isGuest || !user || user.role !== "admin")
+    ) {
       navigate("/");
     }
-  }, [user, isAuthenticated, isLoading, navigate, toast]);
+  }, [user, isAuthenticated, isGuest, isLoading, navigate]);
 
   // Service management functions
   const handleServiceSubmit = async () => {
+    if (!isAdmin) return;
+
     try {
       const serviceData = {
         ...serviceForm,
         pricing: {
           basePrice: parseFloat(serviceForm.basePrice),
-          currency: "NPR",
+          currency: "₨",
         },
       };
 
@@ -496,7 +328,7 @@ export default function AdminDashboard() {
       description: service.description,
       type: service.type,
       category: service.category,
-      basePrice: service.pricing.basePrice.toString(),
+      basePrice: (service.pricing?.basePrice || 0).toString(),
       isActive: service.isActive,
       isFeatured: service.isFeatured,
     });
@@ -504,6 +336,8 @@ export default function AdminDashboard() {
   };
 
   const handleServiceDelete = async (serviceId: string) => {
+    if (!isAdmin) return;
+
     try {
       await servicesAPI.deleteService(serviceId);
       setAllServices((prev) => prev.filter((s) => s._id !== serviceId));
@@ -522,6 +356,8 @@ export default function AdminDashboard() {
 
   // User management functions
   const handleUserSubmit = async () => {
+    if (!isAdmin) return;
+
     try {
       if (editingUser) {
         await userAPI.updateUser(editingUser._id, userForm);
@@ -575,6 +411,8 @@ export default function AdminDashboard() {
   };
 
   const handleUserDelete = async (userId: string) => {
+    if (!isAdmin) return;
+
     try {
       await userAPI.deleteUser(userId);
       setAllUsers((prev) => prev.filter((u) => u._id !== userId));
@@ -612,6 +450,29 @@ export default function AdminDashboard() {
     );
   };
 
+  // Filter functions
+  const filteredUsers = allUsers.filter(
+    (user) =>
+      user.name.toLowerCase().includes(userSearch.toLowerCase()) ||
+      user.email.toLowerCase().includes(userSearch.toLowerCase()),
+  );
+
+  const filteredServices = allServices.filter(
+    (service) =>
+      service.name.toLowerCase().includes(serviceSearch.toLowerCase()) ||
+      service.type.toLowerCase().includes(serviceSearch.toLowerCase()) ||
+      service.category.toLowerCase().includes(serviceSearch.toLowerCase()),
+  );
+
+  const filteredBookings = allBookings.filter(
+    (booking) =>
+      booking.user?.name.toLowerCase().includes(bookingSearch.toLowerCase()) ||
+      booking.service?.name
+        .toLowerCase()
+        .includes(bookingSearch.toLowerCase()) ||
+      booking._id.toLowerCase().includes(bookingSearch.toLowerCase()),
+  );
+
   const statCards = [
     {
       title: "Total Users",
@@ -642,7 +503,7 @@ export default function AdminDashboard() {
     },
     {
       title: "Total Revenue",
-      value: `NPR ${stats.totalRevenue.toLocaleString()}`,
+      value: `₨ ${stats.totalRevenue.toLocaleString()}`,
       change: "+15%",
       changeType: "positive" as const,
       icon: DollarSign,
@@ -651,7 +512,8 @@ export default function AdminDashboard() {
     },
   ];
 
-  if (!isAuthenticated || (user && user.role !== "admin")) {
+  // Access denied for non-admin users
+  if (!isAuthenticated || isGuest || !user || user.role !== "admin") {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
@@ -672,16 +534,6 @@ export default function AdminDashboard() {
                   Go Home
                 </Button>
               </Link>
-            </div>
-            <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-semibold text-blue-800 mb-2">
-                Demo Admin Access
-              </h3>
-              <p className="text-sm text-blue-600">
-                Email: admin@demo.com
-                <br />
-                Password: demo123
-              </p>
             </div>
           </div>
         </div>
@@ -704,31 +556,29 @@ export default function AdminDashboard() {
     );
   }
 
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-16 text-center">
+          <div className="max-w-md mx-auto">
+            <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-red-600 mb-4">
+              Error Loading Dashboard
+            </h1>
+            <p className="text-gray-600 mb-8">{error}</p>
+            <Button onClick={() => window.location.reload()}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Retry
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        {/* Demo Mode Banner */}
-        {isDemoMode && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">i</span>
-                </div>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-lg font-medium text-blue-800">
-                  Demo Mode - Admin Dashboard Preview
-                </h3>
-                <p className="text-blue-600 mt-1">
-                  You're viewing the admin dashboard in demo mode. Login with
-                  admin@demo.com / demo123 for full functionality.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
           <div>
@@ -736,15 +586,51 @@ export default function AdminDashboard() {
               Admin Dashboard
             </h1>
             <p className="text-gray-600">
-              Welcome{user?.name ? `, ${user.name}` : " to the admin panel"}!
-              Here's what's happening with Kanxa Safari.
+              Welcome, {user.name}! Here's what's happening with Kanxa Safari.
             </p>
           </div>
           <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-            <Button variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Export Data
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Data
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => ExportService.exportUsers(allUsers)}
+                  disabled={isLoading}
+                >
+                  Export Users ({allUsers.length})
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => ExportService.exportServices(allServices)}
+                  disabled={isLoading}
+                >
+                  Export Services ({allServices.length})
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => ExportService.exportBookings(allBookings)}
+                  disabled={isLoading}
+                >
+                  Export Bookings ({allBookings.length})
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() =>
+                    ExportService.exportFinancialReport({
+                      totalRevenue: stats.totalRevenue,
+                      monthlyRevenue: stats.monthlyRevenue,
+                      bookings: allBookings,
+                    })
+                  }
+                  disabled={isLoading}
+                >
+                  Financial Report
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="outline" size="sm">
               <Bell className="w-4 h-4 mr-2" />
               Notifications
@@ -803,12 +689,13 @@ export default function AdminDashboard() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="premium">Premium</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -829,30 +716,37 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {recentBookings.map((booking) => (
-                      <div
-                        key={booking._id}
-                        className="flex items-center justify-between p-4 border rounded-lg"
-                      >
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium">
-                            {booking.user.name}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {booking.service.name}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(booking.createdAt).toLocaleDateString()}
-                          </p>
+                    {recentBookings.length > 0 ? (
+                      recentBookings.map((booking) => (
+                        <div
+                          key={booking._id}
+                          className="flex items-center justify-between p-4 border rounded-lg"
+                        >
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium">
+                              {booking.user?.name || "User not available"}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {booking.service?.name || "Service not available"}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {new Date(booking.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="text-right space-y-1">
+                            <p className="text-sm font-medium">
+                              ₨ {(booking.totalAmount || 0).toLocaleString()}
+                            </p>
+                            {getStatusBadge(booking.status)}
+                          </div>
                         </div>
-                        <div className="text-right space-y-1">
-                          <p className="text-sm font-medium">
-                            NPR {booking.totalAmount.toLocaleString()}
-                          </p>
-                          {getStatusBadge(booking.status)}
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8">
+                        <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-500">No recent bookings</p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -872,34 +766,41 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {recentUsers.map((user) => (
-                      <div
-                        key={user._id}
-                        className="flex items-center justify-between p-4 border rounded-lg"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Users className="w-5 h-5 text-blue-600" />
+                    {recentUsers.length > 0 ? (
+                      recentUsers.map((user) => (
+                        <div
+                          key={user._id}
+                          className="flex items-center justify-between p-4 border rounded-lg"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                              <Users className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">{user.name}</p>
+                              <p className="text-sm text-gray-600">
+                                {user.email}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-sm font-medium">{user.name}</p>
-                            <p className="text-sm text-gray-600">
-                              {user.email}
+                          <div className="text-right">
+                            <Badge
+                              variant={user.isActive ? "default" : "secondary"}
+                            >
+                              {user.role}
+                            </Badge>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {new Date(user.createdAt).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <Badge
-                            variant={user.isActive ? "default" : "secondary"}
-                          >
-                            {user.role}
-                          </Badge>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {new Date(user.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8">
+                        <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-500">No recent users</p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -925,7 +826,12 @@ export default function AdminDashboard() {
                 <div className="flex items-center space-x-4 mb-4">
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input placeholder="Search users..." className="pl-10" />
+                    <Input
+                      placeholder="Search users..."
+                      className="pl-10"
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                    />
                   </div>
                   <Button variant="outline" size="sm">
                     <Filter className="w-4 h-4 mr-2" />
@@ -945,7 +851,7 @@ export default function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {allUsers.map((user) => (
+                    {filteredUsers.map((user) => (
                       <TableRow key={user._id}>
                         <TableCell>
                           <div>
@@ -1019,7 +925,8 @@ export default function AdminDashboard() {
                 <div>
                   <CardTitle>Service Management</CardTitle>
                   <CardDescription>
-                    Manage available services and their details
+                    Manage all services - buses, cargo, tours, materials, and
+                    more
                   </CardDescription>
                 </div>
                 <Button onClick={() => setIsServiceDialogOpen(true)}>
@@ -1031,7 +938,12 @@ export default function AdminDashboard() {
                 <div className="flex items-center space-x-4 mb-4">
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input placeholder="Search services..." className="pl-10" />
+                    <Input
+                      placeholder="Search services..."
+                      className="pl-10"
+                      value={serviceSearch}
+                      onChange={(e) => setServiceSearch(e.target.value)}
+                    />
                   </div>
                   <Button variant="outline" size="sm">
                     <Filter className="w-4 h-4 mr-2" />
@@ -1052,7 +964,7 @@ export default function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {allServices.map((service) => (
+                    {filteredServices.map((service) => (
                       <TableRow key={service._id}>
                         <TableCell>
                           <div>
@@ -1067,15 +979,15 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>{service.category}</TableCell>
                         <TableCell>
-                          NPR {service.pricing.basePrice.toLocaleString()}
+                          ₨ {(service.pricing?.basePrice || 0).toLocaleString()}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-1">
                             <span className="text-sm font-medium">
-                              {service.rating.average.toFixed(1)}
+                              {service.rating?.average?.toFixed(1) || "N/A"}
                             </span>
                             <span className="text-sm text-gray-500">
-                              ({service.rating.count})
+                              ({service.rating?.count || 0})
                             </span>
                           </div>
                         </TableCell>
@@ -1110,6 +1022,28 @@ export default function AdminDashboard() {
                                 Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
+                                onClick={() => {
+                                  const serviceData = [
+                                    {
+                                      id: service._id,
+                                      name: service.name,
+                                      type: service.type,
+                                      price: service.pricing?.basePrice || 0,
+                                      status: service.isActive
+                                        ? "Active"
+                                        : "Inactive",
+                                    },
+                                  ];
+                                  ExportService.exportData(serviceData, {
+                                    format: "csv",
+                                    filename: `service_${service.name.replace(/\s+/g, "_").toLowerCase()}`,
+                                  });
+                                }}
+                              >
+                                <Download className="w-4 h-4 mr-2" />
+                                Export Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
                                 onClick={() => handleServiceDelete(service._id)}
                                 className="text-red-600"
                               >
@@ -1140,7 +1074,12 @@ export default function AdminDashboard() {
                 <div className="flex items-center space-x-4 mb-4">
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input placeholder="Search bookings..." className="pl-10" />
+                    <Input
+                      placeholder="Search bookings..."
+                      className="pl-10"
+                      value={bookingSearch}
+                      onChange={(e) => setBookingSearch(e.target.value)}
+                    />
                   </div>
                   <Button variant="outline" size="sm">
                     <Filter className="w-4 h-4 mr-2" />
@@ -1161,31 +1100,33 @@ export default function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {allBookings.map((booking) => (
+                    {filteredBookings.map((booking) => (
                       <TableRow key={booking._id}>
                         <TableCell className="font-mono text-sm">
                           {booking._id.slice(-8).toUpperCase()}
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium">{booking.user.name}</p>
+                            <p className="font-medium">
+                              {booking.user?.name || "User not available"}
+                            </p>
                             <p className="text-sm text-gray-600">
-                              {booking.user.email}
+                              {booking.user?.email || "Email not available"}
                             </p>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
                             <p className="font-medium">
-                              {booking.service.name}
+                              {booking.service?.name || "Service not available"}
                             </p>
                             <Badge variant="outline" className="mt-1">
-                              {booking.service.type}
+                              {booking.service?.type || "N/A"}
                             </Badge>
                           </div>
                         </TableCell>
                         <TableCell>
-                          NPR {booking.totalAmount.toLocaleString()}
+                          ₨ {(booking.totalAmount || 0).toLocaleString()}
                         </TableCell>
                         <TableCell>
                           {new Date(booking.bookingDate).toLocaleDateString()}
@@ -1202,6 +1143,14 @@ export default function AdminDashboard() {
                               <DropdownMenuItem>
                                 <Eye className="w-4 h-4 mr-2" />
                                 View Details
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  ExportService.exportInvoice(booking)
+                                }
+                              >
+                                <Download className="w-4 h-4 mr-2" />
+                                Download Invoice
                               </DropdownMenuItem>
                               <DropdownMenuItem>
                                 <Edit className="w-4 h-4 mr-2" />
@@ -1234,7 +1183,7 @@ export default function AdminDashboard() {
                       <div>
                         <p className="text-sm text-blue-600">This Month</p>
                         <p className="text-2xl font-bold text-blue-800">
-                          NPR {stats.monthlyRevenue.toLocaleString()}
+                          ₨ {stats.monthlyRevenue.toLocaleString()}
                         </p>
                       </div>
                       <TrendingUp className="w-8 h-8 text-blue-600" />
@@ -1253,7 +1202,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>Construction</span>
+                        <span>Materials</span>
                         <span>25%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -1314,7 +1263,7 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm">Construction</span>
+                        <span className="text-sm">Materials</span>
                         <div className="flex items-center space-x-2">
                           <div className="w-12 h-2 bg-gray-200 rounded-full">
                             <div className="w-6 h-2 bg-purple-600 rounded-full"></div>
@@ -1328,6 +1277,11 @@ export default function AdminDashboard() {
               </Card>
             </div>
           </TabsContent>
+
+          {/* Premium Analytics Tab */}
+          <TabsContent value="premium" className="space-y-6">
+            <PremiumAnalytics />
+          </TabsContent>
         </Tabs>
 
         {/* Service Dialog */}
@@ -1335,31 +1289,35 @@ export default function AdminDashboard() {
           open={isServiceDialogOpen}
           onOpenChange={setIsServiceDialogOpen}
         >
-          <DialogContent className="max-w-md">
+          <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>
                 {editingService ? "Edit Service" : "Add New Service"}
               </DialogTitle>
               <DialogDescription>
                 {editingService
-                  ? "Update service details"
-                  : "Create a new service for customers to book"}
+                  ? "Update the service details below."
+                  : "Create a new service for your platform."}
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">Service Name</Label>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Name
+                </Label>
                 <Input
                   id="name"
                   value={serviceForm.name}
                   onChange={(e) =>
                     setServiceForm({ ...serviceForm, name: e.target.value })
                   }
-                  placeholder="Enter service name"
+                  className="col-span-3"
                 />
               </div>
-              <div>
-                <Label htmlFor="description">Description</Label>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="description" className="text-right">
+                  Description
+                </Label>
                 <Textarea
                   id="description"
                   value={serviceForm.description}
@@ -1369,47 +1327,50 @@ export default function AdminDashboard() {
                       description: e.target.value,
                     })
                   }
-                  placeholder="Enter service description"
+                  className="col-span-3"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="type">Type</Label>
-                  <Select
-                    value={serviceForm.type}
-                    onValueChange={(value) =>
-                      setServiceForm({ ...serviceForm, type: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="bus">Bus</SelectItem>
-                      <SelectItem value="tour">Tour</SelectItem>
-                      <SelectItem value="cargo">Cargo</SelectItem>
-                      <SelectItem value="construction">Construction</SelectItem>
-                      <SelectItem value="garage">Garage</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Input
-                    id="category"
-                    value={serviceForm.category}
-                    onChange={(e) =>
-                      setServiceForm({
-                        ...serviceForm,
-                        category: e.target.value,
-                      })
-                    }
-                    placeholder="Category"
-                  />
-                </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="type" className="text-right">
+                  Type
+                </Label>
+                <Select
+                  value={serviceForm.type}
+                  onValueChange={(value) =>
+                    setServiceForm({ ...serviceForm, type: value })
+                  }
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select service type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bus">Bus Transportation</SelectItem>
+                    <SelectItem value="cargo">Cargo Services</SelectItem>
+                    <SelectItem value="tour">Tour Packages</SelectItem>
+                    <SelectItem value="material">
+                      Construction Materials
+                    </SelectItem>
+                    <SelectItem value="garage">Garage Services</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <div>
-                <Label htmlFor="basePrice">Base Price (NPR)</Label>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="category" className="text-right">
+                  Category
+                </Label>
+                <Input
+                  id="category"
+                  value={serviceForm.category}
+                  onChange={(e) =>
+                    setServiceForm({ ...serviceForm, category: e.target.value })
+                  }
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="basePrice" className="text-right">
+                  Base Price (₨)
+                </Label>
                 <Input
                   id="basePrice"
                   type="number"
@@ -1420,46 +1381,19 @@ export default function AdminDashboard() {
                       basePrice: e.target.value,
                     })
                   }
-                  placeholder="Enter base price"
+                  className="col-span-3"
                 />
-              </div>
-              <div className="flex items-center space-x-4">
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={serviceForm.isActive}
-                    onChange={(e) =>
-                      setServiceForm({
-                        ...serviceForm,
-                        isActive: e.target.checked,
-                      })
-                    }
-                  />
-                  <span className="text-sm">Active</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={serviceForm.isFeatured}
-                    onChange={(e) =>
-                      setServiceForm({
-                        ...serviceForm,
-                        isFeatured: e.target.checked,
-                      })
-                    }
-                  />
-                  <span className="text-sm">Featured</span>
-                </label>
               </div>
             </div>
             <DialogFooter>
               <Button
+                type="button"
                 variant="outline"
                 onClick={() => setIsServiceDialogOpen(false)}
               >
                 Cancel
               </Button>
-              <Button onClick={handleServiceSubmit}>
+              <Button type="button" onClick={handleServiceSubmit}>
                 {editingService ? "Update" : "Create"} Service
               </Button>
             </DialogFooter>
@@ -1468,31 +1402,35 @@ export default function AdminDashboard() {
 
         {/* User Dialog */}
         <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>
                 {editingUser ? "Edit User" : "Add New User"}
               </DialogTitle>
               <DialogDescription>
                 {editingUser
-                  ? "Update user details and permissions"
-                  : "Create a new user account"}
+                  ? "Update the user details below."
+                  : "Create a new user account."}
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="userName">Full Name</Label>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="userName" className="text-right">
+                  Name
+                </Label>
                 <Input
                   id="userName"
                   value={userForm.name}
                   onChange={(e) =>
                     setUserForm({ ...userForm, name: e.target.value })
                   }
-                  placeholder="Enter full name"
+                  className="col-span-3"
                 />
               </div>
-              <div>
-                <Label htmlFor="userEmail">Email</Label>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="userEmail" className="text-right">
+                  Email
+                </Label>
                 <Input
                   id="userEmail"
                   type="email"
@@ -1500,58 +1438,51 @@ export default function AdminDashboard() {
                   onChange={(e) =>
                     setUserForm({ ...userForm, email: e.target.value })
                   }
-                  placeholder="Enter email address"
+                  className="col-span-3"
                 />
               </div>
-              <div>
-                <Label htmlFor="userPhone">Phone</Label>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="userPhone" className="text-right">
+                  Phone
+                </Label>
                 <Input
                   id="userPhone"
                   value={userForm.phone}
                   onChange={(e) =>
                     setUserForm({ ...userForm, phone: e.target.value })
                   }
-                  placeholder="Enter phone number"
+                  className="col-span-3"
                 />
               </div>
-              <div>
-                <Label htmlFor="userRole">Role</Label>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="userRole" className="text-right">
+                  Role
+                </Label>
                 <Select
                   value={userForm.role}
                   onValueChange={(value) =>
                     setUserForm({ ...userForm, role: value })
                   }
                 >
-                  <SelectTrigger>
-                    <SelectValue />
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select user role" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="user">User</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="moderator">Moderator</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="userActive"
-                  checked={userForm.isActive}
-                  onChange={(e) =>
-                    setUserForm({ ...userForm, isActive: e.target.checked })
-                  }
-                />
-                <Label htmlFor="userActive">Active Account</Label>
               </div>
             </div>
             <DialogFooter>
               <Button
+                type="button"
                 variant="outline"
                 onClick={() => setIsUserDialogOpen(false)}
               >
                 Cancel
               </Button>
-              <Button onClick={handleUserSubmit}>
+              <Button type="button" onClick={handleUserSubmit}>
                 {editingUser ? "Update" : "Create"} User
               </Button>
             </DialogFooter>

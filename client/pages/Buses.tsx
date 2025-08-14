@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Bus,
@@ -16,6 +16,8 @@ import {
   Shield,
   CreditCard,
   CheckCircle,
+  AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,20 +31,62 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import Layout from "@/components/layout/Layout";
 import { SeatSelectionDialog } from "@/components/bus/SeatSelectionDialog";
+import { servicesAPI } from "@/services/api";
+import { useToast } from "@/hooks/use-toast-simple";
+
+interface BusService {
+  _id: string;
+  name: string;
+  description: string;
+  type: string;
+  category: string;
+  pricing: {
+    basePrice: number;
+    currency: string;
+  };
+  isActive: boolean;
+  isFeatured: boolean;
+  rating: {
+    average: number;
+    count: number;
+  };
+  routes?: Array<{
+    from: string;
+    to: string;
+    departure: string;
+    arrival: string;
+    duration: string;
+  }>;
+  amenities?: string[];
+  features?: string[];
+  seatsAvailable?: number;
+  totalSeats?: number;
+  schedule?: Array<{
+    departure: string;
+    arrival: string;
+    days: string[];
+  }>;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function Buses() {
   const [selectedDate, setSelectedDate] = useState("today");
   const [fromLocation, setFromLocation] = useState("");
   const [toLocation, setToLocation] = useState("");
   const [selectedBus, setSelectedBus] = useState<any>(null);
+  const [buses, setBuses] = useState<BusService[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("departure");
+  const { toast } = useToast();
 
+  // Available routes from the seeded data
   const routes = [
     "Lamjung",
     "Kathmandu",
@@ -53,106 +97,142 @@ export default function Buses() {
     "Biratnagar",
   ];
 
-  const buses = [
-    {
-      id: 1,
-      name: "Kanxa Express",
-      route: "Lamjung → Kathmandu",
-      departure: "6:00 AM",
-      arrival: "12:00 PM",
-      duration: "6h 0m",
-      price: 800,
-      type: "Express",
-      amenities: ["AC", "WiFi", "Snacks"],
-      seatsAvailable: 12,
-      totalSeats: 45,
-      rating: 4.8,
-      reviews: 156,
-      features: ["Premium seats", "USB charging", "Entertainment system"],
-    },
-    {
-      id: 2,
-      name: "Safari Deluxe",
-      route: "Lamjung → Kathmandu",
-      departure: "8:30 AM",
-      arrival: "2:30 PM",
-      duration: "6h 0m",
-      price: 950,
-      type: "Deluxe",
-      amenities: ["AC", "WiFi", "Meals", "Blanket"],
-      seatsAvailable: 8,
-      totalSeats: 40,
-      rating: 4.9,
-      reviews: 203,
-      features: [
-        "Reclining seats",
-        "Personal entertainment",
-        "Complimentary meals",
-      ],
-    },
-    {
-      id: 3,
-      name: "Night Express",
-      route: "Lamjung → Kathmandu",
-      departure: "10:00 PM",
-      arrival: "4:00 AM +1",
-      duration: "6h 0m",
-      price: 750,
-      type: "Night Service",
-      amenities: ["AC", "Blanket", "Pillow"],
-      seatsAvailable: 15,
-      totalSeats: 45,
-      rating: 4.7,
-      reviews: 134,
-      features: ["Sleeper seats", "Night travel comfort", "Security patrol"],
-    },
-    {
-      id: 4,
-      name: "Pokhara Express",
-      route: "Lamjung → Pokhara",
-      departure: "7:00 AM",
-      arrival: "10:30 AM",
-      duration: "3h 30m",
-      price: 500,
-      type: "Express",
-      amenities: ["AC", "WiFi"],
-      seatsAvailable: 20,
-      totalSeats: 45,
-      rating: 4.6,
-      reviews: 89,
-      features: ["Scenic route", "Comfortable seating", "Local guide info"],
-    },
-    {
-      id: 5,
-      name: "Return Express",
-      route: "Kathmandu → Lamjung",
-      departure: "2:00 PM",
-      arrival: "8:00 PM",
-      duration: "6h 0m",
-      price: 800,
-      type: "Express",
-      amenities: ["AC", "WiFi", "Snacks"],
-      seatsAvailable: 18,
-      totalSeats: 45,
-      rating: 4.8,
-      reviews: 167,
-      features: ["Return journey", "Evening departure", "Comfortable ride"],
-    },
-  ];
+  // Load bus services from API
+  useEffect(() => {
+    const loadBuses = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-  const filteredBuses = buses.filter((bus) => {
-    if (
-      fromLocation &&
-      !bus.route.toLowerCase().includes(fromLocation.toLowerCase())
-    )
-      return false;
-    if (
-      toLocation &&
-      !bus.route.toLowerCase().includes(toLocation.toLowerCase())
-    )
-      return false;
-    return true;
-  });
+        // Fetch bus services from API
+        const response = await servicesAPI.getBuses();
+        const busServices = response.buses || [];
+
+        // Transform API data to match UI expectations
+        const transformedBuses = busServices.map((bus: any) => ({
+          ...bus,
+          id: bus._id,
+          price: bus.pricing?.basePrice || 800,
+          // Provide default values for UI
+          route: bus.routes?.[0]
+            ? `${bus.routes[0].from} → ${bus.routes[0].to}`
+            : "Lamjung → Kathmandu",
+          departure: bus.routes?.[0]?.departure || "6:00 AM",
+          arrival: bus.routes?.[0]?.arrival || "12:00 PM",
+          duration: bus.routes?.[0]?.duration || "6h 0m",
+          amenities: bus.amenities || ["AC", "WiFi"],
+          features: bus.features || [
+            "Comfortable seating",
+            "Professional service",
+          ],
+          seatsAvailable:
+            bus.seatsAvailable || Math.floor(Math.random() * 20) + 5,
+          totalSeats: bus.totalSeats || 45,
+          reviews: bus.rating?.count || Math.floor(Math.random() * 200) + 50,
+        }));
+
+        setBuses(transformedBuses);
+      } catch (error: any) {
+        console.error("Failed to load buses:", error);
+        setError("Failed to load bus services. Please try again.");
+        toast({
+          title: "Error",
+          description: "Failed to load bus services. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadBuses();
+  }, [toast]);
+
+  // Filter and sort buses
+  const filteredBuses = buses
+    .filter((bus) => {
+      // Search term filter
+      if (
+        searchTerm &&
+        !bus.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !bus.route.toLowerCase().includes(searchTerm.toLowerCase())
+      ) {
+        return false;
+      }
+
+      // Route filters
+      if (
+        fromLocation &&
+        !bus.route.toLowerCase().includes(fromLocation.toLowerCase())
+      ) {
+        return false;
+      }
+      if (
+        toLocation &&
+        !bus.route.toLowerCase().includes(toLocation.toLowerCase())
+      ) {
+        return false;
+      }
+
+      // Only show active buses
+      return bus.isActive;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "price":
+          return a.price - b.price;
+        case "rating":
+          return (b.rating?.average || 0) - (a.rating?.average || 0);
+        case "duration":
+          return a.duration.localeCompare(b.duration);
+        default: // departure
+          return a.departure.localeCompare(b.departure);
+      }
+    });
+
+  const handleSearch = () => {
+    // Search is already handled by the filter effect
+    toast({
+      title: "Search Complete",
+      description: `Found ${filteredBuses.length} bus(es) matching your criteria.`,
+    });
+  };
+
+  const clearFilters = () => {
+    setFromLocation("");
+    setToLocation("");
+    setSearchTerm("");
+    setSortBy("departure");
+  };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-16 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-kanxa-blue mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading bus services...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-16 text-center">
+          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-red-600 mb-4">
+            Error Loading Buses
+          </h2>
+          <p className="text-gray-600 mb-8">{error}</p>
+          <Button onClick={() => window.location.reload()}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Try Again
+          </Button>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -225,13 +305,34 @@ export default function Buses() {
                 </div>
 
                 <div className="sm:col-span-2 lg:col-span-2 flex flex-col sm:flex-row items-stretch sm:items-end gap-2">
-                  <Button className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90">
+                  <Button
+                    className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90"
+                    onClick={handleSearch}
+                  >
                     <Search className="mr-2 h-4 w-4" />
                     Search Buses
                   </Button>
-                  <Button variant="outline" size="icon" className="sm:w-auto">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="sm:w-auto"
+                    onClick={clearFilters}
+                  >
                     <Filter className="h-4 w-4" />
                   </Button>
+                </div>
+              </div>
+
+              {/* Additional search bar */}
+              <div className="mt-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search by bus name or route..."
+                    className="pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
               </div>
             </CardContent>
@@ -248,7 +349,7 @@ export default function Buses() {
             </h2>
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <span>Sort by:</span>
-              <Select defaultValue="departure">
+              <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -264,7 +365,7 @@ export default function Buses() {
 
           <div className="space-y-4">
             {filteredBuses.map((bus) => (
-              <Card key={bus.id} className="hover:shadow-lg transition-shadow">
+              <Card key={bus._id} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start lg:items-center">
                     {/* Bus Info */}
@@ -277,12 +378,21 @@ export default function Buses() {
                           <h3 className="font-bold text-kanxa-navy">
                             {bus.name}
                           </h3>
-                          <Badge variant="secondary">{bus.type}</Badge>
+                          <Badge variant="secondary">
+                            {bus.type || "Bus Service"}
+                          </Badge>
+                          {bus.isFeatured && (
+                            <Badge variant="default" className="ml-1 text-xs">
+                              Featured
+                            </Badge>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-1 text-sm">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium">{bus.rating}</span>
+                        <span className="font-medium">
+                          {bus.rating?.average?.toFixed(1) || "4.5"}
+                        </span>
                         <span className="text-gray-500">
                           ({bus.reviews} reviews)
                         </span>
@@ -338,7 +448,8 @@ export default function Buses() {
                               {amenity === "WiFi" && (
                                 <Wifi className="mr-1 h-3 w-3" />
                               )}
-                              {amenity === "Snacks" && (
+                              {(amenity === "Snacks" ||
+                                amenity === "Meals") && (
                                 <Coffee className="mr-1 h-3 w-3" />
                               )}
                               {amenity}
@@ -362,19 +473,24 @@ export default function Buses() {
                     <div className="lg:col-span-2">
                       <div className="text-center space-y-2">
                         <p className="text-2xl font-bold text-kanxa-blue">
-                          NPR {bus.price.toLocaleString()}
+                          ₨ {bus.price.toLocaleString()}
                         </p>
                         <p className="text-xs text-gray-500">per person</p>
-                        <Dialog onOpenChange={(open) => !open && setSelectedBus(null)}>
+                        <Dialog
+                          onOpenChange={(open) => !open && setSelectedBus(null)}
+                        >
                           <DialogTrigger asChild>
                             <Button
                               className="w-full bg-kanxa-blue hover:bg-kanxa-blue/90"
                               onClick={() => setSelectedBus(bus)}
+                              disabled={bus.seatsAvailable === 0}
                             >
-                              Select Seats
+                              {bus.seatsAvailable === 0
+                                ? "Sold Out"
+                                : "Select Seats"}
                             </Button>
                           </DialogTrigger>
-                          {selectedBus && bus.id === selectedBus.id && (
+                          {selectedBus && bus._id === selectedBus._id && (
                             <SeatSelectionDialog bus={selectedBus} />
                           )}
                         </Dialog>
@@ -382,18 +498,23 @@ export default function Buses() {
                     </div>
                   </div>
 
-                  {/* Features */}
+                  {/* Features & Description */}
                   <Separator className="my-4" />
-                  <div className="flex flex-wrap gap-2">
-                    {bus.features.map((feature) => (
-                      <div
-                        key={feature}
-                        className="flex items-center gap-1 text-sm text-gray-600"
-                      >
-                        <CheckCircle className="h-3 w-3 text-kanxa-green" />
-                        <span>{feature}</span>
-                      </div>
-                    ))}
+                  <div className="space-y-2">
+                    {bus.description && (
+                      <p className="text-sm text-gray-600">{bus.description}</p>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {bus.features.map((feature) => (
+                        <div
+                          key={feature}
+                          className="flex items-center gap-1 text-sm text-gray-600"
+                        >
+                          <CheckCircle className="h-3 w-3 text-kanxa-green" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -401,16 +522,18 @@ export default function Buses() {
           </div>
 
           {/* No Results */}
-          {filteredBuses.length === 0 && (
+          {filteredBuses.length === 0 && !isLoading && (
             <div className="text-center py-12">
               <Bus className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-medium text-gray-600 mb-2">
                 No buses found
               </h3>
               <p className="text-gray-500 mb-4">
-                Try adjusting your search criteria
+                Try adjusting your search criteria or check back later
               </p>
-              <Button variant="outline">Clear Filters</Button>
+              <Button variant="outline" onClick={clearFilters}>
+                Clear Filters
+              </Button>
             </div>
           )}
         </div>

@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -81,8 +81,21 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to send reset email");
+      }
 
       setEmailSent(true);
       startCountdown();
@@ -97,10 +110,13 @@ export default function ForgotPassword() {
           </div>
         ),
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Forgot password error:", error);
       toast({
         title: "Failed to Send Email",
-        description: "Unable to send reset email. Please try again later.",
+        description:
+          error.message ||
+          "Unable to send reset email. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -126,8 +142,21 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch("/api/sms/send-reset-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          phone: formData.phone,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to send SMS code");
+      }
 
       setSmsSent(true);
       startCountdown();
@@ -142,10 +171,12 @@ export default function ForgotPassword() {
           </div>
         ),
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error("SMS reset error:", error);
       toast({
         title: "Failed to Send SMS",
         description:
+          error.message ||
           "Unable to send verification code. Please try again later.",
         variant: "destructive",
       });

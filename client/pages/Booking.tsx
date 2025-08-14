@@ -48,8 +48,8 @@ export default function Booking() {
   const { isGuest, isAuthenticated } = useAuth();
   const [bookingFilter, setBookingFilter] = useState("all");
 
-  // Show guest restriction if user is in guest mode
-  if (isGuest || !isAuthenticated) {
+  // Show guest restriction if user is not authenticated
+  if (!isAuthenticated) {
     return (
       <GuestRestriction
         action="view your bookings"
@@ -296,7 +296,7 @@ export default function Booking() {
                   Daily Rate
                 </Label>
                 <p className="font-semibold">
-                  NPR {booking.dailyRate?.toLocaleString()}
+                  Rs {booking.dailyRate?.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -395,7 +395,7 @@ export default function Booking() {
               Total Amount
             </Label>
             <p className="font-semibold text-kanxa-green">
-              NPR{" "}
+              Rs{" "}
               {(
                 booking.amount ||
                 booking.totalAmount ||
@@ -482,7 +482,7 @@ export default function Booking() {
             <Card className="text-center">
               <CardContent className="p-6">
                 <div className="text-3xl font-bold text-kanxa-navy mb-2">
-                  NPR{" "}
+                  Rs{" "}
                   {bookings
                     .reduce(
                       (sum, b) =>
@@ -550,7 +550,7 @@ export default function Booking() {
                       </Badge>
                       <div className="text-right">
                         <p className="font-bold text-kanxa-green">
-                          NPR{" "}
+                          Rs{" "}
                           {(
                             booking.amount ||
                             booking.totalAmount ||

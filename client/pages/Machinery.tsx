@@ -34,6 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -280,6 +281,9 @@ export default function Machinery() {
         <DialogTitle className="text-2xl font-bold text-kanxa-navy">
           Rent {machine.name}
         </DialogTitle>
+        <DialogDescription>
+          Complete the rental form to reserve {machine.name} for your project
+        </DialogDescription>
       </DialogHeader>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -337,19 +341,19 @@ export default function Machinery() {
                 <div className="flex justify-between">
                   <span>Daily Rate:</span>
                   <span className="font-bold text-kanxa-orange">
-                    NPR {machine.dailyRate.toLocaleString()}
+                    Rs {machine.dailyRate.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Weekly Rate:</span>
                   <span className="font-bold text-kanxa-blue">
-                    NPR {machine.weeklyRate.toLocaleString()}
+                    Rs {machine.weeklyRate.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Monthly Rate:</span>
                   <span className="font-bold text-kanxa-green">
-                    NPR {machine.monthlyRate.toLocaleString()}
+                    Rs {machine.monthlyRate.toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -479,7 +483,7 @@ export default function Machinery() {
                   }
                 />
                 <Label htmlFor="operator">
-                  Include experienced operator (+NPR 2,000/day)
+                  Include experienced operator (+Rs 2,000/day)
                 </Label>
               </div>
 
@@ -699,19 +703,19 @@ export default function Machinery() {
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Daily:</span>
                       <span className="font-bold text-kanxa-orange">
-                        NPR {machine.dailyRate.toLocaleString()}
+                        Rs {machine.dailyRate.toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Weekly:</span>
                       <span className="font-bold text-kanxa-blue">
-                        NPR {machine.weeklyRate.toLocaleString()}
+                        Rs {machine.weeklyRate.toLocaleString()}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Monthly:</span>
                       <span className="font-bold text-kanxa-green">
-                        NPR {machine.monthlyRate.toLocaleString()}
+                        Rs {machine.monthlyRate.toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -851,7 +855,7 @@ export default function Machinery() {
                   {[
                     "Fuel and consumables",
                     "Delivery beyond city limits",
-                    "Operator services (+NPR 2,000/day)",
+                    "Operator services (+Rs 2,000/day)",
                     "Overtime charges (beyond 8 hours)",
                     "Damage repairs (if any)",
                     "Late return penalties",

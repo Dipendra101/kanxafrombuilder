@@ -315,7 +315,7 @@ export default function Construction() {
                         <div className="flex items-end justify-between">
                           <div>
                             <p className="text-2xl font-bold text-kanxa-orange">
-                              NPR {material.price.toLocaleString()}
+                              Rs {material.price.toLocaleString()}
                             </p>
                             <p className="text-xs text-gray-500">
                               {material.unit}
@@ -384,7 +384,7 @@ export default function Construction() {
                         <div className="flex items-end justify-between">
                           <div>
                             <p className="text-2xl font-bold text-kanxa-blue">
-                              NPR {machine.dailyRate.toLocaleString()}
+                              Rs {machine.dailyRate.toLocaleString()}
                             </p>
                             <p className="text-xs text-gray-500">per day</p>
                           </div>

@@ -14,10 +14,16 @@ import {
   Star,
   Phone,
   Mail,
-  User
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,8 +36,9 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import Layout from "@/components/layout/Layout";
+import { PaymentOptions } from "@/components/ui/payment-options";
 import { useAuth } from "@/contexts/AuthContext";
 import { servicesAPI, bookingsAPI } from "@/services/api";
 
@@ -77,8 +84,8 @@ export default function EnhancedBooking() {
   const { user, isAuthenticated, isGuest } = useAuth();
   const { toast } = useToast();
 
-  // Show guest restriction if user is in guest mode
-  if (isGuest || !isAuthenticated) {
+  // Show guest restriction if user is not authenticated
+  if (!isAuthenticated) {
     return (
       <GuestRestriction
         action="make a booking"
@@ -87,8 +94,8 @@ export default function EnhancedBooking() {
     );
   }
 
-  const serviceId = searchParams.get('service');
-  const serviceType = searchParams.get('type') || 'bus';
+  const serviceId = searchParams.get("service");
+  const serviceType = searchParams.get("type") || "bus";
 
   const [service, setService] = useState<ServiceData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -98,33 +105,35 @@ export default function EnhancedBooking() {
   const [bookingData, setBookingData] = useState({
     // Contact Information
     contactInfo: {
-      name: user?.name || '',
-      phone: user?.phone || '',
-      email: user?.email || '',
-      alternatePhone: ''
+      name: user?.name || "",
+      phone: user?.phone || "",
+      email: user?.email || "",
+      alternatePhone: "",
     },
-    
+
     // Service Details
     serviceDetails: {
       busDetails: {
-        route: { from: '', to: '' },
-        schedule: { departureTime: '', arrivalTime: '', date: '' },
-        passengers: [{
-          name: '',
-          age: 25,
-          gender: 'male' as const,
-          seatNumber: ''
-        }],
+        route: { from: "", to: "" },
+        schedule: { departureTime: "", arrivalTime: "", date: "" },
+        passengers: [
+          {
+            name: "",
+            age: 25,
+            gender: "male" as const,
+            seatNumber: "",
+          },
+        ],
         totalSeats: 1,
-        boardingPoint: '',
-        droppingPoint: ''
-      }
+        boardingPoint: "",
+        droppingPoint: "",
+      },
     },
-    
+
     // Payment
-    paymentMethod: 'khalti',
-    specialRequirements: '',
-    notes: ''
+    paymentMethod: "khalti",
+    specialRequirements: "",
+    notes: "",
   });
 
   const [pricing, setPricing] = useState({
@@ -132,7 +141,7 @@ export default function EnhancedBooking() {
     vatAmount: 0,
     serviceTaxAmount: 0,
     discountAmount: 0,
-    totalAmount: 0
+    totalAmount: 0,
   });
 
   useEffect(() => {
@@ -140,9 +149,9 @@ export default function EnhancedBooking() {
       toast({
         title: "Authentication Required",
         description: "Please log in to make a booking",
-        variant: "destructive"
+        variant: "destructive",
       });
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
@@ -152,9 +161,9 @@ export default function EnhancedBooking() {
       toast({
         title: "Service Not Found",
         description: "Please select a service to book",
-        variant: "destructive"
+        variant: "destructive",
       });
-      navigate('/transportation');
+      navigate("/transportation");
     }
   }, [serviceId, isAuthenticated]);
 
@@ -162,13 +171,13 @@ export default function EnhancedBooking() {
     try {
       setIsLoading(true);
       const response = await servicesAPI.getServiceById(serviceId!);
-      
+
       if (response.success) {
         setService(response.service);
-        
+
         // Initialize booking data with service details
         if (response.service.busService) {
-          setBookingData(prev => ({
+          setBookingData((prev) => ({
             ...prev,
             serviceDetails: {
               busDetails: {
@@ -176,33 +185,39 @@ export default function EnhancedBooking() {
                 route: response.service.busService.route,
                 schedule: {
                   ...prev.serviceDetails.busDetails.schedule,
-                  departureTime: response.service.busService.schedule[0]?.departureTime || '',
-                  arrivalTime: response.service.busService.schedule[0]?.arrivalTime || ''
-                }
-              }
-            }
+                  departureTime:
+                    response.service.busService.schedule[0]?.departureTime ||
+                    "",
+                  arrivalTime:
+                    response.service.busService.schedule[0]?.arrivalTime || "",
+                },
+              },
+            },
           }));
         }
-        
+
         calculatePricing(response.service, 1);
       }
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message || "Failed to fetch service details",
-        variant: "destructive"
+        variant: "destructive",
       });
-      navigate('/transportation');
+      navigate("/transportation");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const calculatePricing = (serviceData: ServiceData, passengers: number = 1) => {
+  const calculatePricing = (
+    serviceData: ServiceData,
+    passengers: number = 1,
+  ) => {
     const baseAmount = serviceData.pricing.basePrice * passengers;
     const vatRate = serviceData.pricing.taxes?.vat || 13;
     const serviceTaxRate = serviceData.pricing.taxes?.serviceTax || 0;
-    
+
     const vatAmount = (baseAmount * vatRate) / 100;
     const serviceTaxAmount = (baseAmount * serviceTaxRate) / 100;
     const totalAmount = baseAmount + vatAmount + serviceTaxAmount;
@@ -212,21 +227,21 @@ export default function EnhancedBooking() {
       vatAmount,
       serviceTaxAmount,
       discountAmount: 0,
-      totalAmount
+      totalAmount,
     });
   };
 
   const handleInputChange = (field: string, value: any) => {
-    const keys = field.split('.');
-    setBookingData(prev => {
+    const keys = field.split(".");
+    setBookingData((prev) => {
       const updated = { ...prev };
       let current: any = updated;
-      
+
       for (let i = 0; i < keys.length - 1; i++) {
         if (!current[keys[i]]) current[keys[i]] = {};
         current = current[keys[i]];
       }
-      
+
       current[keys[keys.length - 1]] = value;
       return updated;
     });
@@ -234,44 +249,55 @@ export default function EnhancedBooking() {
 
   const addPassenger = () => {
     const newPassenger = {
-      name: '',
+      name: "",
       age: 25,
-      gender: 'male' as const,
-      seatNumber: ''
+      gender: "male" as const,
+      seatNumber: "",
     };
-    
-    setBookingData(prev => ({
+
+    setBookingData((prev) => ({
       ...prev,
       serviceDetails: {
         busDetails: {
           ...prev.serviceDetails.busDetails,
-          passengers: [...prev.serviceDetails.busDetails.passengers, newPassenger],
-          totalSeats: prev.serviceDetails.busDetails.passengers.length + 1
-        }
-      }
+          passengers: [
+            ...prev.serviceDetails.busDetails.passengers,
+            newPassenger,
+          ],
+          totalSeats: prev.serviceDetails.busDetails.passengers.length + 1,
+        },
+      },
     }));
 
     if (service) {
-      calculatePricing(service, bookingData.serviceDetails.busDetails.passengers.length + 1);
+      calculatePricing(
+        service,
+        bookingData.serviceDetails.busDetails.passengers.length + 1,
+      );
     }
   };
 
   const removePassenger = (index: number) => {
     if (bookingData.serviceDetails.busDetails.passengers.length <= 1) return;
-    
-    setBookingData(prev => ({
+
+    setBookingData((prev) => ({
       ...prev,
       serviceDetails: {
         busDetails: {
           ...prev.serviceDetails.busDetails,
-          passengers: prev.serviceDetails.busDetails.passengers.filter((_, i) => i !== index),
-          totalSeats: prev.serviceDetails.busDetails.passengers.length - 1
-        }
-      }
+          passengers: prev.serviceDetails.busDetails.passengers.filter(
+            (_, i) => i !== index,
+          ),
+          totalSeats: prev.serviceDetails.busDetails.passengers.length - 1,
+        },
+      },
     }));
 
     if (service) {
-      calculatePricing(service, bookingData.serviceDetails.busDetails.passengers.length - 1);
+      calculatePricing(
+        service,
+        bookingData.serviceDetails.busDetails.passengers.length - 1,
+      );
     }
   };
 
@@ -280,11 +306,15 @@ export default function EnhancedBooking() {
       setIsSubmitting(true);
 
       // Validate required fields
-      if (!bookingData.contactInfo.name || !bookingData.contactInfo.phone || !bookingData.contactInfo.email) {
+      if (
+        !bookingData.contactInfo.name ||
+        !bookingData.contactInfo.phone ||
+        !bookingData.contactInfo.email
+      ) {
         toast({
           title: "Missing Information",
           description: "Please fill in all contact information",
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
@@ -293,7 +323,7 @@ export default function EnhancedBooking() {
         toast({
           title: "Missing Information",
           description: "Please select a travel date",
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
@@ -305,8 +335,10 @@ export default function EnhancedBooking() {
         serviceDetails: bookingData.serviceDetails,
         contactInfo: bookingData.contactInfo,
         pricing,
-        specialRequirements: bookingData.specialRequirements ? [bookingData.specialRequirements] : [],
-        notes: bookingData.notes
+        specialRequirements: bookingData.specialRequirements
+          ? [bookingData.specialRequirements]
+          : [],
+        notes: bookingData.notes,
       };
 
       const response = await bookingsAPI.createBooking(bookingPayload);
@@ -323,8 +355,9 @@ export default function EnhancedBooking() {
     } catch (error: any) {
       toast({
         title: "Booking Failed",
-        description: error.message || "Failed to create booking. Please try again.",
-        variant: "destructive"
+        description:
+          error.message || "Failed to create booking. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -337,34 +370,36 @@ export default function EnhancedBooking() {
 
       // Mock payment processing
       const paymentResponse = await fetch(`/api/payments/${method}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: pricing.totalAmount,
-          bookingId: serviceId
-        })
+          bookingId: serviceId,
+        }),
       });
 
       const result = await paymentResponse.json();
 
       if (result.success) {
         toast({
-          title: "Payment Successful! 🎉",
-          description: "Your booking has been confirmed. You will receive a confirmation email shortly.",
+          title: "Payment Successful! ����",
+          description:
+            "Your booking has been confirmed. You will receive a confirmation email shortly.",
         });
 
         // Redirect to booking confirmation or user bookings
         setTimeout(() => {
-          navigate('/bookings');
+          navigate("/bookings");
         }, 2000);
       } else {
-        throw new Error(result.message || 'Payment failed');
+        throw new Error(result.message || "Payment failed");
       }
     } catch (error: any) {
       toast({
         title: "Payment Failed",
-        description: error.message || "Payment processing failed. Please try again.",
-        variant: "destructive"
+        description:
+          error.message || "Payment processing failed. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -388,8 +423,10 @@ export default function EnhancedBooking() {
         <div className="container mx-auto px-4 py-16 text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-4">Service Not Found</h1>
-          <p className="text-gray-600 mb-8">The requested service could not be found.</p>
-          <Button onClick={() => navigate('/transportation')}>
+          <p className="text-gray-600 mb-8">
+            The requested service could not be found.
+          </p>
+          <Button onClick={() => navigate("/transportation")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Services
           </Button>
@@ -403,16 +440,14 @@ export default function EnhancedBooking() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="mr-4"
-          >
+          <Button variant="ghost" onClick={() => navigate(-1)} className="mr-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-kanxa-navy">Complete Your Booking</h1>
+            <h1 className="text-3xl font-bold text-kanxa-navy">
+              Complete Your Booking
+            </h1>
             <p className="text-gray-600">Step {step} of 3</p>
           </div>
         </div>
@@ -438,15 +473,21 @@ export default function EnhancedBooking() {
                       )}
                       <div className="flex-1">
                         <h3 className="font-bold text-lg">{service.name}</h3>
-                        <p className="text-gray-600 mb-2">{service.description}</p>
+                        <p className="text-gray-600 mb-2">
+                          {service.description}
+                        </p>
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center">
                             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
-                            <span className="text-sm">{service.rating.average} ({service.rating.count} reviews)</span>
+                            <span className="text-sm">
+                              {service.rating.average} ({service.rating.count}{" "}
+                              reviews)
+                            </span>
                           </div>
                           {service.busService && (
                             <Badge variant="outline">
-                              {service.busService.route.from} → {service.busService.route.to}
+                              {service.busService.route.from} →{" "}
+                              {service.busService.route.to}
                             </Badge>
                           )}
                         </div>
@@ -456,7 +497,7 @@ export default function EnhancedBooking() {
                 </Card>
 
                 {/* Travel Details */}
-                {service.type === 'bus' && service.busService && (
+                {service.type === "bus" && service.busService && (
                   <Card>
                     <CardHeader>
                       <CardTitle>Travel Details</CardTitle>
@@ -467,26 +508,48 @@ export default function EnhancedBooking() {
                           <Label htmlFor="date">Travel Date</Label>
                           <Input
                             type="date"
-                            value={bookingData.serviceDetails.busDetails.schedule.date}
-                            onChange={(e) => handleInputChange('serviceDetails.busDetails.schedule.date', e.target.value)}
-                            min={new Date().toISOString().split('T')[0]}
+                            value={
+                              bookingData.serviceDetails.busDetails.schedule
+                                .date
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                "serviceDetails.busDetails.schedule.date",
+                                e.target.value,
+                              )
+                            }
+                            min={new Date().toISOString().split("T")[0]}
                           />
                         </div>
                         <div>
                           <Label htmlFor="time">Departure Time</Label>
                           <Select
-                            value={bookingData.serviceDetails.busDetails.schedule.departureTime}
-                            onValueChange={(value) => handleInputChange('serviceDetails.busDetails.schedule.departureTime', value)}
+                            value={
+                              bookingData.serviceDetails.busDetails.schedule
+                                .departureTime
+                            }
+                            onValueChange={(value) =>
+                              handleInputChange(
+                                "serviceDetails.busDetails.schedule.departureTime",
+                                value,
+                              )
+                            }
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Select time" />
                             </SelectTrigger>
                             <SelectContent>
-                              {service.busService.schedule.map((schedule, index) => (
-                                <SelectItem key={index} value={schedule.departureTime}>
-                                  {schedule.departureTime} - {schedule.arrivalTime}
-                                </SelectItem>
-                              ))}
+                              {service.busService.schedule.map(
+                                (schedule, index) => (
+                                  <SelectItem
+                                    key={index}
+                                    value={schedule.departureTime}
+                                  >
+                                    {schedule.departureTime} -{" "}
+                                    {schedule.arrivalTime}
+                                  </SelectItem>
+                                ),
+                              )}
                             </SelectContent>
                           </Select>
                         </div>
@@ -497,16 +560,32 @@ export default function EnhancedBooking() {
                           <Label htmlFor="boarding">Boarding Point</Label>
                           <Input
                             placeholder="Enter boarding point"
-                            value={bookingData.serviceDetails.busDetails.boardingPoint}
-                            onChange={(e) => handleInputChange('serviceDetails.busDetails.boardingPoint', e.target.value)}
+                            value={
+                              bookingData.serviceDetails.busDetails
+                                .boardingPoint
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                "serviceDetails.busDetails.boardingPoint",
+                                e.target.value,
+                              )
+                            }
                           />
                         </div>
                         <div>
                           <Label htmlFor="dropping">Dropping Point</Label>
                           <Input
                             placeholder="Enter dropping point"
-                            value={bookingData.serviceDetails.busDetails.droppingPoint}
-                            onChange={(e) => handleInputChange('serviceDetails.busDetails.droppingPoint', e.target.value)}
+                            value={
+                              bookingData.serviceDetails.busDetails
+                                .droppingPoint
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                "serviceDetails.busDetails.droppingPoint",
+                                e.target.value,
+                              )
+                            }
                           />
                         </div>
                       </div>
@@ -523,7 +602,10 @@ export default function EnhancedBooking() {
                         variant="outline"
                         size="sm"
                         onClick={addPassenger}
-                        disabled={bookingData.serviceDetails.busDetails.passengers.length >= 6}
+                        disabled={
+                          bookingData.serviceDetails.busDetails.passengers
+                            .length >= 6
+                        }
                       >
                         <Users className="w-4 h-4 mr-2" />
                         Add Passenger
@@ -531,70 +613,96 @@ export default function EnhancedBooking() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {bookingData.serviceDetails.busDetails.passengers.map((passenger, index) => (
-                      <div key={index} className="p-4 border rounded-lg">
-                        <div className="flex items-center justify-between mb-4">
-                          <h4 className="font-medium">Passenger {index + 1}</h4>
-                          {bookingData.serviceDetails.busDetails.passengers.length > 1 && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removePassenger(index)}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              Remove
-                            </Button>
-                          )}
+                    {bookingData.serviceDetails.busDetails.passengers.map(
+                      (passenger, index) => (
+                        <div key={index} className="p-4 border rounded-lg">
+                          <div className="flex items-center justify-between mb-4">
+                            <h4 className="font-medium">
+                              Passenger {index + 1}
+                            </h4>
+                            {bookingData.serviceDetails.busDetails.passengers
+                              .length > 1 && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removePassenger(index)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                Remove
+                              </Button>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <Label>Full Name</Label>
+                              <Input
+                                placeholder="Enter full name"
+                                value={passenger.name}
+                                onChange={(e) => {
+                                  const updated = [
+                                    ...bookingData.serviceDetails.busDetails
+                                      .passengers,
+                                  ];
+                                  updated[index].name = e.target.value;
+                                  handleInputChange(
+                                    "serviceDetails.busDetails.passengers",
+                                    updated,
+                                  );
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label>Age</Label>
+                              <Input
+                                type="number"
+                                placeholder="Age"
+                                value={passenger.age}
+                                onChange={(e) => {
+                                  const updated = [
+                                    ...bookingData.serviceDetails.busDetails
+                                      .passengers,
+                                  ];
+                                  updated[index].age =
+                                    parseInt(e.target.value) || 0;
+                                  handleInputChange(
+                                    "serviceDetails.busDetails.passengers",
+                                    updated,
+                                  );
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <Label>Gender</Label>
+                              <Select
+                                value={passenger.gender}
+                                onValueChange={(
+                                  value: "male" | "female" | "other",
+                                ) => {
+                                  const updated = [
+                                    ...bookingData.serviceDetails.busDetails
+                                      .passengers,
+                                  ];
+                                  updated[index].gender = value;
+                                  handleInputChange(
+                                    "serviceDetails.busDetails.passengers",
+                                    updated,
+                                  );
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="male">Male</SelectItem>
+                                  <SelectItem value="female">Female</SelectItem>
+                                  <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <Label>Full Name</Label>
-                            <Input
-                              placeholder="Enter full name"
-                              value={passenger.name}
-                              onChange={(e) => {
-                                const updated = [...bookingData.serviceDetails.busDetails.passengers];
-                                updated[index].name = e.target.value;
-                                handleInputChange('serviceDetails.busDetails.passengers', updated);
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <Label>Age</Label>
-                            <Input
-                              type="number"
-                              placeholder="Age"
-                              value={passenger.age}
-                              onChange={(e) => {
-                                const updated = [...bookingData.serviceDetails.busDetails.passengers];
-                                updated[index].age = parseInt(e.target.value) || 0;
-                                handleInputChange('serviceDetails.busDetails.passengers', updated);
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <Label>Gender</Label>
-                            <Select
-                              value={passenger.gender}
-                              onValueChange={(value: 'male' | 'female' | 'other') => {
-                                const updated = [...bookingData.serviceDetails.busDetails.passengers];
-                                updated[index].gender = value;
-                                handleInputChange('serviceDetails.busDetails.passengers', updated);
-                              }}
-                            >
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="male">Male</SelectItem>
-                                <SelectItem value="female">Female</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </CardContent>
                 </Card>
 
@@ -622,7 +730,12 @@ export default function EnhancedBooking() {
                         <Label htmlFor="name">Full Name</Label>
                         <Input
                           value={bookingData.contactInfo.name}
-                          onChange={(e) => handleInputChange('contactInfo.name', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "contactInfo.name",
+                              e.target.value,
+                            )
+                          }
                           placeholder="Enter your full name"
                         />
                       </div>
@@ -631,7 +744,12 @@ export default function EnhancedBooking() {
                         <Input
                           type="email"
                           value={bookingData.contactInfo.email}
-                          onChange={(e) => handleInputChange('contactInfo.email', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "contactInfo.email",
+                              e.target.value,
+                            )
+                          }
                           placeholder="Enter your email"
                         />
                       </div>
@@ -641,15 +759,27 @@ export default function EnhancedBooking() {
                         <Label htmlFor="phone">Phone Number</Label>
                         <Input
                           value={bookingData.contactInfo.phone}
-                          onChange={(e) => handleInputChange('contactInfo.phone', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "contactInfo.phone",
+                              e.target.value,
+                            )
+                          }
                           placeholder="Enter your phone number"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="altPhone">Alternate Phone (Optional)</Label>
+                        <Label htmlFor="altPhone">
+                          Alternate Phone (Optional)
+                        </Label>
                         <Input
                           value={bookingData.contactInfo.alternatePhone}
-                          onChange={(e) => handleInputChange('contactInfo.alternatePhone', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "contactInfo.alternatePhone",
+                              e.target.value,
+                            )
+                          }
                           placeholder="Enter alternate phone"
                         />
                       </div>
@@ -661,13 +791,17 @@ export default function EnhancedBooking() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Special Requirements</CardTitle>
-                    <CardDescription>Any specific needs or requests for your journey</CardDescription>
+                    <CardDescription>
+                      Any specific needs or requests for your journey
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Textarea
                       placeholder="Enter any special requirements or notes..."
                       value={bookingData.notes}
-                      onChange={(e) => handleInputChange('notes', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("notes", e.target.value)
+                      }
                       className="min-h-[100px]"
                     />
                   </CardContent>
@@ -696,40 +830,16 @@ export default function EnhancedBooking() {
             {step === 3 && (
               <>
                 {/* Payment Methods */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Choose Payment Method</CardTitle>
-                    <CardDescription>Select your preferred payment option</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Button
-                        variant="outline"
-                        className="h-20 flex flex-col"
-                        onClick={() => handlePayment('khalti')}
-                        disabled={isSubmitting}
-                      >
-                        <CreditCard className="w-6 h-6 mb-2 text-purple-600" />
-                        <span>Khalti</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="h-20 flex flex-col"
-                        onClick={() => handlePayment('esewa')}
-                        disabled={isSubmitting}
-                      >
-                        <CreditCard className="w-6 h-6 mb-2 text-green-600" />
-                        <span>eSewa</span>
-                      </Button>
-                    </div>
-                    
-                    <div className="text-center">
-                      <p className="text-sm text-gray-600">
-                        Your payment is secured with 256-bit SSL encryption
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <PaymentOptions
+                  amount={
+                    service.pricing.basePrice +
+                    (service.pricing.taxes?.vat || 0) +
+                    (service.pricing.taxes?.serviceTax || 0)
+                  }
+                  service={service.name}
+                  serviceId={service.id}
+                  onPaymentSelect={handlePayment}
+                />
               </>
             )}
           </div>
@@ -750,18 +860,27 @@ export default function EnhancedBooking() {
                     <>
                       <div className="flex justify-between text-sm">
                         <span>Route</span>
-                        <span>{service.busService.route.from} → {service.busService.route.to}</span>
+                        <span>
+                          {service.busService.route.from} →{" "}
+                          {service.busService.route.to}
+                        </span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span>Passengers</span>
-                        <span>{bookingData.serviceDetails.busDetails.totalSeats}</span>
+                        <span>
+                          {bookingData.serviceDetails.busDetails.totalSeats}
+                        </span>
                       </div>
                     </>
                   )}
                   {bookingData.serviceDetails.busDetails.schedule.date && (
                     <div className="flex justify-between text-sm">
                       <span>Travel Date</span>
-                      <span>{new Date(bookingData.serviceDetails.busDetails.schedule.date).toLocaleDateString()}</span>
+                      <span>
+                        {new Date(
+                          bookingData.serviceDetails.busDetails.schedule.date,
+                        ).toLocaleDateString()}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -771,24 +890,26 @@ export default function EnhancedBooking() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Base Amount</span>
-                    <span>NPR {pricing.baseAmount.toLocaleString()}</span>
+                    <span>Rs {pricing.baseAmount.toLocaleString()}</span>
                   </div>
                   {pricing.vatAmount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span>VAT (13%)</span>
-                      <span>NPR {pricing.vatAmount.toLocaleString()}</span>
+                      <span>Rs {pricing.vatAmount.toLocaleString()}</span>
                     </div>
                   )}
                   {pricing.serviceTaxAmount > 0 && (
                     <div className="flex justify-between text-sm">
                       <span>Service Tax</span>
-                      <span>NPR {pricing.serviceTaxAmount.toLocaleString()}</span>
+                      <span>
+                        Rs {pricing.serviceTaxAmount.toLocaleString()}
+                      </span>
                     </div>
                   )}
                   {pricing.discountAmount > 0 && (
                     <div className="flex justify-between text-sm text-green-600">
                       <span>Discount</span>
-                      <span>-NPR {pricing.discountAmount.toLocaleString()}</span>
+                      <span>-Rs {pricing.discountAmount.toLocaleString()}</span>
                     </div>
                   )}
                 </div>
@@ -797,13 +918,17 @@ export default function EnhancedBooking() {
 
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total Amount</span>
-                  <span className="text-kanxa-orange">NPR {pricing.totalAmount.toLocaleString()}</span>
+                  <span className="text-kanxa-orange">
+                    Rs {pricing.totalAmount.toLocaleString()}
+                  </span>
                 </div>
 
                 <div className="text-xs text-gray-600 mt-4">
                   <div className="flex items-center space-x-2 mb-2">
                     <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>Free cancellation up to 2 hours before departure</span>
+                    <span>
+                      Free cancellation up to 2 hours before departure
+                    </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Phone className="w-4 h-4 text-blue-600" />

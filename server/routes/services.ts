@@ -8,6 +8,37 @@ const router = Router();
 // Mock services for when database is unavailable
 const mockServices = [
   {
+    _id: "1",
+    name: "Kathmandu to Pokhara Express",
+    description:
+      "Premium AC bus service from Kathmandu to Pokhara with comfort and reliability",
+    type: "bus",
+    category: "Transportation",
+    pricing: { basePrice: 950, currency: "Rs" },
+    isActive: true,
+    isFeatured: true,
+    rating: { average: 4.8, count: 200 },
+    busDetails: {
+      busNumber: "KP-1001",
+      capacity: 45,
+      busType: "AC Deluxe",
+      amenities: ["AC", "WiFi", "Entertainment", "Snacks"],
+      route: { from: "Kathmandu", to: "Pokhara", duration: "6 hours" },
+      availableSeats: 12,
+      schedule: [
+        {
+          departureTime: "06:00 AM",
+          arrivalTime: "12:00 PM",
+          date: new Date().toISOString().split("T")[0],
+        },
+      ],
+      operator: { name: "Kanxa Express" },
+    },
+    images: ["/placeholder.svg"],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
     _id: "mock_service_1",
     name: "Kathmandu to Pokhara Bus",
     description: "Comfortable AC bus service from Kathmandu to Pokhara",
@@ -23,6 +54,15 @@ const mockServices = [
       busType: "AC",
       amenities: ["AC", "WiFi", "Entertainment"],
       route: { from: "Kathmandu", to: "Pokhara", duration: "6 hours" },
+      availableSeats: 8,
+      schedule: [
+        {
+          departureTime: "08:30 AM",
+          arrivalTime: "2:30 PM",
+          date: new Date().toISOString().split("T")[0],
+        },
+      ],
+      operator: { name: "Safari Deluxe" },
     },
     images: ["/placeholder.svg"],
     createdAt: new Date(),
@@ -43,6 +83,68 @@ const mockServices = [
       maxDimensions: { length: 200, width: 150, height: 100 },
       deliveryTypes: ["standard", "express", "overnight"],
       coverage: ["valley", "nationwide"],
+    },
+    images: ["/placeholder.svg"],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    _id: "3",
+    name: "Pokhara to Chitwan Express",
+    description:
+      "Comfortable bus service from Pokhara to Chitwan National Park",
+    type: "bus",
+    category: "Transportation",
+    pricing: { basePrice: 750, currency: "Rs" },
+    isActive: true,
+    isFeatured: false,
+    rating: { average: 4.3, count: 95 },
+    busDetails: {
+      busNumber: "PC-2001",
+      capacity: 40,
+      busType: "Non-AC",
+      amenities: ["WiFi", "Music"],
+      route: { from: "Pokhara", to: "Chitwan", duration: "4 hours" },
+      availableSeats: 15,
+      schedule: [
+        {
+          departureTime: "07:00 AM",
+          arrivalTime: "11:00 AM",
+          date: new Date().toISOString().split("T")[0],
+        },
+      ],
+      operator: { name: "Mountain Express" },
+    },
+    images: ["/placeholder.svg"],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    _id: "4",
+    name: "Kathmandu to Chitwan Tourist Bus",
+    description:
+      "Tourist-friendly bus service to Chitwan with guide assistance",
+    type: "bus",
+    category: "Transportation",
+    pricing: { basePrice: 1200, currency: "Rs" },
+    isActive: true,
+    isFeatured: true,
+    rating: { average: 4.6, count: 150 },
+    busDetails: {
+      busNumber: "KC-3001",
+      capacity: 35,
+      busType: "AC Tourist",
+      amenities: ["AC", "WiFi", "Guide", "Refreshments"],
+      route: { from: "Kathmandu", to: "Chitwan", duration: "5 hours" },
+      availableSeats: 8,
+      schedule: [
+        {
+          departureTime: "09:00 AM",
+          arrivalTime: "2:00 PM",
+          date: new Date().toISOString().split("T")[0],
+        },
+      ],
+      operator: { name: "Nepal Tourism Bus" },
     },
     images: ["/placeholder.svg"],
     createdAt: new Date(),
@@ -286,18 +388,37 @@ export const getBusServices: RequestHandler = async (req, res) => {
     const transformedBuses = buses.map((bus) => ({
       id: bus._id,
       name: bus.name,
-      from: bus.busService?.route.from,
-      to: bus.busService?.route.to,
-      distance: bus.busService?.route.distance,
-      duration: bus.busService?.route.duration,
+      from: bus.busDetails?.route?.from || bus.busService?.route?.from,
+      to: bus.busDetails?.route?.to || bus.busService?.route?.to,
+      distance:
+        bus.busDetails?.route?.distance || bus.busService?.route?.distance,
+      duration:
+        bus.busDetails?.route?.duration || bus.busService?.route?.duration,
+      departureTime: bus.busDetails?.schedule?.[0]?.departureTime || "06:00 AM",
+      arrivalTime: bus.busDetails?.schedule?.[0]?.arrivalTime || "12:00 PM",
+      availableSeats:
+        bus.busDetails?.availableSeats ||
+        Math.floor((bus.busDetails?.capacity || 45) * 0.3),
+      totalSeats: bus.busDetails?.capacity || 45,
+      busType: bus.busDetails?.busType || "AC",
+      busNumber: bus.busDetails?.busNumber,
+      amenities: bus.busDetails?.amenities || [],
+      price: bus.pricing?.basePrice || 800,
+      currency: bus.pricing?.currency || "Rs",
+      operator: bus.busDetails?.operator || {
+        name: bus.name?.split(" ")[0] || "Kanxa",
+      },
+      vehicle: {
+        busType: bus.busDetails?.busType || "AC",
+        totalSeats: bus.busDetails?.capacity || 45,
+        amenities: bus.busDetails?.amenities || [],
+      },
       schedule: bus.busService?.schedule || [],
-      vehicle: bus.busService?.vehicle,
-      operator: bus.busService?.operator,
       pricing: bus.pricing,
       rating: bus.rating,
       images: bus.images,
       features: bus.features,
-      description: bus.shortDescription,
+      description: bus.description,
     }));
 
     res.json({

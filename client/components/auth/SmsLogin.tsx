@@ -1,18 +1,11 @@
 import { useState } from "react";
-import {
-  Phone,
-  ArrowLeft,
-  Send,
-  Shield,
-  Check,
-  Loader2,
-} from "lucide-react";
+import { Phone, ArrowLeft, Send, Shield, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import { useAuth } from "@/contexts/AuthContext";
 import { smsAPI } from "@/services/api";
 
@@ -24,7 +17,7 @@ interface SmsLoginProps {
 export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
   const { toast } = useToast();
   const { smsLogin } = useAuth();
-  
+
   const [step, setStep] = useState<"phone" | "verify">("phone");
   const [isLoading, setIsLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -34,10 +27,11 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
   const formatPhoneNumber = (value: string) => {
     // Remove all non-digits
     const numbers = value.replace(/\D/g, "");
-    
+
     // Format as +977-XXX-XXXXXX for Nepal
     if (numbers.length <= 3) return numbers;
-    if (numbers.length <= 6) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+    if (numbers.length <= 6)
+      return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
     return `${numbers.slice(0, 3)}-${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
   };
 
@@ -48,28 +42,29 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
 
   const handleSendCode = async () => {
     const cleanPhone = phoneNumber.replace(/\D/g, "");
-    
+
     if (!validatePhoneNumber(phoneNumber)) {
       toast({
         title: "Invalid Phone Number",
-        description: "Please enter a valid 10-digit Nepali phone number starting with 98",
+        description:
+          "Please enter a valid 10-digit Nepali phone number starting with 98",
         variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
       const cleanPhone = phoneNumber.replace(/\D/g, "");
       await smsAPI.sendCode(`+977${cleanPhone}`);
-      
+
       setStep("verify");
       setCountdown(60);
-      
+
       // Start countdown timer
       const timer = setInterval(() => {
-        setCountdown(prev => {
+        setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
             return 0;
@@ -77,7 +72,7 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
           return prev - 1;
         });
       }, 1000);
-      
+
       toast({
         title: "Verification Code Sent",
         description: `A 6-digit code has been sent to +977-${cleanPhone}`,
@@ -110,14 +105,17 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
     }
 
     setIsLoading(true);
-    
+
     try {
       const cleanPhone = phoneNumber.replace(/\D/g, "");
-      const response = await smsAPI.verifyCode(`+977${cleanPhone}`, verificationCode);
+      const response = await smsAPI.verifyCode(
+        `+977${cleanPhone}`,
+        verificationCode,
+      );
 
       // Use the response to login (this will be handled by AuthContext)
       await smsLogin(`+977${cleanPhone}`, verificationCode);
-      
+
       toast({
         title: "Login Successful! 🎉",
         description: "Welcome to Kanxa Safari",
@@ -128,12 +126,13 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
           </div>
         ),
       });
-      
+
       onSuccess();
     } catch (error: any) {
       toast({
         title: "Verification Failed",
-        description: error.message || "Invalid verification code. Please try again.",
+        description:
+          error.message || "Invalid verification code. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -143,15 +142,15 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
 
   const handleResendCode = async () => {
     if (countdown > 0) return;
-    
+
     setIsLoading(true);
     try {
       const cleanPhone = phoneNumber.replace(/\D/g, "");
       await smsAPI.resendCode(`+977${cleanPhone}`);
       setCountdown(60);
-      
+
       const timer = setInterval(() => {
-        setCountdown(prev => {
+        setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
             return 0;
@@ -159,7 +158,7 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
           return prev - 1;
         });
       }, 1000);
-      
+
       toast({
         title: "Code Resent",
         description: "A new verification code has been sent",
@@ -180,12 +179,7 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
       <Card className="shadow-xl border-0 backdrop-blur-sm bg-white/95">
         <CardHeader className="space-y-1 pb-4">
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBack}
-              className="p-2"
-            >
+            <Button variant="ghost" size="sm" onClick={onBack} className="p-2">
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
@@ -193,10 +187,9 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
                 SMS Login
               </CardTitle>
               <p className="text-sm text-gray-600">
-                {step === "phone" 
-                  ? "Enter your phone number" 
-                  : "Enter verification code"
-                }
+                {step === "phone"
+                  ? "Enter your phone number"
+                  : "Enter verification code"}
               </p>
             </div>
           </div>
@@ -212,7 +205,10 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
           {step === "phone" ? (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="phone"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Phone Number
                 </Label>
                 <div className="relative">
@@ -225,7 +221,9 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
                     type="tel"
                     placeholder="98X-XXX-XXXX"
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
+                    onChange={(e) =>
+                      setPhoneNumber(formatPhoneNumber(e.target.value))
+                    }
                     className="pl-16"
                     maxLength={12}
                     disabled={isLoading}
@@ -264,7 +262,10 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="code" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="code"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Verification Code
                 </Label>
                 <Input
@@ -272,7 +273,11 @@ export default function SmsLogin({ onBack, onSuccess }: SmsLoginProps) {
                   type="text"
                   placeholder="Enter 6-digit code"
                   value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  onChange={(e) =>
+                    setVerificationCode(
+                      e.target.value.replace(/\D/g, "").slice(0, 6),
+                    )
+                  }
                   className="text-center text-lg tracking-widest"
                   maxLength={6}
                   disabled={isLoading}
