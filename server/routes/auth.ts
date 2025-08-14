@@ -650,4 +650,163 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 router.post("/change-password", changePassword);
 
+// @route   POST /api/auth/request-email-change
+// @desc    Request email change with verification
+// @access  Private
+export const requestEmailChange: RequestHandler = async (req, res) => {
+  try {
+    const { newEmail } = req.body;
+    const userId = (req as any).user?.id;
+
+    if (!newEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "New email is required",
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format",
+      });
+    }
+
+    if (!isDBConnected()) {
+      // Mock response for demo mode
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      console.log(`📧 Demo email verification code for ${newEmail}: ${verificationCode}`);
+
+      return res.json({
+        success: true,
+        message: "Verification code sent successfully",
+        demo: true,
+        // Include code in response for testing (remove in production)
+        ...(process.env.NODE_ENV === "development" && { verificationCode }),
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if email is already in use
+    const existingUser = await User.findOne({ email: newEmail });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already in use",
+      });
+    }
+
+    // Generate verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Store pending email change
+    user.verification.emailChangeToken = verificationCode;
+    user.verification.emailChangeExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    user.verification.pendingEmail = newEmail;
+
+    await user.save();
+
+    // In a real app, send email here
+    console.log(`📧 Email verification code for ${newEmail}: ${verificationCode}`);
+
+    res.json({
+      success: true,
+      message: "Verification code sent to your new email",
+      // Include code in response for testing (remove in production)
+      ...(process.env.NODE_ENV === "development" && { verificationCode }),
+    });
+  } catch (error: any) {
+    console.error("Request email change error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to send verification code",
+    });
+  }
+};
+
+// @route   POST /api/auth/change-email
+// @desc    Change email with verification code
+// @access  Private
+export const changeEmail: RequestHandler = async (req, res) => {
+  try {
+    const { newEmail, verificationCode } = req.body;
+    const userId = (req as any).user?.id;
+
+    if (!newEmail || !verificationCode) {
+      return res.status(400).json({
+        success: false,
+        message: "New email and verification code are required",
+      });
+    }
+
+    if (!isDBConnected()) {
+      // Mock response for demo mode
+      return res.json({
+        success: true,
+        message: "Email changed successfully",
+        demo: true,
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Verify the code and check expiration
+    if (
+      user.verification.emailChangeToken !== verificationCode ||
+      !user.verification.emailChangeExpires ||
+      user.verification.emailChangeExpires < new Date()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
+    }
+
+    // Verify the email matches what was requested
+    if (user.verification.pendingEmail !== newEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "Email doesn't match the requested change",
+      });
+    }
+
+    // Update email
+    user.email = newEmail;
+    user.verification.emailChangeToken = undefined;
+    user.verification.emailChangeExpires = undefined;
+    user.verification.pendingEmail = undefined;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Email changed successfully",
+    });
+  } catch (error: any) {
+    console.error("Change email error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to change email",
+    });
+  }
+};
+
+router.post("/request-email-change", requestEmailChange);
+router.post("/change-email", changeEmail);
+
 export default router;
