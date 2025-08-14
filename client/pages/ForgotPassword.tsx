@@ -114,7 +114,9 @@ export default function ForgotPassword() {
       console.error("Forgot password error:", error);
       toast({
         title: "Failed to Send Email",
-        description: error.message || "Unable to send reset email. Please try again later.",
+        description:
+          error.message ||
+          "Unable to send reset email. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -173,7 +175,9 @@ export default function ForgotPassword() {
       console.error("SMS reset error:", error);
       toast({
         title: "Failed to Send SMS",
-        description: error.message || "Unable to send verification code. Please try again later.",
+        description:
+          error.message ||
+          "Unable to send verification code. Please try again later.",
         variant: "destructive",
       });
     } finally {

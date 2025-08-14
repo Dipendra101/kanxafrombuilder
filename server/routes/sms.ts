@@ -409,7 +409,7 @@ export const sendResetCode: RequestHandler = async (req, res) => {
       async () => {
         return await User.findOne({ phone: formattedPhone });
       },
-      () => null // Mock user not found
+      () => null, // Mock user not found
     );
 
     if (!user && isDBConnected()) {
@@ -447,7 +447,6 @@ export const sendResetCode: RequestHandler = async (req, res) => {
       // Include code in development for testing
       ...(process.env.NODE_ENV === "development" && { code }),
     });
-
   } catch (error: any) {
     console.error("Send reset code error:", error);
     res.status(500).json({

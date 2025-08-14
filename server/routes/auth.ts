@@ -844,8 +844,8 @@ export const extendToken: RequestHandler = async (req, res) => {
     }
 
     // Generate new token with extended expiry (30 days)
-    const jwt = require('jsonwebtoken');
-    const JWT_SECRET = process.env.JWT_SECRET || 'kanxasafari_jwt_secret_key';
+    const jwt = require("jsonwebtoken");
+    const JWT_SECRET = process.env.JWT_SECRET || "kanxasafari_jwt_secret_key";
 
     const extendedToken = jwt.sign(
       {
@@ -854,7 +854,7 @@ export const extendToken: RequestHandler = async (req, res) => {
         role: user.role,
       },
       JWT_SECRET,
-      { expiresIn: '30d' } // 30 days for remember me
+      { expiresIn: "30d" }, // 30 days for remember me
     );
 
     res.json({

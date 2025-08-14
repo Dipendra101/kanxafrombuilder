@@ -46,14 +46,17 @@ export default function ResetPassword() {
 
     const checkToken = async () => {
       try {
-        const response = await fetch(`/api/auth/verify-reset-token?token=${token}`);
+        const response = await fetch(
+          `/api/auth/verify-reset-token?token=${token}`,
+        );
         const result = await response.json();
         setTokenValid(result.success);
-        
+
         if (!result.success) {
           toast({
             title: "Invalid Reset Link",
-            description: result.message || "This reset link is invalid or has expired.",
+            description:
+              result.message || "This reset link is invalid or has expired.",
             variant: "destructive",
           });
         }
@@ -80,7 +83,8 @@ export default function ResetPassword() {
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = "Password must contain uppercase, lowercase, and number";
+      newErrors.password =
+        "Password must contain uppercase, lowercase, and number";
     }
 
     // Confirm password validation
@@ -130,7 +134,8 @@ export default function ResetPassword() {
 
       toast({
         title: "Password Reset Successful! 🎉",
-        description: "Your password has been updated. You can now log in with your new password.",
+        description:
+          "Your password has been updated. You can now log in with your new password.",
         action: (
           <div className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -143,12 +148,12 @@ export default function ResetPassword() {
       setTimeout(() => {
         navigate("/login");
       }, 3000);
-
     } catch (error: any) {
       console.error("Reset password error:", error);
       toast({
         title: "Reset Failed",
-        description: error.message || "Unable to reset password. Please try again.",
+        description:
+          error.message || "Unable to reset password. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -192,7 +197,9 @@ export default function ResetPassword() {
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <AlertCircle className="h-8 w-8 text-red-600" />
               </div>
-              <CardTitle className="text-xl text-red-700">Invalid Reset Link</CardTitle>
+              <CardTitle className="text-xl text-red-700">
+                Invalid Reset Link
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-center">
               <p className="text-gray-600">
@@ -206,14 +213,10 @@ export default function ResetPassword() {
               </Alert>
               <div className="flex gap-3">
                 <Button variant="outline" asChild className="flex-1">
-                  <Link to="/forgot-password">
-                    Request New Link
-                  </Link>
+                  <Link to="/forgot-password">Request New Link</Link>
                 </Button>
                 <Button asChild className="flex-1">
-                  <Link to="/login">
-                    Back to Login
-                  </Link>
+                  <Link to="/login">Back to Login</Link>
                 </Button>
               </div>
             </CardContent>
@@ -265,7 +268,10 @@ export default function ResetPassword() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* New Password */}
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor="password"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     New Password
                   </Label>
                   <div className="relative">
@@ -275,7 +281,9 @@ export default function ResetPassword() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter new password"
                       value={formData.password}
-                      onChange={(e) => handleInputChange("password", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("password", e.target.value)
+                      }
                       className={`pl-10 pr-10 ${errors.password ? "border-red-500" : ""}`}
                       disabled={isLoading}
                     />
@@ -284,14 +292,22 @@ export default function ResetPassword() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                   {formData.password && (
                     <div className="flex items-center gap-2 text-xs">
                       <span className="text-gray-600">Strength:</span>
-                      <span className={`font-medium ${getPasswordStrength(formData.password).color}`}>
-                        {getPasswordStrength(formData.password).strength.toUpperCase()}
+                      <span
+                        className={`font-medium ${getPasswordStrength(formData.password).color}`}
+                      >
+                        {getPasswordStrength(
+                          formData.password,
+                        ).strength.toUpperCase()}
                       </span>
                     </div>
                   )}
@@ -305,7 +321,10 @@ export default function ResetPassword() {
 
                 {/* Confirm Password */}
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+                  <Label
+                    htmlFor="confirmPassword"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Confirm New Password
                   </Label>
                   <div className="relative">
@@ -315,16 +334,24 @@ export default function ResetPassword() {
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Confirm new password"
                       value={formData.confirmPassword}
-                      onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("confirmPassword", e.target.value)
+                      }
                       className={`pl-10 pr-10 ${errors.confirmPassword ? "border-red-500" : ""}`}
                       disabled={isLoading}
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                   {errors.confirmPassword && (
@@ -337,22 +364,48 @@ export default function ResetPassword() {
 
                 {/* Password Requirements */}
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-blue-900 mb-2">Password Requirements:</h4>
+                  <h4 className="font-medium text-blue-900 mb-2">
+                    Password Requirements:
+                  </h4>
                   <ul className="text-sm text-blue-800 space-y-1">
-                    <li className={`flex items-center gap-2 ${formData.password.length >= 6 ? 'text-green-700' : ''}`}>
-                      {formData.password.length >= 6 ? <CheckCircle className="h-3 w-3" /> : <div className="h-3 w-3 border border-gray-400 rounded-full" />}
+                    <li
+                      className={`flex items-center gap-2 ${formData.password.length >= 6 ? "text-green-700" : ""}`}
+                    >
+                      {formData.password.length >= 6 ? (
+                        <CheckCircle className="h-3 w-3" />
+                      ) : (
+                        <div className="h-3 w-3 border border-gray-400 rounded-full" />
+                      )}
                       At least 6 characters
                     </li>
-                    <li className={`flex items-center gap-2 ${/(?=.*[a-z])/.test(formData.password) ? 'text-green-700' : ''}`}>
-                      {/(?=.*[a-z])/.test(formData.password) ? <CheckCircle className="h-3 w-3" /> : <div className="h-3 w-3 border border-gray-400 rounded-full" />}
+                    <li
+                      className={`flex items-center gap-2 ${/(?=.*[a-z])/.test(formData.password) ? "text-green-700" : ""}`}
+                    >
+                      {/(?=.*[a-z])/.test(formData.password) ? (
+                        <CheckCircle className="h-3 w-3" />
+                      ) : (
+                        <div className="h-3 w-3 border border-gray-400 rounded-full" />
+                      )}
                       One lowercase letter
                     </li>
-                    <li className={`flex items-center gap-2 ${/(?=.*[A-Z])/.test(formData.password) ? 'text-green-700' : ''}`}>
-                      {/(?=.*[A-Z])/.test(formData.password) ? <CheckCircle className="h-3 w-3" /> : <div className="h-3 w-3 border border-gray-400 rounded-full" />}
+                    <li
+                      className={`flex items-center gap-2 ${/(?=.*[A-Z])/.test(formData.password) ? "text-green-700" : ""}`}
+                    >
+                      {/(?=.*[A-Z])/.test(formData.password) ? (
+                        <CheckCircle className="h-3 w-3" />
+                      ) : (
+                        <div className="h-3 w-3 border border-gray-400 rounded-full" />
+                      )}
                       One uppercase letter
                     </li>
-                    <li className={`flex items-center gap-2 ${/(?=.*\d)/.test(formData.password) ? 'text-green-700' : ''}`}>
-                      {/(?=.*\d)/.test(formData.password) ? <CheckCircle className="h-3 w-3" /> : <div className="h-3 w-3 border border-gray-400 rounded-full" />}
+                    <li
+                      className={`flex items-center gap-2 ${/(?=.*\d)/.test(formData.password) ? "text-green-700" : ""}`}
+                    >
+                      {/(?=.*\d)/.test(formData.password) ? (
+                        <CheckCircle className="h-3 w-3" />
+                      ) : (
+                        <div className="h-3 w-3 border border-gray-400 rounded-full" />
+                      )}
                       One number
                     </li>
                   </ul>
@@ -386,11 +439,14 @@ export default function ResetPassword() {
                     Password Updated Successfully!
                   </h3>
                   <p className="text-sm text-gray-600 mb-2">
-                    Your password has been changed. You can now log in with your new password.
+                    Your password has been changed. You can now log in with your
+                    new password.
                   </p>
                 </div>
                 <div className="bg-green-50 p-4 rounded-lg text-left">
-                  <h4 className="font-medium text-green-900 mb-2">What's Next:</h4>
+                  <h4 className="font-medium text-green-900 mb-2">
+                    What's Next:
+                  </h4>
                   <ul className="text-sm text-green-800 space-y-1">
                     <li>• You'll be redirected to login automatically</li>
                     <li>• Use your email and new password to sign in</li>
@@ -399,9 +455,7 @@ export default function ResetPassword() {
                   </ul>
                 </div>
                 <Button asChild className="w-full">
-                  <Link to="/login">
-                    Go to Login Now
-                  </Link>
+                  <Link to="/login">Go to Login Now</Link>
                 </Button>
               </div>
             )}
