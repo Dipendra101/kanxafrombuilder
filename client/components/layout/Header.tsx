@@ -20,6 +20,8 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import ChatNotifications from "@/components/chat/ChatNotifications";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Header() {
   const { user, logout, isAuthenticated, isGuest } = useAuth();
