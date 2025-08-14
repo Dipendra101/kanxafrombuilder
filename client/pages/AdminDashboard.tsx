@@ -402,17 +402,29 @@ export default function AdminDashboard() {
           setAllBookings(mockBookings);
           setRecentBookings(mockBookings);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to load dashboard data:", error);
 
-        // Only show error toast for authenticated users, not in demo mode
-        if (!isDemoMode) {
-          toast({
-            title: "Error",
-            description: "Failed to load dashboard data. Using demo data.",
-            variant: "destructive",
-          });
+        // Check if this is a network error (Failed to fetch)
+        const isNetworkError = error.message && (
+          error.message.includes("Failed to fetch") ||
+          error.message.includes("NetworkError") ||
+          error.message.includes("fetch")
+        );
+
+        if (isNetworkError) {
+          console.warn("Network error detected, enabling API failure mode");
+          setApiFailure(true);
         }
+
+        // Always show demo data on any error for better UX
+        toast({
+          title: isNetworkError ? "Network Error" : "Error",
+          description: isNetworkError
+            ? "Unable to connect to server. Showing demo data instead."
+            : "Failed to load dashboard data. Using demo data.",
+          variant: "destructive",
+        });
 
         // Fallback to demo data
         setStats({
@@ -425,6 +437,51 @@ export default function AdminDashboard() {
           pendingBookings: 12,
           monthlyRevenue: 25000,
         });
+
+        // Set demo users and services
+        const demoUsers = [
+          {
+            _id: "demo1",
+            name: "John Doe",
+            email: "john@example.com",
+            phone: "+977-980-123456",
+            role: "user",
+            isActive: true,
+            createdAt: new Date().toISOString(),
+          },
+        ];
+        setAllUsers(demoUsers);
+        setRecentUsers(demoUsers);
+
+        const demoServices = [
+          {
+            _id: "service1",
+            name: "Bus Transportation",
+            type: "transportation",
+            category: "Transportation",
+            pricing: { basePrice: 800, currency: "₨" },
+            isActive: true,
+            isFeatured: true,
+            rating: { average: 4.5, count: 120 },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ];
+        setAllServices(demoServices);
+
+        const demoBookings = [
+          {
+            _id: "booking1",
+            user: demoUsers[0],
+            service: demoServices[0],
+            totalAmount: 1500,
+            status: "confirmed",
+            createdAt: new Date().toISOString(),
+            bookingDate: new Date().toISOString(),
+          },
+        ];
+        setRecentBookings(demoBookings);
+        setAllBookings(demoBookings);
       } finally {
         setIsLoading(false);
       }
