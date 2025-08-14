@@ -77,13 +77,13 @@ export default function Profile() {
       email: user.email || "",
       phone: user.phone || "",
       address: user.address || "",
-      company: user.company || "", // Update this line
+      company: user.profile?.company || user.company || "",
       dateJoined: user.createdAt
         ? new Date(user.createdAt).toISOString().split("T")[0]
         : new Date().toISOString().split("T")[0],
-      bio: user.bio || "", // Update this line
+      bio: user.profile?.bio || user.bio || "",
     });
-    setProfilePicture(user.profilePicture || null);
+    setProfilePicture(user.profilePicture || user.avatar || null);
   }
 }, [user]);
 
