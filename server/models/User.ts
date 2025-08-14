@@ -45,6 +45,9 @@ export interface IUser extends Document {
     phoneToken?: string;
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
+    emailChangeToken?: string;
+    emailChangeExpires?: Date;
+    pendingEmail?: string;
   };
   loginHistory: Array<{
     ip: string;
