@@ -665,13 +665,22 @@ export default function Transportation() {
                             </span>
                           </div>
                         </div>
-                        <Link
-                          to={`/payment?service=${cargo.id}&type=cargo&amount=${cargo.basePrice}`}
-                        >
-                          <Button className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
-                            Book Service
-                          </Button>
-                        </Link>
+                        {!isAuthenticated || isGuest ? (
+                          <Link to="/login">
+                            <Button className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
+                              <Lock className="mr-2 h-4 w-4" />
+                              Login to Book
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Link
+                            to={`/payment?service=${cargo.id}&type=cargo&amount=${cargo.basePrice}`}
+                          >
+                            <Button className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90">
+                              Book Service
+                            </Button>
+                          </Link>
+                        )}
                       </CardContent>
                     </Card>
                   ))}
