@@ -367,6 +367,20 @@ export default function Materials() {
       </DialogHeader>
 
       <div className="space-y-4">
+        {/* Guest Mode Alert */}
+        {(!isAuthenticated || isGuest) && Object.entries(cart).length > 0 && (
+          <Alert className="border-orange-200 bg-orange-50">
+            <Lock className="h-4 w-4 text-orange-600" />
+            <AlertDescription className="text-orange-800">
+              <strong>Guest Mode:</strong> You can browse and add items to cart, but you'll need to{" "}
+              <Link to="/login" className="underline font-medium">
+                log in
+              </Link>{" "}
+              to complete your purchase.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {Object.entries(cart).length === 0 ? (
           <div className="text-center py-8">
             <ShoppingCart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
