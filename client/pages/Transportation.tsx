@@ -164,9 +164,9 @@ export default function Transportation() {
     return Array.from(routes);
   };
 
-  const renderBusService = (service: any) => (
+  const renderBusService = (service: any, index: number) => (
     <Card
-      key={service._id}
+      key={service._id || service.id || `bus-${index}`}
       className="hover:shadow-lg transition-shadow border-l-4 border-l-kanxa-blue"
     >
       <CardContent className="p-0">
@@ -295,8 +295,8 @@ export default function Transportation() {
     </Card>
   );
 
-  const renderCargoService = (service: any) => (
-    <Card key={service._id} className="hover:shadow-lg transition-shadow">
+  const renderCargoService = (service: any, index: number) => (
+    <Card key={service._id || service.id || `cargo-${index}`} className="hover:shadow-lg transition-shadow">
       <CardHeader>
         <div className="flex items-center gap-2">
           <Truck className="w-6 h-6 text-kanxa-orange" />
@@ -529,7 +529,7 @@ export default function Transportation() {
                     </Card>
                   ) : (
                     <div className="space-y-4">
-                      {filteredServices.map((service) => renderBusService(service))}
+                      {filteredServices.map((service, index) => renderBusService(service, index))}
                     </div>
                   )}
                 </div>
@@ -565,7 +565,7 @@ export default function Transportation() {
                   </Card>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredServices.map((service) => renderCargoService(service))}
+                    {filteredServices.map((service, index) => renderCargoService(service, index))}
                   </div>
                 )}
               </TabsContent>
@@ -587,9 +587,9 @@ export default function Transportation() {
 
                     {filteredServices.length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredServices.map((service) => (
+                        {filteredServices.map((service, index) => (
                           <Card
-                            key={service._id}
+                            key={service._id || service.id || `tour-${index}`}
                             className="hover:shadow-lg transition-shadow"
                           >
                             <CardHeader>
