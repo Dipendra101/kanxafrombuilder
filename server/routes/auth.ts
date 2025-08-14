@@ -717,8 +717,13 @@ export const requestEmailChange: RequestHandler = async (req, res) => {
 
     await user.save();
 
-    // In a real app, send email here
-    console.log(`📧 Email verification code for ${newEmail}: ${verificationCode}`);
+    // Send verification email
+    try {
+      await emailService.sendVerificationCode(newEmail, verificationCode, 'email-change');
+      console.log(`📧 Email verification code sent to ${newEmail}`);
+    } catch (emailError) {
+      console.error('Failed to send email, but continuing with demo mode:', emailError);
+    }
 
     res.json({
       success: true,
