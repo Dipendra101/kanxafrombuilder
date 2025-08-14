@@ -1,25 +1,40 @@
-import nodemailer from 'nodemailer';
+import { fork } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const sendEmail = async (options) => {
-  // 1. Create a transporter
-  const transporter = nodemailer.createTransport({
-    service: 'gmail', // Or your email provider
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
+// Helper to get the correct path in ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const sendEmail = (options) => {
+  return new Promise((resolve, reject) => {
+    // Fork the email worker script
+    const worker = fork(path.join(__dirname, 'emailWorker.js'));
+
+    // Listen for messages from the worker
+    worker.on('message', (message) => {
+      if (message.success) {
+        resolve();
+      } else {
+        reject(new Error(message.error));
+      }
+    });
+
+    // Handle errors in the worker process itself
+    worker.on('error', (err) => {
+      reject(err);
+    });
+
+    // Handle the worker exiting unexpectedly
+    worker.on('exit', (code) => {
+      if (code !== 0) {
+        reject(new Error(`Email worker stopped with exit code ${code}`));
+      }
+    });
+
+    // Send the email options to the worker to start the process
+    worker.send(options);
   });
-
-  // 2. Define the email options
-  const mailOptions = {
-    from: 'Kanxa Safari <no-reply@kanxasafari.com>',
-    to: options.email,
-    subject: options.subject,
-    html: options.html,
-  };
-
-  // 3. Actually send the email
-  await transporter.sendMail(mailOptions);
 };
 
 export default sendEmail;
