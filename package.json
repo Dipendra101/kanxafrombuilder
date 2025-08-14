@@ -28,6 +28,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.1",
+    "react-hot-toast": "^2.5.2",
     "twilio": "^5.8.0",
     "zod": "^3.23.8"
   },
