@@ -111,7 +111,7 @@ export default function Header() {
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-kanxa-navy hover:text-kanxa-orange">
-                  Construction
+                  {t('header.construction')}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid gap-3 p-6 w-[400px]">
@@ -122,10 +122,10 @@ export default function Header() {
                           className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-kanxa-light-orange to-kanxa-orange p-6 no-underline outline-none focus:shadow-md"
                         >
                           <div className="mb-2 mt-4 text-lg font-medium text-white">
-                            Construction
+                            {t('header.construction')}
                           </div>
                           <p className="text-sm leading-tight text-white/90">
-                            Building materials and machinery
+                            {t('nav.construction.desc')}
                           </p>
                         </Link>
                       </NavigationMenuLink>
