@@ -46,6 +46,7 @@ const Seat = ({
 };
 
 export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
+  const { isAuthenticated, isGuest } = useAuth();
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
   const occupiedSeats = [2, 5, 8, 12, 15, 23, 28, 31, 37, 42];
   const navigate = useNavigate();
