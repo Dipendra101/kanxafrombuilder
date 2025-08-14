@@ -7,15 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from "react";
-import { 
-  Shield, 
-  ShieldAlert, 
-  User, 
-  Lock, 
-  Eye, 
+import {
+  Shield,
+  ShieldAlert,
+  User,
+  Lock,
+  Eye,
   EyeOff,
   Loader2,
-  AlertTriangle 
+  AlertTriangle,
 } from "lucide-react";
 
 interface AdminAccessProps {
@@ -24,16 +24,16 @@ interface AdminAccessProps {
   fallbackComponent?: React.ReactNode;
 }
 
-export function AdminAccess({ 
-  requiredRole = ["admin"], 
-  children, 
-  fallbackComponent 
+export function AdminAccess({
+  requiredRole = ["admin"],
+  children,
+  fallbackComponent,
 }: AdminAccessProps) {
   const { user, isAuthenticated, login } = useAuth();
   const { toast } = useToast();
   const [loginData, setLoginData] = useState({
     email: "admin@demo.com",
-    password: "demo123"
+    password: "demo123",
   });
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -91,10 +91,9 @@ export function AdminAccess({
             <Alert variant="destructive" className="mb-4">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                {isAuthenticated 
+                {isAuthenticated
                   ? `${requiredRole.join(" or ").toUpperCase()} privileges required to access this dashboard.`
-                  : "Admin privileges required to access this dashboard."
-                }
+                  : "Admin privileges required to access this dashboard."}
               </AlertDescription>
             </Alert>
 
@@ -104,7 +103,9 @@ export function AdminAccess({
                 <div className="flex items-center gap-2 text-sm">
                   <User className="h-4 w-4 text-gray-500" />
                   <span className="text-gray-700">Logged in as:</span>
-                  <span className="font-medium">{user.name} ({user.role})</span>
+                  <span className="font-medium">
+                    {user.name} ({user.role})
+                  </span>
                 </div>
               </div>
             )}
@@ -129,10 +130,12 @@ export function AdminAccess({
                   id="admin-email"
                   type="email"
                   value={loginData.email}
-                  onChange={(e) => setLoginData({
-                    ...loginData,
-                    email: e.target.value
-                  })}
+                  onChange={(e) =>
+                    setLoginData({
+                      ...loginData,
+                      email: e.target.value,
+                    })
+                  }
                   placeholder="Enter admin email"
                   required
                 />
@@ -145,10 +148,12 @@ export function AdminAccess({
                     id="admin-password"
                     type={showPassword ? "text" : "password"}
                     value={loginData.password}
-                    onChange={(e) => setLoginData({
-                      ...loginData,
-                      password: e.target.value
-                    })}
+                    onChange={(e) =>
+                      setLoginData({
+                        ...loginData,
+                        password: e.target.value,
+                      })
+                    }
                     placeholder="Enter admin password"
                     required
                   />
@@ -168,8 +173,8 @@ export function AdminAccess({
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 disabled={isLoggingIn}
               >
@@ -189,18 +194,28 @@ export function AdminAccess({
 
             {/* Demo Credentials */}
             <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <h4 className="font-medium text-blue-800 mb-2">Demo Admin Access</h4>
+              <h4 className="font-medium text-blue-800 mb-2">
+                Demo Admin Access
+              </h4>
               <div className="text-sm text-blue-700 space-y-1">
-                <div>Email: <code className="bg-blue-100 px-1 rounded">admin@demo.com</code></div>
-                <div>Password: <code className="bg-blue-100 px-1 rounded">demo123</code></div>
+                <div>
+                  Email:{" "}
+                  <code className="bg-blue-100 px-1 rounded">
+                    admin@demo.com
+                  </code>
+                </div>
+                <div>
+                  Password:{" "}
+                  <code className="bg-blue-100 px-1 rounded">demo123</code>
+                </div>
               </div>
             </div>
 
             {/* Go Home Button */}
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full mt-4"
-              onClick={() => window.location.href = '/'}
+              onClick={() => (window.location.href = "/")}
             >
               Go Home
             </Button>

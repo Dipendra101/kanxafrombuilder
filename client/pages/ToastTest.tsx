@@ -50,7 +50,11 @@ export default function ToastTest() {
             <Button onClick={handleTestToasts} className="w-full">
               Test useToast Hook
             </Button>
-            <Button onClick={handleDirectToasts} variant="outline" className="w-full">
+            <Button
+              onClick={handleDirectToasts}
+              variant="outline"
+              className="w-full"
+            >
               Test Direct Toast Methods
             </Button>
           </CardContent>

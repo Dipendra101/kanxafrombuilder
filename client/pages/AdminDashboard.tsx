@@ -289,19 +289,19 @@ export default function AdminDashboard() {
           servicesResponse,
           bookingsResponse,
         ] = await Promise.allSettled([
-          adminAPI.getDashboard().catch(err => {
+          adminAPI.getDashboard().catch((err) => {
             console.warn("Dashboard API failed:", err.message);
             return { data: null };
           }),
-          userAPI.getAllUsers().catch(err => {
+          userAPI.getAllUsers().catch((err) => {
             console.warn("Users API failed:", err.message);
             return { users: [] };
           }),
-          servicesAPI.getAllServices({ limit: 100 }).catch(err => {
+          servicesAPI.getAllServices({ limit: 100 }).catch((err) => {
             console.warn("Services API failed:", err.message);
             return { services: [] };
           }),
-          bookingsAPI.getAllBookings({ limit: 100 }).catch(err => {
+          bookingsAPI.getAllBookings({ limit: 100 }).catch((err) => {
             console.warn("Bookings API failed:", err.message);
             return { bookings: [] };
           }),
@@ -774,11 +774,13 @@ export default function AdminDashboard() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => ExportService.exportFinancialReport({
-                    totalRevenue: stats.totalRevenue,
-                    monthlyRevenue: stats.monthlyRevenue,
-                    bookings: allBookings
-                  })}
+                  onClick={() =>
+                    ExportService.exportFinancialReport({
+                      totalRevenue: stats.totalRevenue,
+                      monthlyRevenue: stats.monthlyRevenue,
+                      bookings: allBookings,
+                    })
+                  }
                   disabled={isLoading}
                 >
                   Financial Report
@@ -877,10 +879,10 @@ export default function AdminDashboard() {
                       >
                         <div className="space-y-1">
                           <p className="text-sm font-medium">
-                            {booking.user?.name || 'User not available'}
+                            {booking.user?.name || "User not available"}
                           </p>
                           <p className="text-sm text-gray-600">
-                            {booking.service?.name || 'Service not available'}
+                            {booking.service?.name || "Service not available"}
                           </p>
                           <p className="text-xs text-gray-500">
                             {new Date(booking.createdAt).toLocaleDateString()}
@@ -1113,7 +1115,7 @@ export default function AdminDashboard() {
                         <TableCell>
                           <div className="flex items-center space-x-1">
                             <span className="text-sm font-medium">
-                              {service.rating?.average?.toFixed(1) || 'N/A'}
+                              {service.rating?.average?.toFixed(1) || "N/A"}
                             </span>
                             <span className="text-sm text-gray-500">
                               ({service.rating?.count || 0})
@@ -1152,16 +1154,20 @@ export default function AdminDashboard() {
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => {
-                                  const serviceData = [{
-                                    id: service._id,
-                                    name: service.name,
-                                    type: service.type,
-                                    price: service.pricing?.basePrice || 0,
-                                    status: service.isActive ? 'Active' : 'Inactive'
-                                  }];
+                                  const serviceData = [
+                                    {
+                                      id: service._id,
+                                      name: service.name,
+                                      type: service.type,
+                                      price: service.pricing?.basePrice || 0,
+                                      status: service.isActive
+                                        ? "Active"
+                                        : "Inactive",
+                                    },
+                                  ];
                                   ExportService.exportData(serviceData, {
-                                    format: 'csv',
-                                    filename: `service_${service.name.replace(/\s+/g, '_').toLowerCase()}`
+                                    format: "csv",
+                                    filename: `service_${service.name.replace(/\s+/g, "_").toLowerCase()}`,
                                   });
                                 }}
                               >
@@ -1227,19 +1233,21 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium">{booking.user?.name || 'User not available'}</p>
+                            <p className="font-medium">
+                              {booking.user?.name || "User not available"}
+                            </p>
                             <p className="text-sm text-gray-600">
-                              {booking.user?.email || 'Email not available'}
+                              {booking.user?.email || "Email not available"}
                             </p>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
                             <p className="font-medium">
-                              {booking.service?.name || 'Service not available'}
+                              {booking.service?.name || "Service not available"}
                             </p>
                             <Badge variant="outline" className="mt-1">
-                              {booking.service?.type || 'N/A'}
+                              {booking.service?.type || "N/A"}
                             </Badge>
                           </div>
                         </TableCell>
@@ -1263,7 +1271,9 @@ export default function AdminDashboard() {
                                 View Details
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                onClick={() => ExportService.exportInvoice(booking)}
+                                onClick={() =>
+                                  ExportService.exportInvoice(booking)
+                                }
                               >
                                 <Download className="w-4 h-4 mr-2" />
                                 Download Invoice

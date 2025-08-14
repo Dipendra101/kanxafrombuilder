@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Settings,
   Bell,
@@ -16,18 +16,24 @@ import {
   RotateCcw,
   Palette,
   Languages,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/hooks/use-toast-simple';
-import ExportService from '@/services/exportService';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast-simple";
+import ExportService from "@/services/exportService";
 
 interface ChatSettings {
   notifications: {
@@ -38,9 +44,9 @@ interface ChatSettings {
     volume: number;
   };
   appearance: {
-    theme: 'light' | 'dark' | 'auto';
+    theme: "light" | "dark" | "auto";
     fontSize: number;
-    bubbleStyle: 'modern' | 'classic' | 'minimal';
+    bubbleStyle: "modern" | "classic" | "minimal";
     accentColor: string;
   };
   privacy: {
@@ -67,10 +73,10 @@ const defaultSettings: ChatSettings = {
     volume: 0.7,
   },
   appearance: {
-    theme: 'light',
+    theme: "light",
     fontSize: 14,
-    bubbleStyle: 'modern',
-    accentColor: '#2563eb',
+    bubbleStyle: "modern",
+    accentColor: "#2563eb",
   },
   privacy: {
     readReceipts: true,
@@ -81,7 +87,7 @@ const defaultSettings: ChatSettings = {
   chat: {
     enterToSend: true,
     autoCorrect: true,
-    language: 'en',
+    language: "en",
     messageHistory: 30,
     backupEnabled: true,
   },
@@ -92,9 +98,9 @@ interface EnhancedChatSettingsProps {
   initialSettings?: Partial<ChatSettings>;
 }
 
-export default function EnhancedChatSettings({ 
-  onClose, 
-  initialSettings 
+export default function EnhancedChatSettings({
+  onClose,
+  initialSettings,
 }: EnhancedChatSettingsProps) {
   const { toast } = useToast();
   const [settings, setSettings] = useState<ChatSettings>({
@@ -105,35 +111,35 @@ export default function EnhancedChatSettings({
   const [hasChanges, setHasChanges] = useState(false);
 
   const updateSetting = (path: string, value: any) => {
-    const keys = path.split('.');
+    const keys = path.split(".");
     const newSettings = { ...settings };
     let current: any = newSettings;
-    
+
     for (let i = 0; i < keys.length - 1; i++) {
       current = current[keys[i]];
     }
     current[keys[keys.length - 1]] = value;
-    
+
     setSettings(newSettings);
     setHasChanges(true);
   };
 
   const saveSettings = () => {
     // Save to localStorage or send to API
-    localStorage.setItem('chatSettings', JSON.stringify(settings));
-    
+    localStorage.setItem("chatSettings", JSON.stringify(settings));
+
     toast({
       title: "Settings Saved",
       description: "Your chat preferences have been updated successfully.",
     });
-    
+
     setHasChanges(false);
   };
 
   const resetSettings = () => {
     setSettings(defaultSettings);
     setHasChanges(true);
-    
+
     toast({
       title: "Settings Reset",
       description: "All settings have been reset to default values.",
@@ -144,24 +150,24 @@ export default function EnhancedChatSettings({
     // Mock chat data - in real app, this would come from chat service
     const chatData = [
       {
-        id: '1',
-        contact: 'Kanxa Safari Assistant',
-        lastMessage: 'How can I help you today?',
+        id: "1",
+        contact: "Kanxa Safari Assistant",
+        lastMessage: "How can I help you today?",
         timestamp: new Date().toISOString(),
         messageCount: 15,
       },
       {
-        id: '2', 
-        contact: 'Support Team',
-        lastMessage: 'Your booking has been confirmed',
+        id: "2",
+        contact: "Support Team",
+        lastMessage: "Your booking has been confirmed",
         timestamp: new Date().toISOString(),
         messageCount: 8,
-      }
+      },
     ];
 
     await ExportService.exportData(chatData, {
-      format: 'json',
-      filename: `chat_backup_${new Date().toISOString().split('T')[0]}`,
+      format: "json",
+      filename: `chat_backup_${new Date().toISOString().split("T")[0]}`,
       includeHeaders: true,
     });
   };
@@ -221,11 +227,15 @@ export default function EnhancedChatSettings({
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Enable Notifications</Label>
-                  <p className="text-sm text-gray-600">Receive notifications for new messages</p>
+                  <p className="text-sm text-gray-600">
+                    Receive notifications for new messages
+                  </p>
                 </div>
                 <Switch
                   checked={settings.notifications.enabled}
-                  onCheckedChange={(checked) => updateSetting('notifications.enabled', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("notifications.enabled", checked)
+                  }
                 />
               </div>
 
@@ -234,11 +244,15 @@ export default function EnhancedChatSettings({
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Sound Notifications</Label>
-                  <p className="text-sm text-gray-600">Play sound when receiving messages</p>
+                  <p className="text-sm text-gray-600">
+                    Play sound when receiving messages
+                  </p>
                 </div>
                 <Switch
                   checked={settings.notifications.sound}
-                  onCheckedChange={(checked) => updateSetting('notifications.sound', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("notifications.sound", checked)
+                  }
                   disabled={!settings.notifications.enabled}
                 />
               </div>
@@ -249,7 +263,9 @@ export default function EnhancedChatSettings({
                   <VolumeX className="h-4 w-4 text-gray-400" />
                   <Slider
                     value={[settings.notifications.volume * 100]}
-                    onValueChange={(value) => updateSetting('notifications.volume', value[0] / 100)}
+                    onValueChange={(value) =>
+                      updateSetting("notifications.volume", value[0] / 100)
+                    }
                     disabled={!settings.notifications.sound}
                     className="flex-1"
                   />
@@ -262,11 +278,15 @@ export default function EnhancedChatSettings({
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Desktop Notifications</Label>
-                  <p className="text-sm text-gray-600">Show browser notifications</p>
+                  <p className="text-sm text-gray-600">
+                    Show browser notifications
+                  </p>
                 </div>
                 <Switch
                   checked={settings.notifications.desktop}
-                  onCheckedChange={(checked) => updateSetting('notifications.desktop', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("notifications.desktop", checked)
+                  }
                   disabled={!settings.notifications.enabled}
                 />
               </div>
@@ -274,11 +294,15 @@ export default function EnhancedChatSettings({
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Email Notifications</Label>
-                  <p className="text-sm text-gray-600">Send important messages to email</p>
+                  <p className="text-sm text-gray-600">
+                    Send important messages to email
+                  </p>
                 </div>
                 <Switch
                   checked={settings.notifications.email}
-                  onCheckedChange={(checked) => updateSetting('notifications.email', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("notifications.email", checked)
+                  }
                   disabled={!settings.notifications.enabled}
                 />
               </div>
@@ -300,24 +324,36 @@ export default function EnhancedChatSettings({
                 <Label className="text-base">Theme</Label>
                 <div className="flex space-x-3">
                   <Button
-                    variant={settings.appearance.theme === 'light' ? 'default' : 'outline'}
-                    onClick={() => updateSetting('appearance.theme', 'light')}
+                    variant={
+                      settings.appearance.theme === "light"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() => updateSetting("appearance.theme", "light")}
                     className="flex items-center space-x-2"
                   >
                     <Sun className="h-4 w-4" />
                     <span>Light</span>
                   </Button>
                   <Button
-                    variant={settings.appearance.theme === 'dark' ? 'default' : 'outline'}
-                    onClick={() => updateSetting('appearance.theme', 'dark')}
+                    variant={
+                      settings.appearance.theme === "dark"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() => updateSetting("appearance.theme", "dark")}
                     className="flex items-center space-x-2"
                   >
                     <Moon className="h-4 w-4" />
                     <span>Dark</span>
                   </Button>
                   <Button
-                    variant={settings.appearance.theme === 'auto' ? 'default' : 'outline'}
-                    onClick={() => updateSetting('appearance.theme', 'auto')}
+                    variant={
+                      settings.appearance.theme === "auto"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() => updateSetting("appearance.theme", "auto")}
                     className="flex items-center space-x-2"
                   >
                     <Settings className="h-4 w-4" />
@@ -334,7 +370,9 @@ export default function EnhancedChatSettings({
                   <span className="text-sm">Small</span>
                   <Slider
                     value={[settings.appearance.fontSize]}
-                    onValueChange={(value) => updateSetting('appearance.fontSize', value[0])}
+                    onValueChange={(value) =>
+                      updateSetting("appearance.fontSize", value[0])
+                    }
                     min={12}
                     max={18}
                     step={1}
@@ -342,7 +380,9 @@ export default function EnhancedChatSettings({
                   />
                   <span className="text-sm">Large</span>
                 </div>
-                <p className="text-sm text-gray-600">Current size: {settings.appearance.fontSize}px</p>
+                <p className="text-sm text-gray-600">
+                  Current size: {settings.appearance.fontSize}px
+                </p>
               </div>
 
               <Separator />
@@ -351,7 +391,9 @@ export default function EnhancedChatSettings({
                 <Label className="text-base">Message Bubble Style</Label>
                 <Select
                   value={settings.appearance.bubbleStyle}
-                  onValueChange={(value) => updateSetting('appearance.bubbleStyle', value)}
+                  onValueChange={(value) =>
+                    updateSetting("appearance.bubbleStyle", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -369,14 +411,18 @@ export default function EnhancedChatSettings({
               <div className="space-y-3">
                 <Label className="text-base">Accent Color</Label>
                 <div className="flex space-x-2">
-                  {['#2563eb', '#16a34a', '#dc2626', '#ca8a04', '#9333ea'].map(color => (
-                    <button
-                      key={color}
-                      className="w-8 h-8 rounded-full border-2 border-gray-300"
-                      style={{ backgroundColor: color }}
-                      onClick={() => updateSetting('appearance.accentColor', color)}
-                    />
-                  ))}
+                  {["#2563eb", "#16a34a", "#dc2626", "#ca8a04", "#9333ea"].map(
+                    (color) => (
+                      <button
+                        key={color}
+                        className="w-8 h-8 rounded-full border-2 border-gray-300"
+                        style={{ backgroundColor: color }}
+                        onClick={() =>
+                          updateSetting("appearance.accentColor", color)
+                        }
+                      />
+                    ),
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -396,44 +442,60 @@ export default function EnhancedChatSettings({
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Read Receipts</Label>
-                  <p className="text-sm text-gray-600">Let others know when you've read their messages</p>
+                  <p className="text-sm text-gray-600">
+                    Let others know when you've read their messages
+                  </p>
                 </div>
                 <Switch
                   checked={settings.privacy.readReceipts}
-                  onCheckedChange={(checked) => updateSetting('privacy.readReceipts', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("privacy.readReceipts", checked)
+                  }
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Online Status</Label>
-                  <p className="text-sm text-gray-600">Show when you're online</p>
+                  <p className="text-sm text-gray-600">
+                    Show when you're online
+                  </p>
                 </div>
                 <Switch
                   checked={settings.privacy.onlineStatus}
-                  onCheckedChange={(checked) => updateSetting('privacy.onlineStatus', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("privacy.onlineStatus", checked)
+                  }
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Typing Indicators</Label>
-                  <p className="text-sm text-gray-600">Show when you're typing</p>
+                  <p className="text-sm text-gray-600">
+                    Show when you're typing
+                  </p>
                 </div>
                 <Switch
                   checked={settings.privacy.typing}
-                  onCheckedChange={(checked) => updateSetting('privacy.typing', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("privacy.typing", checked)
+                  }
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Auto-download Media</Label>
-                  <p className="text-sm text-gray-600">Automatically download images and files</p>
+                  <p className="text-sm text-gray-600">
+                    Automatically download images and files
+                  </p>
                 </div>
                 <Switch
                   checked={settings.privacy.mediaAutoDownload}
-                  onCheckedChange={(checked) => updateSetting('privacy.mediaAutoDownload', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("privacy.mediaAutoDownload", checked)
+                  }
                 />
               </div>
             </CardContent>
@@ -453,22 +515,30 @@ export default function EnhancedChatSettings({
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Enter to Send</Label>
-                  <p className="text-sm text-gray-600">Press Enter to send messages (Shift+Enter for new line)</p>
+                  <p className="text-sm text-gray-600">
+                    Press Enter to send messages (Shift+Enter for new line)
+                  </p>
                 </div>
                 <Switch
                   checked={settings.chat.enterToSend}
-                  onCheckedChange={(checked) => updateSetting('chat.enterToSend', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("chat.enterToSend", checked)
+                  }
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Auto-correct</Label>
-                  <p className="text-sm text-gray-600">Automatically correct spelling mistakes</p>
+                  <p className="text-sm text-gray-600">
+                    Automatically correct spelling mistakes
+                  </p>
                 </div>
                 <Switch
                   checked={settings.chat.autoCorrect}
-                  onCheckedChange={(checked) => updateSetting('chat.autoCorrect', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("chat.autoCorrect", checked)
+                  }
                 />
               </div>
 
@@ -476,7 +546,9 @@ export default function EnhancedChatSettings({
                 <Label className="text-base">Language</Label>
                 <Select
                   value={settings.chat.language}
-                  onValueChange={(value) => updateSetting('chat.language', value)}
+                  onValueChange={(value) =>
+                    updateSetting("chat.language", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -494,21 +566,32 @@ export default function EnhancedChatSettings({
                 <Input
                   type="number"
                   value={settings.chat.messageHistory}
-                  onChange={(e) => updateSetting('chat.messageHistory', parseInt(e.target.value))}
+                  onChange={(e) =>
+                    updateSetting(
+                      "chat.messageHistory",
+                      parseInt(e.target.value),
+                    )
+                  }
                   min={1}
                   max={365}
                 />
-                <p className="text-sm text-gray-600">How long to keep chat messages</p>
+                <p className="text-sm text-gray-600">
+                  How long to keep chat messages
+                </p>
               </div>
 
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-base">Automatic Backup</Label>
-                  <p className="text-sm text-gray-600">Automatically backup chat data</p>
+                  <p className="text-sm text-gray-600">
+                    Automatically backup chat data
+                  </p>
                 </div>
                 <Switch
                   checked={settings.chat.backupEnabled}
-                  onCheckedChange={(checked) => updateSetting('chat.backupEnabled', checked)}
+                  onCheckedChange={(checked) =>
+                    updateSetting("chat.backupEnabled", checked)
+                  }
                 />
               </div>
             </CardContent>
@@ -528,7 +611,9 @@ export default function EnhancedChatSettings({
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium mb-2">Export Chat Data</h4>
-                  <p className="text-sm text-gray-600 mb-3">Download your chat history and settings</p>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Download your chat history and settings
+                  </p>
                   <Button onClick={exportChatData} variant="outline">
                     <Download className="h-4 w-4 mr-2" />
                     Export Data
@@ -539,7 +624,9 @@ export default function EnhancedChatSettings({
 
                 <div>
                   <h4 className="font-medium mb-2 text-red-600">Danger Zone</h4>
-                  <p className="text-sm text-gray-600 mb-3">Permanently delete all chat data</p>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Permanently delete all chat data
+                  </p>
                   <Button onClick={clearChatHistory} variant="destructive">
                     <Trash2 className="h-4 w-4 mr-2" />
                     Clear All Chat History
