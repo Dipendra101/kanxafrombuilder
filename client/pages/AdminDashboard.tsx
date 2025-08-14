@@ -244,10 +244,11 @@ export default function AdminDashboard() {
       } catch (error: any) {
         console.error("Failed to load dashboard data:", error);
         setError(error.message || "Failed to load dashboard data");
-        
+
         toast({
           title: "Error",
-          description: "Failed to load dashboard data. Please try refreshing the page.",
+          description:
+            "Failed to load dashboard data. Please try refreshing the page.",
           variant: "destructive",
         });
       } finally {
@@ -260,7 +261,10 @@ export default function AdminDashboard() {
 
   // Redirect non-admin users
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || isGuest || !user || user.role !== "admin")) {
+    if (
+      !isLoading &&
+      (!isAuthenticated || isGuest || !user || user.role !== "admin")
+    ) {
       navigate("/");
     }
   }, [user, isAuthenticated, isGuest, isLoading, navigate]);
@@ -450,21 +454,23 @@ export default function AdminDashboard() {
   const filteredUsers = allUsers.filter(
     (user) =>
       user.name.toLowerCase().includes(userSearch.toLowerCase()) ||
-      user.email.toLowerCase().includes(userSearch.toLowerCase())
+      user.email.toLowerCase().includes(userSearch.toLowerCase()),
   );
 
   const filteredServices = allServices.filter(
     (service) =>
       service.name.toLowerCase().includes(serviceSearch.toLowerCase()) ||
       service.type.toLowerCase().includes(serviceSearch.toLowerCase()) ||
-      service.category.toLowerCase().includes(serviceSearch.toLowerCase())
+      service.category.toLowerCase().includes(serviceSearch.toLowerCase()),
   );
 
   const filteredBookings = allBookings.filter(
     (booking) =>
       booking.user?.name.toLowerCase().includes(bookingSearch.toLowerCase()) ||
-      booking.service?.name.toLowerCase().includes(bookingSearch.toLowerCase()) ||
-      booking._id.toLowerCase().includes(bookingSearch.toLowerCase())
+      booking.service?.name
+        .toLowerCase()
+        .includes(bookingSearch.toLowerCase()) ||
+      booking._id.toLowerCase().includes(bookingSearch.toLowerCase()),
   );
 
   const statCards = [
@@ -919,7 +925,8 @@ export default function AdminDashboard() {
                 <div>
                   <CardTitle>Service Management</CardTitle>
                   <CardDescription>
-                    Manage all services - buses, cargo, tours, materials, and more
+                    Manage all services - buses, cargo, tours, materials, and
+                    more
                   </CardDescription>
                 </div>
                 <Button onClick={() => setIsServiceDialogOpen(true)}>
@@ -1278,7 +1285,10 @@ export default function AdminDashboard() {
         </Tabs>
 
         {/* Service Dialog */}
-        <Dialog open={isServiceDialogOpen} onOpenChange={setIsServiceDialogOpen}>
+        <Dialog
+          open={isServiceDialogOpen}
+          onOpenChange={setIsServiceDialogOpen}
+        >
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>
@@ -1337,7 +1347,9 @@ export default function AdminDashboard() {
                     <SelectItem value="bus">Bus Transportation</SelectItem>
                     <SelectItem value="cargo">Cargo Services</SelectItem>
                     <SelectItem value="tour">Tour Packages</SelectItem>
-                    <SelectItem value="material">Construction Materials</SelectItem>
+                    <SelectItem value="material">
+                      Construction Materials
+                    </SelectItem>
                     <SelectItem value="garage">Garage Services</SelectItem>
                   </SelectContent>
                 </Select>
@@ -1364,7 +1376,10 @@ export default function AdminDashboard() {
                   type="number"
                   value={serviceForm.basePrice}
                   onChange={(e) =>
-                    setServiceForm({ ...serviceForm, basePrice: e.target.value })
+                    setServiceForm({
+                      ...serviceForm,
+                      basePrice: e.target.value,
+                    })
                   }
                   className="col-span-3"
                 />

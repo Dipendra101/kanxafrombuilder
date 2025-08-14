@@ -155,7 +155,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (isNetworkError) {
               console.log("🌐 Network issue detected during auth init");
               setNetworkError(true);
-              
+
               // Use cached data during network issues
               try {
                 const userData = JSON.parse(storedUser);
@@ -195,7 +195,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       setNetworkError(false);
-      
+
       const response = await authAPI.login({ email, password });
 
       if (response.success) {
@@ -212,12 +212,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      
+
       // Check for network errors
-      if (error.message?.includes("fetch") || error.message?.includes("Network")) {
+      if (
+        error.message?.includes("fetch") ||
+        error.message?.includes("Network")
+      ) {
         setNetworkError(true);
       }
-      
+
       throw error;
     } finally {
       setIsLoading(false);
@@ -233,7 +236,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       setNetworkError(false);
-      
+
       const response = await authAPI.register(userData);
 
       if (response.success) {
@@ -250,12 +253,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       console.error("Registration error:", error);
-      
+
       // Check for network errors
-      if (error.message?.includes("fetch") || error.message?.includes("Network")) {
+      if (
+        error.message?.includes("fetch") ||
+        error.message?.includes("Network")
+      ) {
         setNetworkError(true);
       }
-      
+
       throw error;
     } finally {
       setIsLoading(false);
@@ -285,12 +291,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       console.error("SMS login error:", error);
-      
+
       // Check for network errors
-      if (error.message?.includes("fetch") || error.message?.includes("Network")) {
+      if (
+        error.message?.includes("fetch") ||
+        error.message?.includes("Network")
+      ) {
         setNetworkError(true);
       }
-      
+
       throw error;
     } finally {
       setIsLoading(false);
@@ -342,12 +351,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       console.error("💥 AuthContext: Update user error:", error);
-      
+
       // Check for network errors
-      if (error.message?.includes("fetch") || error.message?.includes("Network")) {
+      if (
+        error.message?.includes("fetch") ||
+        error.message?.includes("Network")
+      ) {
         setNetworkError(true);
       }
-      
+
       throw error;
     }
   };
@@ -365,9 +377,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: any) {
       console.error("Refresh user error:", error);
-      
+
       // Check for network errors
-      if (error.message?.includes("fetch") || error.message?.includes("Network")) {
+      if (
+        error.message?.includes("fetch") ||
+        error.message?.includes("Network")
+      ) {
         setNetworkError(true);
       } else {
         // If profile fetch fails for other reasons (like 401), handle token expiry

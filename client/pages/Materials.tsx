@@ -108,13 +108,13 @@ export default function Materials() {
     try {
       setIsLoading(true);
       setError(null);
-      
-      const response = await servicesAPI.getAllServices({ 
-        type: "material", 
+
+      const response = await servicesAPI.getAllServices({
+        type: "material",
         limit: 100,
-        isActive: true 
+        isActive: true,
       });
-      
+
       setMaterials(response.services || []);
       console.log(`✅ Loaded ${response.services?.length || 0} materials`);
     } catch (error: any) {
@@ -140,17 +140,20 @@ export default function Materials() {
     const matchesSearch =
       material.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       material.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      material.materialService?.brand?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const materialCategory = material.materialService?.materialType?.toLowerCase() || 
-                           material.category?.toLowerCase() || 
-                           "";
-    
+      material.materialService?.brand
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+    const materialCategory =
+      material.materialService?.materialType?.toLowerCase() ||
+      material.category?.toLowerCase() ||
+      "";
+
     const matchesCategory =
-      selectedCategory === "all" || 
+      selectedCategory === "all" ||
       materialCategory.includes(selectedCategory) ||
       material.type === selectedCategory;
-    
+
     return matchesSearch && matchesCategory;
   });
 
@@ -211,8 +214,8 @@ export default function Materials() {
           <Alert className="border-orange-200 bg-orange-50">
             <Lock className="h-4 w-4 text-orange-600" />
             <AlertDescription className="text-orange-800">
-              <strong>Please log in to checkout:</strong> You can browse and add items to cart,
-              but you'll need to{" "}
+              <strong>Please log in to checkout:</strong> You can browse and add
+              items to cart, but you'll need to{" "}
               <Link to="/login" className="underline font-medium">
                 log in
               </Link>{" "}
@@ -239,9 +242,11 @@ export default function Materials() {
                     className="flex items-center gap-4 p-4 border rounded-lg"
                   >
                     <div className="text-3xl">
-                      {material.materialService?.materialType === "Cement" ? "🧱" :
-                       material.materialService?.materialType === "Steel" ? "🔗" :
-                       "📦"}
+                      {material.materialService?.materialType === "Cement"
+                        ? "🧱"
+                        : material.materialService?.materialType === "Steel"
+                          ? "🔗"
+                          : "📦"}
                     </div>
                     <div className="flex-1">
                       <h4 className="font-medium text-kanxa-navy">
@@ -273,7 +278,10 @@ export default function Materials() {
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-kanxa-blue">
-                        Rs {((material.pricing?.basePrice || 0) * quantity).toLocaleString()}
+                        Rs{" "}
+                        {(
+                          (material.pricing?.basePrice || 0) * quantity
+                        ).toLocaleString()}
                       </p>
                     </div>
                   </div>
@@ -419,7 +427,10 @@ export default function Materials() {
                     {material.name} x {quantity}
                   </span>
                   <span className="font-medium">
-                    Rs {((material.pricing?.basePrice || 0) * quantity).toLocaleString()}
+                    Rs{" "}
+                    {(
+                      (material.pricing?.basePrice || 0) * quantity
+                    ).toLocaleString()}
                   </span>
                 </div>
               );
@@ -573,11 +584,13 @@ export default function Materials() {
                 : categories.find((c) => c.id === selectedCategory)?.name}
               ({sortedMaterials.length})
             </h2>
-            
+
             {isLoading && (
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm text-gray-600">Loading materials...</span>
+                <span className="text-sm text-gray-600">
+                  Loading materials...
+                </span>
               </div>
             )}
           </div>
@@ -596,8 +609,8 @@ export default function Materials() {
                 No materials found
               </h3>
               <p className="text-gray-500 mb-4">
-                {materials.length === 0 
-                  ? "No materials are currently available. Please check back later." 
+                {materials.length === 0
+                  ? "No materials are currently available. Please check back later."
                   : "Try adjusting your search or filters"}
               </p>
               <Button
@@ -621,10 +634,13 @@ export default function Materials() {
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="text-4xl mb-2">
-                        {material.materialService?.materialType === "Cement" ? "🧱" :
-                         material.materialService?.materialType === "Steel" ? "🔗" :
-                         material.materialService?.materialType === "Pipes" ? "🚰" :
-                         "📦"}
+                        {material.materialService?.materialType === "Cement"
+                          ? "🧱"
+                          : material.materialService?.materialType === "Steel"
+                            ? "🔗"
+                            : material.materialService?.materialType === "Pipes"
+                              ? "🚰"
+                              : "📦"}
                       </div>
                       <div className="text-right">
                         <Badge
@@ -662,16 +678,16 @@ export default function Materials() {
 
                     {material.materialService?.specifications && (
                       <div className="space-y-2 text-sm">
-                        {Object.entries(material.materialService.specifications).slice(0, 3).map(
-                          ([key, value]) => (
+                        {Object.entries(material.materialService.specifications)
+                          .slice(0, 3)
+                          .map(([key, value]) => (
                             <div key={key} className="flex justify-between">
                               <span className="text-gray-600 capitalize">
                                 {key}:
                               </span>
                               <span className="font-medium">{value}</span>
                             </div>
-                          ),
-                        )}
+                          ))}
                       </div>
                     )}
 
@@ -681,7 +697,10 @@ export default function Materials() {
                       <div className="flex items-end justify-between">
                         <div>
                           <p className="text-2xl font-bold text-kanxa-orange">
-                            Rs {(material.pricing?.basePrice || 0).toLocaleString()}
+                            Rs{" "}
+                            {(
+                              material.pricing?.basePrice || 0
+                            ).toLocaleString()}
                           </p>
                           <p className="text-xs text-gray-500">
                             {material.pricing?.unit || "per unit"}
@@ -690,7 +709,8 @@ export default function Materials() {
                         <div className="text-right">
                           <p className="text-xs text-gray-500">Stock:</p>
                           <p className="text-sm font-medium">
-                            {material.materialService?.stockQuantity || "Available"}
+                            {material.materialService?.stockQuantity ||
+                              "Available"}
                           </p>
                         </div>
                       </div>

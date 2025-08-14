@@ -66,14 +66,16 @@ export default function Transportation() {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const filters = {
-        from: selectedRoute && selectedRoute !== "all" 
-          ? selectedRoute.split(" → ")[0] 
-          : undefined,
-        to: selectedRoute && selectedRoute !== "all" 
-          ? selectedRoute.split(" → ")[1] 
-          : undefined,
+        from:
+          selectedRoute && selectedRoute !== "all"
+            ? selectedRoute.split(" → ")[0]
+            : undefined,
+        to:
+          selectedRoute && selectedRoute !== "all"
+            ? selectedRoute.split(" → ")[1]
+            : undefined,
         type,
         isActive: true,
       };
@@ -89,11 +91,17 @@ export default function Transportation() {
           setServices(response.cargo || response.services || []);
           break;
         case "tours":
-          response = await servicesAPI.getAllServices({ ...filters, type: "tour" });
+          response = await servicesAPI.getAllServices({
+            ...filters,
+            type: "tour",
+          });
           setServices(response.services || []);
           break;
         default:
-          response = await servicesAPI.getAllServices({ ...filters, limit: 20 });
+          response = await servicesAPI.getAllServices({
+            ...filters,
+            limit: 20,
+          });
           setServices(response.services || []);
       }
 
@@ -129,8 +137,8 @@ export default function Transportation() {
         service.description?.toLowerCase().includes(searchLower) ||
         service.busService?.route?.from?.toLowerCase().includes(searchLower) ||
         service.busService?.route?.to?.toLowerCase().includes(searchLower) ||
-        service.cargoService?.routes?.some((route: string) => 
-          route.toLowerCase().includes(searchLower)
+        service.cargoService?.routes?.some((route: string) =>
+          route.toLowerCase().includes(searchLower),
         )
       );
     }
@@ -140,17 +148,19 @@ export default function Transportation() {
   // Get available routes from services for the dropdown
   const getAvailableRoutes = () => {
     const routes = new Set<string>();
-    
-    services.forEach(service => {
+
+    services.forEach((service) => {
       if (service.busService?.route) {
         const route = `${service.busService.route.from} → ${service.busService.route.to}`;
         routes.add(route);
       }
       if (service.cargoService?.routes) {
-        service.cargoService.routes.forEach((route: string) => routes.add(route));
+        service.cargoService.routes.forEach((route: string) =>
+          routes.add(route),
+        );
       }
     });
-    
+
     return Array.from(routes);
   };
 
@@ -176,7 +186,8 @@ export default function Transportation() {
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                 <span className="text-sm text-gray-600">
-                  {service.rating?.average || "4.5"} ({service.rating?.count || "0"} reviews)
+                  {service.rating?.average || "4.5"} (
+                  {service.rating?.count || "0"} reviews)
                 </span>
               </div>
             </div>
@@ -187,7 +198,8 @@ export default function Transportation() {
             <div className="flex items-center gap-2 mb-2">
               <MapPin className="w-4 h-4 text-kanxa-blue" />
               <span className="text-lg font-semibold text-kanxa-navy">
-                {service.busService?.route?.from || "Departure"} → {service.busService?.route?.to || "Destination"}
+                {service.busService?.route?.from || "Departure"} →{" "}
+                {service.busService?.route?.to || "Destination"}
               </span>
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
@@ -200,7 +212,9 @@ export default function Transportation() {
               <div>
                 <div className="text-gray-500">Distance</div>
                 <div className="font-semibold text-lg">
-                  {service.busService?.route?.distance ? `${service.busService.route.distance} km` : "N/A"}
+                  {service.busService?.route?.distance
+                    ? `${service.busService.route.distance} km`
+                    : "N/A"}
                 </div>
               </div>
             </div>
@@ -294,14 +308,18 @@ export default function Transportation() {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-gray-600">{service.description}</p>
-        
+
         {service.cargoService?.routes && (
           <div>
-            <h4 className="font-medium text-kanxa-navy mb-2">Available Routes:</h4>
+            <h4 className="font-medium text-kanxa-navy mb-2">
+              Available Routes:
+            </h4>
             <ul className="text-sm text-gray-600 space-y-1">
-              {service.cargoService.routes.map((route: string, index: number) => (
-                <li key={index}>• {route}</li>
-              ))}
+              {service.cargoService.routes.map(
+                (route: string, index: number) => (
+                  <li key={index}>• {route}</li>
+                ),
+              )}
             </ul>
           </div>
         )}
@@ -310,9 +328,11 @@ export default function Transportation() {
           <div>
             <h4 className="font-medium text-kanxa-navy mb-2">Features:</h4>
             <ul className="text-sm text-gray-600 space-y-1">
-              {service.cargoService.features.map((feature: string, index: number) => (
-                <li key={index}>• {feature}</li>
-              ))}
+              {service.cargoService.features.map(
+                (feature: string, index: number) => (
+                  <li key={index}>• {feature}</li>
+                ),
+              )}
             </ul>
           </div>
         )}
@@ -322,12 +342,16 @@ export default function Transportation() {
         <div className="space-y-2">
           <div className="flex justify-between">
             <span className="text-sm text-gray-600">Base Price:</span>
-            <span className="font-medium">Rs {(service.pricing?.basePrice || 0).toLocaleString()}</span>
+            <span className="font-medium">
+              Rs {(service.pricing?.basePrice || 0).toLocaleString()}
+            </span>
           </div>
           {service.pricing?.pricePerKm && (
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Per KM:</span>
-              <span className="font-medium">Rs {service.pricing.pricePerKm}</span>
+              <span className="font-medium">
+                Rs {service.pricing.pricePerKm}
+              </span>
             </div>
           )}
         </div>
@@ -415,7 +439,10 @@ export default function Transportation() {
                       </div>
                       <div>
                         <Label htmlFor="route">Select Route</Label>
-                        <Select value={selectedRoute} onValueChange={setSelectedRoute}>
+                        <Select
+                          value={selectedRoute}
+                          onValueChange={setSelectedRoute}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Choose route" />
                           </SelectTrigger>
@@ -484,7 +511,8 @@ export default function Transportation() {
                       <CardContent className="text-center py-8">
                         <Bus className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                         <p className="text-gray-600">
-                          No bus services found. Please try different search criteria.
+                          No bus services found. Please try different search
+                          criteria.
                         </p>
                         <Button
                           variant="outline"
@@ -522,7 +550,9 @@ export default function Transportation() {
                 {isLoading ? (
                   <div className="text-center py-8">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto text-kanxa-blue" />
-                    <p className="mt-2 text-gray-600">Loading cargo services...</p>
+                    <p className="mt-2 text-gray-600">
+                      Loading cargo services...
+                    </p>
                   </div>
                 ) : filteredServices.length === 0 ? (
                   <Card>
@@ -550,26 +580,40 @@ export default function Transportation() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <p className="text-gray-600">
-                      Plan your perfect tour with our custom transportation services.
-                      We provide flexible routing, comfortable vehicles, and experienced drivers.
+                      Plan your perfect tour with our custom transportation
+                      services. We provide flexible routing, comfortable
+                      vehicles, and experienced drivers.
                     </p>
 
                     {filteredServices.length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredServices.map((service) => (
-                          <Card key={service._id} className="hover:shadow-lg transition-shadow">
+                          <Card
+                            key={service._id}
+                            className="hover:shadow-lg transition-shadow"
+                          >
                             <CardHeader>
-                              <CardTitle className="text-kanxa-navy">{service.name}</CardTitle>
+                              <CardTitle className="text-kanxa-navy">
+                                {service.name}
+                              </CardTitle>
                             </CardHeader>
                             <CardContent>
-                              <p className="text-sm text-gray-600 mb-4">{service.description}</p>
+                              <p className="text-sm text-gray-600 mb-4">
+                                {service.description}
+                              </p>
                               <div className="flex justify-between items-center">
                                 <span className="text-lg font-bold text-kanxa-green">
-                                  Rs {(service.pricing?.basePrice || 0).toLocaleString()}
+                                  Rs{" "}
+                                  {(
+                                    service.pricing?.basePrice || 0
+                                  ).toLocaleString()}
                                 </span>
                                 {!isAuthenticated ? (
                                   <Link to="/login">
-                                    <Button size="sm" className="bg-kanxa-green hover:bg-kanxa-green/90">
+                                    <Button
+                                      size="sm"
+                                      className="bg-kanxa-green hover:bg-kanxa-green/90"
+                                    >
                                       <Lock className="mr-2 h-4 w-4" />
                                       Login to Book
                                     </Button>
@@ -578,7 +622,10 @@ export default function Transportation() {
                                   <Link
                                     to={`/payment?service=${service._id}&type=tour&amount=${service.pricing?.basePrice || 0}`}
                                   >
-                                    <Button size="sm" className="bg-kanxa-green hover:bg-kanxa-green/90">
+                                    <Button
+                                      size="sm"
+                                      className="bg-kanxa-green hover:bg-kanxa-green/90"
+                                    >
                                       Book Tour
                                     </Button>
                                   </Link>
@@ -594,7 +641,8 @@ export default function Transportation() {
                           Get Custom Quote
                         </h4>
                         <p className="text-sm text-gray-600 mb-4">
-                          Contact us with your requirements for a personalized quote
+                          Contact us with your requirements for a personalized
+                          quote
                         </p>
                         <div className="flex gap-2">
                           <Button className="bg-kanxa-green hover:bg-kanxa-green/90">

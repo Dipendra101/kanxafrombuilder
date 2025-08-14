@@ -77,13 +77,13 @@ router.post("/register", async (req, res) => {
     const accessToken = jwt.sign(
       { userId: user._id, role: user.role },
       JWT_SECRET,
-      { expiresIn: "24h" }
+      { expiresIn: "24h" },
     );
 
     const refreshToken = jwt.sign(
       { userId: user._id, type: "refresh" },
       JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     // User response without password
@@ -128,10 +128,10 @@ router.post("/login", async (req, res) => {
     }
 
     // Find user
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       email: email.toLowerCase(),
-      isActive: true 
-    }).select('+password');
+      isActive: true,
+    }).select("+password");
 
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
@@ -144,13 +144,13 @@ router.post("/login", async (req, res) => {
     const accessToken = jwt.sign(
       { userId: user._id, role: user.role },
       JWT_SECRET,
-      { expiresIn: "24h" }
+      { expiresIn: "24h" },
     );
 
     const refreshToken = jwt.sign(
       { userId: user._id, type: "refresh" },
       JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     // Update last login
@@ -257,7 +257,7 @@ router.post("/extend-token", authenticate, async (req, res) => {
     const extendedToken = jwt.sign(
       { userId: user._id, role: user.role },
       JWT_SECRET,
-      { expiresIn: "30d" }
+      { expiresIn: "30d" },
     );
 
     res.json({
@@ -293,16 +293,17 @@ router.post("/forgot-password", async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       email: email.toLowerCase(),
-      isActive: true 
+      isActive: true,
     });
 
     if (!user) {
       // Don't reveal if user exists for security
       return res.json({
         success: true,
-        message: "If an account with this email exists, a reset link has been sent.",
+        message:
+          "If an account with this email exists, a reset link has been sent.",
       });
     }
 
@@ -316,7 +317,11 @@ router.post("/forgot-password", async (req, res) => {
 
     // Send email
     try {
-      await emailService.sendPasswordResetEmail(user.email, user.name, resetToken);
+      await emailService.sendPasswordResetEmail(
+        user.email,
+        user.name,
+        resetToken,
+      );
       console.log(`📧 Password reset email sent to ${user.email}`);
     } catch (emailError) {
       console.error("Failed to send password reset email:", emailError);

@@ -138,7 +138,7 @@ export default function Cargo() {
     },
     {
       from: "Lamjung",
-      to: "Pokhara", 
+      to: "Pokhara",
       distance: "120 km",
       duration: "3-4 hours",
       basePrice: 8000,
@@ -185,11 +185,11 @@ export default function Cargo() {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         // Fetch cargo services from API
         const response = await servicesAPI.getCargo();
         const services = response.cargo || [];
-        
+
         setCargoServices(services);
         console.log("Cargo services loaded successfully:", services.length);
       } catch (error: any) {
@@ -197,7 +197,8 @@ export default function Cargo() {
         setError("Failed to load cargo services. Using default options.");
         toast({
           title: "Notice",
-          description: "Loading cargo services from cache. Some features may be limited.",
+          description:
+            "Loading cargo services from cache. Some features may be limited.",
           variant: "default",
         });
       } finally {
@@ -209,30 +210,44 @@ export default function Cargo() {
   }, [toast]);
 
   // Get available truck types (from API or defaults)
-  const truckTypes = cargoServices.length > 0 && cargoServices[0].truckTypes 
-    ? cargoServices[0].truckTypes.map(truck => ({
-        ...truck,
-        description: `Perfect for ${truck.capacity} cargo`,
-        image: truck.id === 'light' ? '🚐' : truck.id === 'medium' ? '🚚' : truck.id === 'heavy' ? '🚛' : '🚚',
-        features: truck.features || ["Professional service", "GPS tracking", "Insurance covered"]
-      }))
-    : defaultTruckTypes;
+  const truckTypes =
+    cargoServices.length > 0 && cargoServices[0].truckTypes
+      ? cargoServices[0].truckTypes.map((truck) => ({
+          ...truck,
+          description: `Perfect for ${truck.capacity} cargo`,
+          image:
+            truck.id === "light"
+              ? "🚐"
+              : truck.id === "medium"
+                ? "🚚"
+                : truck.id === "heavy"
+                  ? "🚛"
+                  : "🚚",
+          features: truck.features || [
+            "Professional service",
+            "GPS tracking",
+            "Insurance covered",
+          ],
+        }))
+      : defaultTruckTypes;
 
   // Get available routes (from API or defaults)
-  const routes = cargoServices.length > 0 && cargoServices[0].routes 
-    ? cargoServices[0].routes.map(route => ({
-        from: route.from,
-        to: route.to,
-        distance: route.distance || "Distance varies",
-        duration: route.duration || "Duration varies",
-        price: route.basePrice || 10000
-      }))
-    : defaultRoutes;
+  const routes =
+    cargoServices.length > 0 && cargoServices[0].routes
+      ? cargoServices[0].routes.map((route) => ({
+          from: route.from,
+          to: route.to,
+          distance: route.distance || "Distance varies",
+          duration: route.duration || "Duration varies",
+          price: route.basePrice || 10000,
+        }))
+      : defaultRoutes;
 
   // Get available cargo types (from API or defaults)
-  const cargoTypes = cargoServices.length > 0 && cargoServices[0].cargoTypes 
-    ? cargoServices[0].cargoTypes 
-    : defaultCargoTypes;
+  const cargoTypes =
+    cargoServices.length > 0 && cargoServices[0].cargoTypes
+      ? cargoServices[0].cargoTypes
+      : defaultCargoTypes;
 
   const calculateQuote = () => {
     if (!quoteForm.from || !quoteForm.to || !quoteForm.weight) return 0;
@@ -294,7 +309,11 @@ export default function Cargo() {
               <Button
                 size="lg"
                 className="bg-white text-kanxa-orange hover:bg-white/90"
-                onClick={() => document.getElementById('quote-calculator')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .getElementById("quote-calculator")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
               >
                 <Calculator className="mr-2 h-5 w-5" />
                 Get Instant Quote
@@ -317,7 +336,8 @@ export default function Cargo() {
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              {error} You can still use the quote calculator with available routes.
+              {error} You can still use the quote calculator with available
+              routes.
             </AlertDescription>
           </Alert>
         </div>
@@ -350,11 +370,13 @@ export default function Cargo() {
                             <SelectValue placeholder="Select pickup location" />
                           </SelectTrigger>
                           <SelectContent>
-                            {Array.from(new Set(routes.map(r => r.from))).map((location) => (
-                              <SelectItem key={location} value={location}>
-                                {location}
-                              </SelectItem>
-                            ))}
+                            {Array.from(new Set(routes.map((r) => r.from))).map(
+                              (location) => (
+                                <SelectItem key={location} value={location}>
+                                  {location}
+                                </SelectItem>
+                              ),
+                            )}
                           </SelectContent>
                         </Select>
                       </div>
@@ -370,11 +392,13 @@ export default function Cargo() {
                             <SelectValue placeholder="Select destination" />
                           </SelectTrigger>
                           <SelectContent>
-                            {Array.from(new Set(routes.map(r => r.to))).map((location) => (
-                              <SelectItem key={location} value={location}>
-                                {location}
-                              </SelectItem>
-                            ))}
+                            {Array.from(new Set(routes.map((r) => r.to))).map(
+                              (location) => (
+                                <SelectItem key={location} value={location}>
+                                  {location}
+                                </SelectItem>
+                              ),
+                            )}
                           </SelectContent>
                         </Select>
                       </div>
@@ -389,7 +413,10 @@ export default function Cargo() {
                           placeholder="e.g. 2.5"
                           value={quoteForm.weight}
                           onChange={(e) =>
-                            setQuoteForm({ ...quoteForm, weight: e.target.value })
+                            setQuoteForm({
+                              ...quoteForm,
+                              weight: e.target.value,
+                            })
                           }
                         />
                       </div>
@@ -454,7 +481,9 @@ export default function Cargo() {
                     </div>
 
                     <div>
-                      <Label htmlFor="description">Description (Optional)</Label>
+                      <Label htmlFor="description">
+                        Description (Optional)
+                      </Label>
                       <Textarea
                         id="description"
                         placeholder="Describe your cargo..."
@@ -487,7 +516,7 @@ export default function Cargo() {
                             ? ` from ${quoteForm.from} to ${quoteForm.to}`
                             : ""}
                         </p>
-                        <Button 
+                        <Button
                           className="w-full bg-kanxa-orange hover:bg-kanxa-orange/90"
                           onClick={handleQuoteSubmit}
                         >
@@ -521,7 +550,10 @@ export default function Cargo() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {truckTypes.map((truck) => (
-              <Card key={truck.id} className="hover:shadow-lg transition-shadow">
+              <Card
+                key={truck.id}
+                className="hover:shadow-lg transition-shadow"
+              >
                 <CardContent className="p-6 text-center">
                   <div className="text-4xl mb-4">{truck.image}</div>
                   <h3 className="text-xl font-bold text-kanxa-navy mb-2">
@@ -638,7 +670,8 @@ export default function Cargo() {
               {
                 icon: <CheckCircle className="h-8 w-8 text-kanxa-green" />,
                 title: "On-Time Delivery",
-                description: "98% on-time delivery rate with real-time tracking",
+                description:
+                  "98% on-time delivery rate with real-time tracking",
               },
               {
                 icon: <Star className="h-8 w-8 text-kanxa-orange" />,
@@ -668,9 +701,7 @@ export default function Cargo() {
       {/* CTA Section */}
       <section className="py-16 bg-kanxa-navy text-white">
         <div className="container text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Ready to Ship Your Cargo?
-          </h2>
+          <h2 className="text-3xl font-bold mb-4">Ready to Ship Your Cargo?</h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
             Get started with our easy booking process or contact us for custom
             requirements

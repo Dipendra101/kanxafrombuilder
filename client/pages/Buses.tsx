@@ -103,28 +103,34 @@ export default function Buses() {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         // Fetch bus services from API
         const response = await servicesAPI.getBuses();
         const busServices = response.buses || [];
-        
+
         // Transform API data to match UI expectations
         const transformedBuses = busServices.map((bus: any) => ({
           ...bus,
           id: bus._id,
           price: bus.pricing?.basePrice || 800,
           // Provide default values for UI
-          route: bus.routes?.[0] ? `${bus.routes[0].from} → ${bus.routes[0].to}` : "Lamjung → Kathmandu",
+          route: bus.routes?.[0]
+            ? `${bus.routes[0].from} → ${bus.routes[0].to}`
+            : "Lamjung → Kathmandu",
           departure: bus.routes?.[0]?.departure || "6:00 AM",
           arrival: bus.routes?.[0]?.arrival || "12:00 PM",
           duration: bus.routes?.[0]?.duration || "6h 0m",
           amenities: bus.amenities || ["AC", "WiFi"],
-          features: bus.features || ["Comfortable seating", "Professional service"],
-          seatsAvailable: bus.seatsAvailable || Math.floor(Math.random() * 20) + 5,
+          features: bus.features || [
+            "Comfortable seating",
+            "Professional service",
+          ],
+          seatsAvailable:
+            bus.seatsAvailable || Math.floor(Math.random() * 20) + 5,
           totalSeats: bus.totalSeats || 45,
           reviews: bus.rating?.count || Math.floor(Math.random() * 200) + 50,
         }));
-        
+
         setBuses(transformedBuses);
       } catch (error: any) {
         console.error("Failed to load buses:", error);
@@ -143,35 +149,46 @@ export default function Buses() {
   }, [toast]);
 
   // Filter and sort buses
-  const filteredBuses = buses.filter((bus) => {
-    // Search term filter
-    if (searchTerm && !bus.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !bus.route.toLowerCase().includes(searchTerm.toLowerCase())) {
-      return false;
-    }
-    
-    // Route filters
-    if (fromLocation && !bus.route.toLowerCase().includes(fromLocation.toLowerCase())) {
-      return false;
-    }
-    if (toLocation && !bus.route.toLowerCase().includes(toLocation.toLowerCase())) {
-      return false;
-    }
-    
-    // Only show active buses
-    return bus.isActive;
-  }).sort((a, b) => {
-    switch (sortBy) {
-      case "price":
-        return a.price - b.price;
-      case "rating":
-        return (b.rating?.average || 0) - (a.rating?.average || 0);
-      case "duration":
-        return a.duration.localeCompare(b.duration);
-      default: // departure
-        return a.departure.localeCompare(b.departure);
-    }
-  });
+  const filteredBuses = buses
+    .filter((bus) => {
+      // Search term filter
+      if (
+        searchTerm &&
+        !bus.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !bus.route.toLowerCase().includes(searchTerm.toLowerCase())
+      ) {
+        return false;
+      }
+
+      // Route filters
+      if (
+        fromLocation &&
+        !bus.route.toLowerCase().includes(fromLocation.toLowerCase())
+      ) {
+        return false;
+      }
+      if (
+        toLocation &&
+        !bus.route.toLowerCase().includes(toLocation.toLowerCase())
+      ) {
+        return false;
+      }
+
+      // Only show active buses
+      return bus.isActive;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "price":
+          return a.price - b.price;
+        case "rating":
+          return (b.rating?.average || 0) - (a.rating?.average || 0);
+        case "duration":
+          return a.duration.localeCompare(b.duration);
+        default: // departure
+          return a.departure.localeCompare(b.departure);
+      }
+    });
 
   const handleSearch = () => {
     // Search is already handled by the filter effect
@@ -204,7 +221,9 @@ export default function Buses() {
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
           <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-red-600 mb-4">Error Loading Buses</h2>
+          <h2 className="text-xl font-bold text-red-600 mb-4">
+            Error Loading Buses
+          </h2>
           <p className="text-gray-600 mb-8">{error}</p>
           <Button onClick={() => window.location.reload()}>
             <RefreshCw className="w-4 h-4 mr-2" />
@@ -286,16 +305,16 @@ export default function Buses() {
                 </div>
 
                 <div className="sm:col-span-2 lg:col-span-2 flex flex-col sm:flex-row items-stretch sm:items-end gap-2">
-                  <Button 
+                  <Button
                     className="flex-1 bg-kanxa-blue hover:bg-kanxa-blue/90"
                     onClick={handleSearch}
                   >
                     <Search className="mr-2 h-4 w-4" />
                     Search Buses
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
+                  <Button
+                    variant="outline"
+                    size="icon"
                     className="sm:w-auto"
                     onClick={clearFilters}
                   >
@@ -303,7 +322,7 @@ export default function Buses() {
                   </Button>
                 </div>
               </div>
-              
+
               {/* Additional search bar */}
               <div className="mt-4">
                 <div className="relative">
@@ -429,7 +448,8 @@ export default function Buses() {
                               {amenity === "WiFi" && (
                                 <Wifi className="mr-1 h-3 w-3" />
                               )}
-                              {(amenity === "Snacks" || amenity === "Meals") && (
+                              {(amenity === "Snacks" ||
+                                amenity === "Meals") && (
                                 <Coffee className="mr-1 h-3 w-3" />
                               )}
                               {amenity}
@@ -465,7 +485,9 @@ export default function Buses() {
                               onClick={() => setSelectedBus(bus)}
                               disabled={bus.seatsAvailable === 0}
                             >
-                              {bus.seatsAvailable === 0 ? "Sold Out" : "Select Seats"}
+                              {bus.seatsAvailable === 0
+                                ? "Sold Out"
+                                : "Select Seats"}
                             </Button>
                           </DialogTrigger>
                           {selectedBus && bus._id === selectedBus._id && (
