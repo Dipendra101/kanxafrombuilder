@@ -140,8 +140,21 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch("/api/sms/send-reset-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          phone: formData.phone,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to send SMS code");
+      }
 
       setSmsSent(true);
       startCountdown();
@@ -156,11 +169,11 @@ export default function ForgotPassword() {
           </div>
         ),
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error("SMS reset error:", error);
       toast({
         title: "Failed to Send SMS",
-        description:
-          "Unable to send verification code. Please try again later.",
+        description: error.message || "Unable to send verification code. Please try again later.",
         variant: "destructive",
       });
     } finally {
