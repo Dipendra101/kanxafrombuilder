@@ -41,6 +41,17 @@ export default function Login() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Load remembered email on component mount
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem("kanxa_remembered_email");
+    const rememberFlag = localStorage.getItem("kanxa_remember");
+
+    if (rememberedEmail && rememberFlag === "true") {
+      setFormData(prev => ({ ...prev, email: rememberedEmail }));
+      setRememberMe(true);
+    }
+  }, []);
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
