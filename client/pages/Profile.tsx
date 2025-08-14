@@ -217,6 +217,43 @@ export default function Profile() {
 
   const [activityLoading, setActivityLoading] = useState(false);
 
+  // Account action dialog states
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+
+  // Password change form
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  // Email change form
+  const [emailForm, setEmailForm] = useState({
+    newEmail: "",
+    verificationCode: "",
+    step: 1, // 1: enter email, 2: verify code
+  });
+
+  // Payment methods state
+  const [paymentMethods, setPaymentMethods] = useState([
+    {
+      id: 1,
+      type: "Khalti",
+      identifier: "**** **** **** 1234",
+      isDefault: true,
+      expiryDate: "12/25",
+    },
+    {
+      id: 2,
+      type: "eSewa",
+      identifier: "example@email.com",
+      isDefault: false,
+      expiryDate: null,
+    },
+  ]);
+
   // Load recent activity from backend - MUST be before conditional return
   useEffect(() => {
     const loadRecentActivity = async () => {
