@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Bell, Menu, User, Search, Phone, MessageCircle, Moon, Sun, Languages } from "lucide-react";
+import { Bell, Menu, User, Search, Phone, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -20,13 +20,9 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import ChatNotifications from "@/components/chat/ChatNotifications";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTheme } from "@/contexts/ThemeContext";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Header() {
   const { user, logout, isAuthenticated, isGuest } = useAuth();
-  const { theme, toggleTheme } = useTheme();
-  const { language, toggleLanguage, t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -47,7 +43,7 @@ export default function Header() {
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-kanxa-navy hover:text-kanxa-blue">
-                  {t('header.transportation')}
+                  Transportation
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid gap-3 p-6 w-[400px]">
@@ -58,10 +54,10 @@ export default function Header() {
                           className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-kanxa-light-blue to-kanxa-blue p-6 no-underline outline-none focus:shadow-md"
                         >
                           <div className="mb-2 mt-4 text-lg font-medium text-white">
-                            {t('header.transportation')}
+                            Transportation
                           </div>
                           <p className="text-sm leading-tight text-white/90">
-                            {t('nav.transportation.desc')}
+                            Book buses, cargo trucks, and custom tours
                           </p>
                         </Link>
                       </NavigationMenuLink>
@@ -72,10 +68,10 @@ export default function Header() {
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <div className="text-sm font-medium leading-none">
-                          {t('header.busServices')}
+                          Bus Services
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          {t('nav.busServices.desc')}
+                          Daily and nightly bus routes
                         </p>
                       </Link>
                     </NavigationMenuLink>
@@ -85,10 +81,10 @@ export default function Header() {
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <div className="text-sm font-medium leading-none">
-                          {t('header.cargoTrucks')}
+                          Cargo Trucks
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          {t('nav.cargoTrucks.desc')}
+                          Freight and logistics services
                         </p>
                       </Link>
                     </NavigationMenuLink>
@@ -98,10 +94,10 @@ export default function Header() {
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <div className="text-sm font-medium leading-none">
-                          {t('header.customTours')}
+                          Custom Tours
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          {t('nav.customTours.desc')}
+                          Reserved tour services
                         </p>
                       </Link>
                     </NavigationMenuLink>
@@ -111,7 +107,7 @@ export default function Header() {
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-kanxa-navy hover:text-kanxa-orange">
-                  {t('header.construction')}
+                  Construction
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="grid gap-3 p-6 w-[400px]">
@@ -122,10 +118,10 @@ export default function Header() {
                           className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-kanxa-light-orange to-kanxa-orange p-6 no-underline outline-none focus:shadow-md"
                         >
                           <div className="mb-2 mt-4 text-lg font-medium text-white">
-                            {t('header.construction')}
+                            Construction
                           </div>
                           <p className="text-sm leading-tight text-white/90">
-                            {t('nav.construction.desc')}
+                            Building materials and machinery
                           </p>
                         </Link>
                       </NavigationMenuLink>
@@ -136,10 +132,10 @@ export default function Header() {
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <div className="text-sm font-medium leading-none">
-                          {t('header.buildingMaterials')}
+                          Building Materials
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          {t('nav.buildingMaterials.desc')}
+                          Cement, blocks, pipes, and more
                         </p>
                       </Link>
                     </NavigationMenuLink>
@@ -149,10 +145,10 @@ export default function Header() {
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
                         <div className="text-sm font-medium leading-none">
-                          {t('header.machinery')}
+                          Machinery
                         </div>
                         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                          {t('nav.machinery.desc')}
+                          JCBs, mixers, and tractors
                         </p>
                       </Link>
                     </NavigationMenuLink>
@@ -162,13 +158,13 @@ export default function Header() {
 
               <NavigationMenuItem>
                 <Link to="/garage" className={navigationMenuTriggerStyle()}>
-                  {t('header.garage')}
+                  Garage & Workshop
                 </Link>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
                 <Link to="/about" className={navigationMenuTriggerStyle()}>
-                  {t('header.about')}
+                  About
                 </Link>
               </NavigationMenuItem>
             </NavigationMenuList>
@@ -177,35 +173,6 @@ export default function Header() {
 
         {/* Right side actions */}
         <div className="flex items-center space-x-2 sm:space-x-4">
-          {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="hover:bg-accent hover:text-accent-foreground"
-            title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-          >
-            {theme === 'light' ? (
-              <Moon className="h-4 w-4" />
-            ) : (
-              <Sun className="h-4 w-4" />
-            )}
-          </Button>
-
-          {/* Language Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleLanguage}
-            className="hover:bg-accent hover:text-accent-foreground relative"
-            title={language === 'en' ? 'नेपालीमा परिवर्तन गर्नुहोस्' : 'Switch to English'}
-          >
-            <Languages className="h-4 w-4" />
-            <span className="absolute -bottom-1 -right-1 text-[8px] font-bold bg-primary text-primary-foreground rounded-full w-3 h-3 flex items-center justify-center">
-              {language.toUpperCase()}
-            </span>
-          </Button>
-
           <Button variant="ghost" size="icon" className="hidden sm:flex">
             <Phone className="h-4 w-4" />
           </Button>
@@ -231,14 +198,14 @@ export default function Header() {
               <>
                 {user?.role === "admin" && (
                   <Button variant="ghost" asChild>
-                    <Link to="/admin">{t('header.adminPanel')}</Link>
+                    <Link to="/admin">Admin Panel</Link>
                   </Button>
                 )}
                 <span className="text-sm text-kanxa-gray">
-                  {t('header.welcome')}, {user?.name?.split(" ")[0]}!
+                  Welcome, {user?.name?.split(" ")[0]}!
                 </span>
                 <Button variant="ghost" onClick={logout}>
-                  {t('header.signOut')}
+                  Sign Out
                 </Button>
               </>
             ) : isGuest ? (
@@ -247,28 +214,28 @@ export default function Header() {
                   variant="outline"
                   className="text-orange-600 border-orange-300"
                 >
-                  {t('header.guestMode')}
+                  Guest Mode
                 </Badge>
                 <Button variant="ghost" asChild>
-                  <Link to="/login">{t('header.signIn')}</Link>
+                  <Link to="/login">Sign In</Link>
                 </Button>
                 <Button
                   asChild
                   className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy hover:from-kanxa-navy hover:to-kanxa-blue"
                 >
-                  <Link to="/signup">{t('header.getStarted')}</Link>
+                  <Link to="/signup">Get Started</Link>
                 </Button>
               </>
             ) : (
               <>
                 <Button variant="ghost" asChild>
-                  <Link to="/login">{t('header.signIn')}</Link>
+                  <Link to="/login">Sign In</Link>
                 </Button>
                 <Button
                   asChild
                   className="bg-gradient-to-r from-kanxa-blue to-kanxa-navy hover:from-kanxa-navy hover:to-kanxa-blue"
                 >
-                  <Link to="/signup">{t('header.getStarted')}</Link>
+                  <Link to="/signup">Get Started</Link>
                 </Button>
               </>
             )}
@@ -285,41 +252,41 @@ export default function Header() {
               {isAuthenticated ? (
                 <>
                   <DropdownMenuItem asChild>
-                    <Link to="/profile">{t('header.profile')}</Link>
+                    <Link to="/profile">Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/bookings">{t('header.myBookings')}</Link>
+                    <Link to="/bookings">My Bookings</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/orders">{t('header.myOrders')}</Link>
+                    <Link to="/orders">My Orders</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>{t('header.settings')}</DropdownMenuItem>
-                  <DropdownMenuItem onClick={logout}>{t('header.signOut')}</DropdownMenuItem>
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem onClick={logout}>Sign out</DropdownMenuItem>
                 </>
               ) : isGuest ? (
                 <>
                   <DropdownMenuItem disabled>
                     <Badge variant="outline" className="text-orange-600">
-                      {t('header.guestMode')}
+                      Guest Mode
                     </Badge>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/login">{t('header.signIn')}</Link>
+                    <Link to="/login">Sign In</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/signup">{t('header.createAccount')}</Link>
+                    <Link to="/signup">Create Account</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={logout}>
-                    {t('header.exitGuestMode')}
+                    Exit Guest Mode
                   </DropdownMenuItem>
                 </>
               ) : (
                 <>
                   <DropdownMenuItem asChild>
-                    <Link to="/login">{t('header.signIn')}</Link>
+                    <Link to="/login">Sign In</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/signup">{t('header.createAccount')}</Link>
+                    <Link to="/signup">Create Account</Link>
                   </DropdownMenuItem>
                 </>
               )}
@@ -348,25 +315,25 @@ export default function Header() {
                     to="/transportation"
                     className="text-kanxa-navy hover:text-kanxa-blue"
                   >
-                    {t('header.transportation')}
+                    Transportation
                   </Link>
                   <Link
                     to="/construction"
                     className="text-kanxa-navy hover:text-kanxa-orange"
                   >
-                    {t('header.construction')}
+                    Construction
                   </Link>
                   <Link
                     to="/garage"
                     className="text-kanxa-navy hover:text-kanxa-green"
                   >
-                    {t('header.garage')}
+                    Garage & Workshop
                   </Link>
                   <Link
                     to="/about"
                     className="text-kanxa-navy hover:text-kanxa-blue"
                   >
-                    {t('header.about')}
+                    About
                   </Link>
                 </nav>
               </div>
