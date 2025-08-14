@@ -8,6 +8,8 @@ import React, {
 import { authAPI, userAPI } from "@/services/api";
 
 interface User {
+  company: string;
+  bio: string;
   id: string;
   name: string;
   email: string;
