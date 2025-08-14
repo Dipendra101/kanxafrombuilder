@@ -162,7 +162,8 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Check admin access - allow demo mode for UI preview
-  const isDemoMode = !isAuthenticated || !user;
+  const [apiFailure, setApiFailure] = useState(false);
+  const isDemoMode = !isAuthenticated || !user || apiFailure;
   const isAdmin = user?.role === "admin";
   const [activeTab, setActiveTab] = useState("overview");
 
