@@ -290,6 +290,166 @@ export default function Profile() {
     loadRecentActivity();
   }, [user]);
 
+  // Password change handler
+  const handlePasswordChange = async () => {
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "New passwords don't match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify({
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Password Updated",
+          description: "Your password has been changed successfully.",
+        });
+        setPasswordDialogOpen(false);
+        setPasswordForm({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        throw new Error(result.message || 'Password change failed');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Password Change Failed",
+        description: error.message || "Unable to change password.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Email verification request
+  const handleEmailVerificationRequest = async () => {
+    try {
+      const response = await fetch('/api/auth/request-email-change', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify({
+          newEmail: emailForm.newEmail,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Verification Code Sent",
+          description: `A verification code has been sent to ${emailForm.newEmail}`,
+        });
+        setEmailForm(prev => ({ ...prev, step: 2 }));
+      } else {
+        throw new Error(result.message || 'Failed to send verification code');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Verification Failed",
+        description: error.message || "Unable to send verification code.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Email change with verification
+  const handleEmailChange = async () => {
+    try {
+      const response = await fetch('/api/auth/change-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify({
+          newEmail: emailForm.newEmail,
+          verificationCode: emailForm.verificationCode,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Email Updated",
+          description: "Your email has been changed successfully.",
+        });
+        setEmailDialogOpen(false);
+        setEmailForm({
+          newEmail: "",
+          verificationCode: "",
+          step: 1,
+        });
+        // Update user profile with new email
+        updateUser({ email: emailForm.newEmail });
+      } else {
+        throw new Error(result.message || 'Email change failed');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Email Change Failed",
+        description: error.message || "Unable to change email.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Payment method management
+  const addPaymentMethod = (method: any) => {
+    setPaymentMethods(prev => [...prev, { ...method, id: Date.now() }]);
+  };
+
+  const removePaymentMethod = (id: number) => {
+    setPaymentMethods(prev => prev.filter(method => method.id !== id));
+    toast({
+      title: "Payment Method Removed",
+      description: "Payment method has been removed successfully.",
+    });
+  };
+
+  const setDefaultPaymentMethod = (id: number) => {
+    setPaymentMethods(prev =>
+      prev.map(method => ({
+        ...method,
+        isDefault: method.id === id,
+      }))
+    );
+    toast({
+      title: "Default Payment Updated",
+      description: "Default payment method has been updated.",
+    });
+  };
+
   // Show guest restriction if user is in guest mode - MUST be after all hooks
   if (isGuest || !isAuthenticated) {
     return (
