@@ -269,7 +269,7 @@ export default function Profile() {
       setActivityLoading(true);
       try {
         const response = await bookingsAPI.getBookings({ limit: 5 });
-        if (response.success && response.bookings) {
+        if (response && response.success && response.bookings) {
           const activities = response.bookings
             .slice(0, 5)
             .map((booking: any, index: number) => ({
@@ -285,17 +285,26 @@ export default function Profile() {
               status: booking.status || "completed",
             }));
           setRecentActivity(activities);
+        } else {
+          // API returned but no data - keep default mock data
+          console.log("API returned but no bookings data available");
         }
       } catch (error) {
         console.error("Failed to load recent activity:", error);
-        // Keep the mock data if API fails
+        // Keep the default mock data when API fails
+        // This ensures the UI still shows something meaningful
       } finally {
         setActivityLoading(false);
       }
     };
 
-    loadRecentActivity();
-  }, [user]);
+    // Only try to load if user is authenticated
+    if (user && !isGuest) {
+      loadRecentActivity();
+    } else {
+      setActivityLoading(false);
+    }
+  }, [user, isGuest]);
 
   // Password change handler
   const handlePasswordChange = async () => {
