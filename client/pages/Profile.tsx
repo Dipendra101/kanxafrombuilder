@@ -71,21 +71,21 @@ export default function Profile() {
 
   // Update profile when user data changes
   useEffect(() => {
-  if (user) {
-    setProfile({
-      name: user.name || "",
-      email: user.email || "",
-      phone: user.phone || "",
-      address: user.address || "",
-      company: user.profile?.company || user.company || "",
-      dateJoined: user.createdAt
-        ? new Date(user.createdAt).toISOString().split("T")[0]
-        : new Date().toISOString().split("T")[0],
-      bio: user.profile?.bio || user.bio || "",
-    });
-    setProfilePicture(user.profilePicture || user.avatar || null);
-  }
-}, [user]);
+    if (user) {
+      setProfile({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        company: user.profile?.company || user.company || "",
+        dateJoined: user.createdAt
+          ? new Date(user.createdAt).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
+        bio: user.profile?.bio || user.bio || "",
+      });
+      setProfilePicture(user.profilePicture || user.avatar || null);
+    }
+  }, [user]);
 
   const [notifications, setNotifications] = useState({
     bookingUpdates: true,
@@ -745,7 +745,8 @@ export default function Profile() {
                           <Input
                             id="address"
                             value={
-                              typeof profile.address === "object" && profile.address
+                              typeof profile.address === "object" &&
+                              profile.address
                                 ? Object.values(profile.address).join(", ")
                                 : profile.address
                             }
@@ -806,7 +807,8 @@ export default function Profile() {
                               Location
                             </p>
                             <p className="font-medium text-sm sm:text-base truncate">
-                              {typeof profile.address === "object" && profile.address
+                              {typeof profile.address === "object" &&
+                              profile.address
                                 ? Object.values(profile.address).join(", ")
                                 : profile.address}
                             </p>
@@ -911,12 +913,13 @@ export default function Profile() {
                         >
                           <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                             <div
-                              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${activity.type === "booking"
-                                ? "bg-kanxa-light-blue"
-                                : activity.type === "order"
-                                  ? "bg-kanxa-light-orange"
-                                  : "bg-kanxa-light-green"
-                                }`}
+                              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                activity.type === "booking"
+                                  ? "bg-kanxa-light-blue"
+                                  : activity.type === "order"
+                                    ? "bg-kanxa-light-orange"
+                                    : "bg-kanxa-light-green"
+                              }`}
                             >
                               {activity.type === "booking" && (
                                 <Calendar className="h-3 w-3 sm:h-5 sm:w-5 text-kanxa-blue" />
@@ -938,12 +941,13 @@ export default function Profile() {
                             </div>
                           </div>
                           <Badge
-                            className={`text-xs flex-shrink-0 ${activity.status === "completed"
-                              ? "bg-green-100 text-green-800"
-                              : activity.status === "delivered"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-yellow-100 text-yellow-800"
-                              }`}
+                            className={`text-xs flex-shrink-0 ${
+                              activity.status === "completed"
+                                ? "bg-green-100 text-green-800"
+                                : activity.status === "delivered"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-yellow-100 text-yellow-800"
+                            }`}
                           >
                             {activity.status}
                           </Badge>
