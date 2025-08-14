@@ -672,6 +672,11 @@ export default function Materials() {
                 <CartDialog />
               </Dialog>
 
+              {/* Login Prompt Dialog */}
+              <Dialog open={showLoginPrompt} onOpenChange={setShowLoginPrompt}>
+                <LoginPromptDialog />
+              </Dialog>
+
               {/* Payment Dialog */}
               <Dialog open={showPayment} onOpenChange={setShowPayment}>
                 <PaymentDialog />
