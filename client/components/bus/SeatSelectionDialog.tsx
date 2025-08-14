@@ -233,7 +233,7 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
                 className="w-full bg-kanxa-green hover:bg-kanxa-green/90"
                 disabled={selectedSeats.length === 0}
                 onClick={() => {
-                  if (!isAuthenticated || isGuest) {
+                  if (!isAuthenticated) {
                     navigate("/login");
                     return;
                   }
@@ -244,7 +244,7 @@ export const SeatSelectionDialog = ({ bus }: { bus: any }) => {
                   );
                 }}
               >
-                {!isAuthenticated || isGuest ? (
+                {!isAuthenticated ? (
                   <>
                     <Lock className="mr-2 h-4 w-4" />
                     Login to Pay

@@ -61,14 +61,14 @@ export default function Payment() {
     null,
   );
 
-  // Redirect guests to login page with return URL
+  // Redirect unauthenticated users to login page with return URL
   useEffect(() => {
-    if (!isAuthenticated || isGuest) {
+    if (!isAuthenticated) {
       const currentUrl = window.location.pathname + window.location.search;
       navigate(`/login?returnUrl=${encodeURIComponent(currentUrl)}`);
       return;
     }
-  }, [isAuthenticated, isGuest, navigate]);
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     const serviceId = searchParams.get("service");
@@ -196,12 +196,12 @@ export default function Payment() {
   };
 
   // Show loading if not authenticated or details not loaded
-  if (!isAuthenticated || isGuest || !serviceDetails) {
+  if (!isAuthenticated || !serviceDetails) {
     return (
       <Layout>
         <div className="container py-16">
           <div className="max-w-md mx-auto text-center">
-            {!isAuthenticated || isGuest ? (
+            {!isAuthenticated ? (
               <Card className="border-orange-200 bg-orange-50">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-center gap-2 text-orange-800">

@@ -368,7 +368,7 @@ export default function Materials() {
 
       <div className="space-y-4">
         {/* Guest Mode Alert */}
-        {(!isAuthenticated || isGuest) && Object.entries(cart).length > 0 && (
+        {!isAuthenticated && Object.entries(cart).length > 0 && (
           <Alert className="border-orange-200 bg-orange-50">
             <Lock className="h-4 w-4 text-orange-600" />
             <AlertDescription className="text-orange-800">
@@ -458,7 +458,7 @@ export default function Materials() {
                 <Button
                   className="flex-1 bg-kanxa-orange hover:bg-kanxa-orange/90"
                   onClick={() => {
-                    if (!isAuthenticated || isGuest) {
+                    if (!isAuthenticated) {
                       setShowLoginPrompt(true);
                     } else {
                       setShowPayment(true);
@@ -466,7 +466,7 @@ export default function Materials() {
                   }}
                   disabled={Object.keys(cart).length === 0}
                 >
-                  {!isAuthenticated || isGuest ? (
+                  {!isAuthenticated ? (
                     <>
                       <Lock className="mr-2 h-4 w-4" />
                       Login to Checkout
