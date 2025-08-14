@@ -216,9 +216,7 @@ export default function ChatNotifications() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                    onClick={() => {
                       clearAll();
                     }}
                     className="text-xs hover:bg-gray-100"
