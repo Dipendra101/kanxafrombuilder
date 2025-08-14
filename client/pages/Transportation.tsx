@@ -296,7 +296,10 @@ export default function Transportation() {
   );
 
   const renderCargoService = (service: any, index: number) => (
-    <Card key={service._id || service.id || `cargo-${index}`} className="hover:shadow-lg transition-shadow">
+    <Card
+      key={service._id || service.id || `cargo-${index}`}
+      className="hover:shadow-lg transition-shadow"
+    >
       <CardHeader>
         <div className="flex items-center gap-2">
           <Truck className="w-6 h-6 text-kanxa-orange" />
@@ -529,7 +532,9 @@ export default function Transportation() {
                     </Card>
                   ) : (
                     <div className="space-y-4">
-                      {filteredServices.map((service, index) => renderBusService(service, index))}
+                      {filteredServices.map((service, index) =>
+                        renderBusService(service, index),
+                      )}
                     </div>
                   )}
                 </div>
@@ -565,7 +570,9 @@ export default function Transportation() {
                   </Card>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredServices.map((service, index) => renderCargoService(service, index))}
+                    {filteredServices.map((service, index) =>
+                      renderCargoService(service, index),
+                    )}
                   </div>
                 )}
               </TabsContent>

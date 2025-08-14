@@ -61,9 +61,13 @@ export default function Profile() {
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
-    address: typeof user?.address === 'object' && user?.address ?
-      (user.address.country || user.address.city || user.address.street || JSON.stringify(user.address)) :
-      (user?.address || ""),
+    address:
+      typeof user?.address === "object" && user?.address
+        ? user.address.country ||
+          user.address.city ||
+          user.address.street ||
+          JSON.stringify(user.address)
+        : user?.address || "",
     company: "",
     dateJoined: user?.createdAt
       ? new Date(user.createdAt).toISOString().split("T")[0]
@@ -78,9 +82,13 @@ export default function Profile() {
         name: user.name || "",
         email: user.email || "",
         phone: user.phone || "",
-        address: typeof user.address === 'object' && user.address ?
-          (user.address.country || user.address.city || user.address.street || JSON.stringify(user.address)) :
-          (user.address || ""),
+        address:
+          typeof user.address === "object" && user.address
+            ? user.address.country ||
+              user.address.city ||
+              user.address.street ||
+              JSON.stringify(user.address)
+            : user.address || "",
         company: "",
         dateJoined: user.createdAt
           ? new Date(user.createdAt).toISOString().split("T")[0]
