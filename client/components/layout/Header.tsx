@@ -25,6 +25,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Header() {
   const { user, logout, isAuthenticated, isGuest } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const { language, toggleLanguage, t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
