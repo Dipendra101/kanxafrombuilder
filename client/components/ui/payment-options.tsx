@@ -47,38 +47,70 @@ export function PaymentOptions({
         description: `Connecting to ${method} payment gateway...`,
       });
 
+      console.log("Initiating payment with:", { amount, service, method, transactionId });
+
       // Call payment initiation API
-      const response = await fetch("/api/payments/initiate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: amount,
-          productName: service,
-          transactionId: transactionId,
-          method: method,
-          customerInfo: {
-            name: "Customer Name",
-            email: "customer@example.com",
-            phone: "9800000000",
+      let response;
+      try {
+        response = await fetch("/api/payments/initiate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        }),
-      });
+          body: JSON.stringify({
+            amount: amount,
+            productName: service,
+            transactionId: transactionId,
+            method: method,
+            customerInfo: {
+              name: "Customer Name",
+              email: "customer@example.com",
+              phone: "9800000000",
+            },
+          }),
+        });
+      } catch (fetchError) {
+        console.error("Fetch error:", fetchError);
+        throw new Error("Network error: Unable to connect to payment service");
+      }
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
       // Check if response is ok before reading body
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Try to get error message from response
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorText = await response.text();
+          if (errorText) {
+            errorMessage += ` - ${errorText}`;
+          }
+        } catch {
+          // Ignore error reading error message
+        }
+        throw new Error(errorMessage);
       }
+
+      // Clone response to avoid "body stream already read" error
+      const responseClone = response.clone();
 
       let result;
       try {
         result = await response.json();
       } catch (parseError) {
-        // If JSON parsing fails, try to get text response for debugging
         console.error("Failed to parse JSON response:", parseError);
+        // Try to get the raw text for debugging
+        try {
+          const rawText = await responseClone.text();
+          console.error("Raw response text:", rawText);
+        } catch {
+          // Ignore
+        }
         throw new Error("Invalid response format from payment service");
       }
+
+      console.log("Payment initiation result:", result);
 
       if (!result.success) {
         throw new Error(result.error || "Payment initiation failed");
