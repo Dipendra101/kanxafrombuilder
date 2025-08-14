@@ -67,7 +67,9 @@ export function PaymentOptions({
           }
 
           if (!response.ok) {
-            throw new Error(responseData?.message || `Server error: ${response.status}`);
+            throw new Error(
+              responseData?.message || `Server error: ${response.status}`,
+            );
           }
 
           toast({

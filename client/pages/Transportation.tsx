@@ -157,7 +157,7 @@ export default function Transportation() {
       hasToken: !!token,
       userName: user?.name,
       userRole: user?.role,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }, [isAuthenticated, isGuest, user, token]);
 
