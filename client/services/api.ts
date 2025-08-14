@@ -53,36 +53,26 @@ const apiRequest = async (
 
         clearTimeout(timeoutId);
 
-        // Store response status and headers before any body reading
+        // Store response metadata before reading body
         const responseStatus = response.status;
         const responseOk = response.ok;
         const responseStatusText = response.statusText;
 
-        // Read response body immediately and store it
-        let responseText: string;
         let data: any;
-        let parseSuccess = false;
-
+        
         try {
-          // Read response as text first (only way to safely read once)
-          responseText = await response.text();
-
-          // Try to parse as JSON
-          if (responseText) {
+          // Read response body only once
+          const responseText = await response.text();
+          
+          // Try to parse as JSON if there's content
+          if (responseText.trim()) {
             try {
               data = JSON.parse(responseText);
-              parseSuccess = true;
             } catch (jsonError) {
-              console.warn(
-                `⚠️ Non-JSON response from ${url}:`,
-                responseText.slice(0, 100),
-              );
-              // Create structured response for non-JSON data
+              console.warn(`⚠️ Non-JSON response from ${url}:`, responseText.slice(0, 100));
               data = {
                 success: false,
-                message:
-                  responseText ||
-                  `HTTP ${responseStatus}: ${responseStatusText}`,
+                message: responseText || `HTTP ${responseStatus}: ${responseStatusText}`,
                 error: "NON_JSON_RESPONSE",
                 rawResponse: responseText,
               };
@@ -95,11 +85,11 @@ const apiRequest = async (
               error: "EMPTY_RESPONSE",
             };
           }
-        } catch (readError) {
-          console.error(`❌ Failed to read response for ${url}:`, readError);
+        } catch (readError: any) {
+          console.error(`❌ Failed to read response for ${url}:`, readError.message);
           data = {
             success: false,
-            message: `HTTP ${responseStatus}: Failed to read response - ${readError.message}`,
+            message: `Failed to read response: ${readError.message}`,
             error: "READ_ERROR",
           };
         }
@@ -109,10 +99,9 @@ const apiRequest = async (
           message: data.message,
           demo: data.demo,
           attempt: attempt + 1,
-          parseSuccess,
         });
 
-        // Check response status using stored values
+        // Handle non-OK responses
         if (!responseOk) {
           // Handle specific auth errors
           if (
@@ -121,17 +110,14 @@ const apiRequest = async (
               data.message?.includes("unauthorized") ||
               data.message?.includes("expired"))
           ) {
-            console.warn(
-              "🔐 Token expired/invalid detected - triggering guest mode switch",
-            );
+            console.warn("🔐 Token expired/invalid detected - triggering guest mode switch");
 
-            // Dispatch token expiry event to trigger automatic guest mode
+            // Dispatch token expiry event
             if (typeof window !== "undefined" && window.dispatchEvent) {
               window.dispatchEvent(
                 new CustomEvent("tokenExpired", {
                   detail: {
-                    message:
-                      "Your session expired. You can continue browsing as a guest or log in again.",
+                    message: "Your session expired. You can continue browsing as a guest or log in again.",
                     source: "api_call",
                     url: url,
                   },
@@ -144,18 +130,17 @@ const apiRequest = async (
             localStorage.removeItem("kanxa_user");
           }
 
-          const errorMessage =
-            data.message || `HTTP ${responseStatus}: Request failed`;
-          console.error(`❌ API Error: ${errorMessage}`, data);
-          throw new Error(errorMessage);
+          const errorMessage = data.message || `HTTP ${responseStatus}: Request failed`;
+          console.error(`❌ API Error: HTTP ${responseStatus}: ${errorMessage}`);
+          throw new Error(`HTTP ${responseStatus}: ${errorMessage}`);
         }
 
         return data;
-      } catch (fetchError) {
+      } catch (fetchError: any) {
         clearTimeout(timeoutId);
         throw fetchError;
       }
-    } catch (error) {
+    } catch (error: any) {
       const isLastAttempt = attempt === retries;
 
       // Check if it's a network/timeout error that we should retry
@@ -163,70 +148,68 @@ const apiRequest = async (
         error instanceof TypeError ||
         error.name === "TimeoutError" ||
         error.name === "AbortError" ||
-        (error instanceof Error && error.message.includes("fetch")) ||
-        (error instanceof Error && error.message.includes("aborted")) ||
-        (error instanceof Error && error.message.includes("Failed to fetch"));
+        (error.message && error.message.includes("fetch")) ||
+        (error.message && error.message.includes("aborted")) ||
+        (error.message && error.message.includes("Failed to fetch")) ||
+        (error.message && error.message.includes("NetworkError"));
 
-      if (isRetryableError && !isLastAttempt) {
+      // Don't retry HTTP status errors (4xx, 5xx)
+      const isHttpStatusError = error.message && error.message.startsWith("HTTP ");
+
+      if (isRetryableError && !isHttpStatusError && !isLastAttempt) {
         const delay = Math.min(Math.pow(2, attempt) * 1000, 5000); // Cap at 5 seconds
         console.warn(
           `🔄 API Request failed (attempt ${attempt + 1}/${retries + 1}), retrying in ${delay}ms...`,
+          error.message
         );
         await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
 
-      console.error(
-        `💥 API Request failed for ${url} (attempt ${attempt + 1}/${retries + 1}):`,
-        error,
-      );
+      console.error(`💥 API Request failed for ${url} (attempt ${attempt + 1}/${retries + 1}):`, error.message);
 
       // Provide better error messages based on error type
-      if (isRetryableError) {
-        if (error.message.includes("Failed to fetch")) {
-          throw new Error(
-            "Network error: Unable to connect to server. Please check your internet connection and try again.",
-          );
-        } else if (
-          error.name === "AbortError" ||
-          error.message.includes("timeout")
-        ) {
-          throw new Error(
-            "Request timeout: The server is taking too long to respond. Please try again.",
-          );
-        } else {
-          throw new Error(
-            "Network error: Unable to connect to server. Please check your internet connection and try again.",
-          );
+      if (isRetryableError && !isHttpStatusError) {
+        if (error.message && error.message.includes("Failed to fetch")) {
+          throw new Error("Network error: Unable to connect to server. Please check your internet connection and try again.");
+        } else if (error.name === "AbortError" || (error.message && error.message.includes("timeout"))) {
+          throw new Error("Request timeout: The server is taking too long to respond. Please try again.");
         }
       }
+
+      // Re-throw the original error for HTTP status errors or final attempt
       throw error;
     }
   }
+
+  // This shouldn't be reached, but just in case
+  throw new Error(`Request failed after ${retries + 1} attempts`);
 };
 
-// SMS Authentication API
-export const smsAPI = {
-  sendCode: async (phoneNumber: string) => {
-    return apiRequest("/sms/send-code", {
-      method: "POST",
-      body: JSON.stringify({ phoneNumber }),
-    });
-  },
+// Helper function to make JSON requests
+const jsonRequest = async (endpoint: string, data: any, method = "POST") => {
+  return apiRequest(endpoint, {
+    method,
+    body: JSON.stringify(data),
+  });
+};
 
-  verifyCode: async (phoneNumber: string, code: string) => {
-    return apiRequest("/sms/verify-code", {
-      method: "POST",
-      body: JSON.stringify({ phoneNumber, code }),
-    });
-  },
+// Helper function to make GET requests
+const getRequest = async (endpoint: string) => {
+  return apiRequest(endpoint, { method: "GET" });
+};
 
-  resendCode: async (phoneNumber: string) => {
-    return apiRequest("/sms/resend-code", {
-      method: "POST",
-      body: JSON.stringify({ phoneNumber }),
-    });
-  },
+// Helper function to make PUT requests
+const putRequest = async (endpoint: string, data: any) => {
+  return apiRequest(endpoint, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+};
+
+// Helper function to make DELETE requests
+const deleteRequest = async (endpoint: string) => {
+  return apiRequest(endpoint, { method: "DELETE" });
 };
 
 // Authentication API
@@ -361,14 +344,15 @@ export const servicesAPI = {
   getAllServices: async (
     filters: {
       type?: string;
-      active?: boolean;
-      page?: number;
+      category?: string;
+      search?: string;
       limit?: number;
+      page?: number;
     } = {},
   ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value) {
         params.append(key, value.toString());
       }
     });
@@ -378,9 +362,9 @@ export const servicesAPI = {
 
   getBuses: async (
     filters: {
-      from?: string;
-      to?: string;
+      route?: string;
       date?: string;
+      search?: string;
     } = {},
   ) => {
     const params = new URLSearchParams();
@@ -395,8 +379,9 @@ export const servicesAPI = {
 
   getCargo: async (
     filters: {
-      vehicleType?: string;
+      truckType?: string;
       route?: string;
+      capacity?: string;
     } = {},
   ) => {
     const params = new URLSearchParams();
@@ -505,13 +490,13 @@ export const bookingsAPI = {
     filters: {
       status?: string;
       type?: string;
-      page?: number;
       limit?: number;
+      page?: number;
     } = {},
   ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value) {
         params.append(key, value.toString());
       }
     });
@@ -519,36 +504,17 @@ export const bookingsAPI = {
     return apiRequest(`/bookings?${params.toString()}`);
   },
 
-  getBookingById: async (id: string) => {
-    return apiRequest(`/bookings/${id}`);
-  },
-
-  updateBooking: async (id: string, updateData: any) => {
-    return apiRequest(`/bookings/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(updateData),
-    });
-  },
-
-  cancelBooking: async (id: string) => {
-    return apiRequest(`/bookings/${id}/cancel`, {
-      method: "PUT",
-    });
-  },
-
-  // Admin functions
   getAllBookings: async (
     filters: {
       status?: string;
-      userId?: string;
-      serviceId?: string;
-      page?: number;
+      type?: string;
       limit?: number;
+      page?: number;
     } = {},
   ) => {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value) {
         params.append(key, value.toString());
       }
     });
@@ -556,18 +522,20 @@ export const bookingsAPI = {
     return apiRequest(`/admin/bookings?${params.toString()}`);
   },
 
-  updatePayment: async (
-    id: string,
-    paymentData: {
-      paymentStatus: string;
-      paymentMethod: string;
-      transactionId?: string;
-      gatewayResponse?: any;
-    },
-  ) => {
-    return apiRequest(`/bookings/${id}/payment`, {
+  getBookingById: async (id: string) => {
+    return apiRequest(`/bookings/${id}`);
+  },
+
+  updateBooking: async (id: string, data: any) => {
+    return apiRequest(`/bookings/${id}`, {
       method: "PUT",
-      body: JSON.stringify(paymentData),
+      body: JSON.stringify(data),
+    });
+  },
+
+  cancelBooking: async (id: string) => {
+    return apiRequest(`/bookings/${id}/cancel`, {
+      method: "POST",
     });
   },
 };
@@ -582,67 +550,62 @@ export const adminAPI = {
     return apiRequest("/admin/stats");
   },
 
-  getAnalytics: async (period: string = "30d") => {
-    return apiRequest(`/admin/analytics?period=${period}`);
+  getUsers: async (filters: any = {}) => {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        params.append(key, value.toString());
+      }
+    });
+
+    return apiRequest(`/admin/users?${params.toString()}`);
   },
 
-  exportData: async (type: string) => {
-    return apiRequest(`/admin/export/${type}`);
-  },
-
-  getSystemHealth: async () => {
-    return apiRequest("/admin/health");
+  updateUserRole: async (userId: string, role: string) => {
+    return apiRequest(`/admin/users/${userId}/role`, {
+      method: "PUT",
+      body: JSON.stringify({ role }),
+    });
   },
 };
 
 // Payment API
-export const paymentAPI = {
-  initiatePayment: async (paymentData: {
+export const paymentsAPI = {
+  initializeKhalti: async (paymentData: {
     amount: number;
-    productName: string;
-    transactionId: string;
-    method: "khalti" | "esewa";
-    customerInfo?: {
-      name?: string;
-      email?: string;
-      phone?: string;
-    };
+    bookingId: string;
+    customerInfo: any;
   }) => {
-    return apiRequest("/payments/initiate", {
+    return apiRequest("/payments/khalti/initialize", {
       method: "POST",
       body: JSON.stringify(paymentData),
     });
   },
 
-  verifyKhaltiPayment: async (pidx: string) => {
-    return apiRequest("/payments/verify/khalti", {
+  verifyKhalti: async (token: string, amount: number) => {
+    return apiRequest("/payments/khalti/verify", {
       method: "POST",
-      body: JSON.stringify({ pidx }),
+      body: JSON.stringify({ token, amount }),
     });
   },
 
-  verifyEsewaPayment: async (oid: string, amt: string, refId: string) => {
-    return apiRequest("/payments/verify/esewa", {
+  initializeEsewa: async (paymentData: {
+    amount: number;
+    bookingId: string;
+    customerInfo: any;
+  }) => {
+    return apiRequest("/payments/esewa/initialize", {
       method: "POST",
-      body: JSON.stringify({ oid, amt, refId }),
+      body: JSON.stringify(paymentData),
+    });
+  },
+
+  verifyEsewa: async (data: any) => {
+    return apiRequest("/payments/esewa/verify", {
+      method: "POST",
+      body: JSON.stringify(data),
     });
   },
 };
 
-// Health check
-export const healthAPI = {
-  check: async () => {
-    return apiRequest("/health");
-  },
-};
-
-export default {
-  authAPI,
-  smsAPI,
-  userAPI,
-  servicesAPI,
-  bookingsAPI,
-  adminAPI,
-  paymentAPI,
-  healthAPI,
-};
+export default apiRequest;
