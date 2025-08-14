@@ -79,26 +79,92 @@ export function PaymentOptions({
 
       // Handle different payment methods
       if (method === "khalti") {
-        // Redirect to Khalti payment URL
-        window.location.href = result.paymentUrl;
+        if (result.paymentUrl && result.paymentUrl.includes('khalti.com')) {
+          // Real Khalti - redirect to payment URL
+          window.location.href = result.paymentUrl;
+        } else {
+          // Demo mode - simulate the payment process
+          toast({
+            title: "Demo Payment Mode",
+            description: "Simulating Khalti payment process...",
+          });
+
+          // Simulate payment delay
+          setTimeout(() => {
+            toast({
+              title: "Payment Successful!",
+              description: "Your order has been processed successfully.",
+            });
+
+            // Call parent callback if provided
+            if (onPaymentSelect) {
+              onPaymentSelect(method);
+            }
+
+            // Clear materials cart if on materials page
+            if (service === "Construction Materials") {
+              // Dispatch custom event to clear cart
+              window.dispatchEvent(new CustomEvent('paymentCompleted', {
+                detail: { method, service }
+              }));
+            }
+
+            setIsProcessing(false);
+            setSelectedMethod("");
+          }, 2000);
+          return;
+        }
       } else if (method === "esewa") {
-        // Create form and submit to eSewa
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = result.paymentUrl;
+        if (result.paymentUrl && result.config) {
+          // Real eSewa - create form and submit
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = result.paymentUrl;
 
-        // Add all required fields for eSewa
-        Object.entries(result.config).forEach(([key, value]) => {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = key;
-          input.value = value as string;
-          form.appendChild(input);
-        });
+          // Add all required fields for eSewa
+          Object.entries(result.config).forEach(([key, value]) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = value as string;
+            form.appendChild(input);
+          });
 
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
+          document.body.appendChild(form);
+          form.submit();
+          document.body.removeChild(form);
+        } else {
+          // Demo mode - simulate the payment process
+          toast({
+            title: "Demo Payment Mode",
+            description: "Simulating eSewa payment process...",
+          });
+
+          // Simulate payment delay
+          setTimeout(() => {
+            toast({
+              title: "Payment Successful!",
+              description: "Your order has been processed successfully.",
+            });
+
+            // Call parent callback if provided
+            if (onPaymentSelect) {
+              onPaymentSelect(method);
+            }
+
+            // Clear materials cart if on materials page
+            if (service === "Construction Materials") {
+              // Dispatch custom event to clear cart
+              window.dispatchEvent(new CustomEvent('paymentCompleted', {
+                detail: { method, service }
+              }));
+            }
+
+            setIsProcessing(false);
+            setSelectedMethod("");
+          }, 2000);
+          return;
+        }
       }
     } catch (error: any) {
       console.error("Payment initiation error:", error);
