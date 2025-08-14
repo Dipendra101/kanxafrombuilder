@@ -223,6 +223,7 @@ export default function Profile() {
   });
 
   const [activityLoading, setActivityLoading] = useState(false);
+  const [networkError, setNetworkError] = useState(false);
 
   // Account action dialog states
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
