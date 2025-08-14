@@ -58,10 +58,10 @@ export default function Header() {
                           className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-kanxa-light-blue to-kanxa-blue p-6 no-underline outline-none focus:shadow-md"
                         >
                           <div className="mb-2 mt-4 text-lg font-medium text-white">
-                            Transportation
+                            {t('header.transportation')}
                           </div>
                           <p className="text-sm leading-tight text-white/90">
-                            Book buses, cargo trucks, and custom tours
+                            {t('nav.transportation.desc')}
                           </p>
                         </Link>
                       </NavigationMenuLink>
