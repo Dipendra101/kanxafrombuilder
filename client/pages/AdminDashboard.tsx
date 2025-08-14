@@ -257,7 +257,7 @@ export default function AdminDashboard() {
     };
 
     loadDashboardData();
-  }, [isAdmin, toast]);
+  }, [isAdmin]);
 
   // Redirect non-admin users
   useEffect(() => {
