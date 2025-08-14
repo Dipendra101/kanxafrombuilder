@@ -58,13 +58,17 @@ export function PaymentOptions({
             }),
           });
 
-          const responseData = await response.json();
-
-          if (!response.ok) {
-            throw new Error(responseData.message || "An API error occurred.");
+          // Read response only once and handle both success and error cases
+          let responseData;
+          try {
+            responseData = await response.json();
+          } catch (parseError) {
+            throw new Error("Invalid response from server");
           }
 
-          const esewaResponse = responseData;
+          if (!response.ok) {
+            throw new Error(responseData?.message || `Server error: ${response.status}`);
+          }
 
           toast({
             title: "Redirecting to eSewa",
@@ -74,15 +78,15 @@ export function PaymentOptions({
           // Create form for eSewa submission
           const form = document.createElement("form");
           form.setAttribute("method", "POST");
-          form.setAttribute("action", esewaResponse.ESEWA_URL);
+          form.setAttribute("action", responseData.ESEWA_URL);
 
           // Add all form fields
-          for (const key in esewaResponse) {
-            if (key !== "ESEWA_URL") {
+          for (const key in responseData) {
+            if (key !== "ESEWA_URL" && key !== "success") {
               const hiddenField = document.createElement("input");
               hiddenField.setAttribute("type", "hidden");
               hiddenField.setAttribute("name", key);
-              hiddenField.setAttribute("value", esewaResponse[key]);
+              hiddenField.setAttribute("value", responseData[key]);
               form.appendChild(hiddenField);
             }
           }
@@ -97,10 +101,10 @@ export function PaymentOptions({
             description: error.message || "Error initiating eSewa payment.",
             variant: "destructive",
           });
+        } finally {
+          setIsProcessing(false);
+          setSelectedMethod("");
         }
-
-        setIsProcessing(false);
-        setSelectedMethod("");
         return;
       }
 
