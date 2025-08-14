@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # MongoDB database
@@ -50,7 +50,7 @@ services:
     networks:
       - kanxa-network
     volumes:
-      - ./uploads:/app/uploads  # For file uploads if needed
+      - ./uploads:/app/uploads # For file uploads if needed
 
   # Nginx reverse proxy
   nginx:
@@ -62,7 +62,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/nginx/ssl:ro  # SSL certificates
+      - ./ssl:/etc/nginx/ssl:ro # SSL certificates
     depends_on:
       - app
     networks:
