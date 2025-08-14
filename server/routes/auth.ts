@@ -10,83 +10,29 @@ const router = Router();
 const JWT_SECRET =
   process.env.JWT_SECRET || "kanxasafari_jwt_secret_key_super_secure_2024";
 
-// Mock users for when database is unavailable
-const mockUsers = [
-  {
-    _id: "mock_user_1",
-    name: "Demo User",
-    email: "user@demo.com",
-    phone: "1234567890",
-    password: "$2b$12$DEMO_HASH_PASSWORD",
-    role: "user",
-    isActive: true,
-    toJSON: () => ({
-      _id: "mock_user_1",
-      name: "Demo User",
-      email: "user@demo.com",
-      phone: "1234567890",
-      role: "user",
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }),
-  },
-  {
-    _id: "mock_admin_1",
-    name: "Demo Admin",
-    email: "admin@demo.com",
-    phone: "0987654321",
-    password: "$2b$12$DEMO_HASH_PASSWORD",
-    role: "admin",
-    isActive: true,
-    toJSON: () => ({
-      _id: "mock_admin_1",
-      name: "Demo Admin",
-      email: "admin@demo.com",
-      phone: "0987654321",
-      role: "admin",
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }),
-  },
-];
-
-// Utility functions
-const generateToken = (user: IUser) => {
-  return jwt.sign(
-    {
-      userId: user._id,
-      email: user.email,
-      role: user.role,
-    },
-    JWT_SECRET,
-    { expiresIn: "7d" },
-  );
-};
-
-const generateRefreshToken = (user: IUser) => {
-  return jwt.sign({ userId: user._id, type: "refresh" }, JWT_SECRET, {
-    expiresIn: "30d",
-  });
-};
-
-// @route   POST /api/auth/register
-// @desc    Register a new user
-// @access  Public
-export const register: RequestHandler = async (req, res) => {
+// User Registration
+router.post("/register", async (req, res) => {
   try {
-    const { name, email, phone, password, role = "user" } = req.body;
+    const { name, email, phone, password } = req.body;
 
-    // Comprehensive validation
+    // Validation
     if (!name || !email || !phone || !password) {
       return res.status(400).json({
         success: false,
-        message:
-          "Please provide all required fields: name, email, phone, password",
+        message: "All fields are required",
       });
     }
 
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email address",
+      });
+    }
+
+    // Password validation
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
@@ -94,254 +40,154 @@ export const register: RequestHandler = async (req, res) => {
       });
     }
 
-    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-      return res.status(400).json({
+    // Database connection check
+    if (!isDBConnected()) {
+      return res.status(503).json({
         success: false,
-        message: "Please provide a valid email address",
+        message: "Database service unavailable. Please try again later.",
       });
     }
 
-    if (!/^[0-9]{10}$/.test(phone)) {
-      return res.status(400).json({
+    // Check if user already exists
+    const existingUser = await User.findOne({
+      $or: [{ email: email.toLowerCase() }, { phone }],
+    });
+
+    if (existingUser) {
+      return res.status(409).json({
         success: false,
-        message: "Please provide a valid 10-digit phone number",
+        message: "User with this email or phone already exists",
       });
     }
 
-    // Use safe database operation
-    const result = await withDB(
-      async () => {
-        // Check if user already exists
-        const existingUser = await User.findOne({
-          $or: [{ email }, { phone }],
-        });
+    // Create new user
+    const user = new User({
+      name: name.trim(),
+      email: email.toLowerCase(),
+      phone,
+      password,
+      role: "user",
+      isActive: true,
+      isEmailVerified: false,
+    });
 
-        if (existingUser) {
-          const field = existingUser.email === email ? "email" : "phone";
-          throw new Error(`User already exists with this ${field}`);
-        }
+    await user.save();
 
-        // Create new user
-        const user = new User({
-          name: name.trim(),
-          email: email.toLowerCase().trim(),
-          phone: phone.trim(),
-          password,
-          role: role === "admin" ? "admin" : "user",
-          verification: {
-            emailToken: crypto.randomBytes(32).toString("hex"),
-            phoneToken: Math.floor(100000 + Math.random() * 900000).toString(),
-          },
-          loginHistory: [
-            {
-              ip: req.ip,
-              userAgent: req.get("User-Agent") || "Unknown",
-              timestamp: new Date(),
-            },
-          ],
-          lastLogin: new Date(),
-        });
-
-        await user.save();
-        return user;
-      },
-      // Fallback: Create mock user for demo
-      (() => {
-        console.log("⚠️  Database unavailable, creating mock user response");
-        const mockUser = {
-          _id: `mock_${Date.now()}`,
-          name: name.trim(),
-          email: email.toLowerCase().trim(),
-          phone: phone.trim(),
-          role: role === "admin" ? "admin" : "user",
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          toJSON: () => ({
-            _id: `mock_${Date.now()}`,
-            name: name.trim(),
-            email: email.toLowerCase().trim(),
-            phone: phone.trim(),
-            role: role === "admin" ? "admin" : "user",
-            isActive: true,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          }),
-        };
-        return mockUser;
-      })(),
+    // Generate token
+    const accessToken = jwt.sign(
+      { userId: user._id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "24h" }
     );
 
-    // Generate tokens
-    const accessToken = generateToken(result as any);
-    const refreshToken = generateRefreshToken(result as any);
+    const refreshToken = jwt.sign(
+      { userId: user._id, type: "refresh" },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
-    // Remove sensitive information
-    const userResponse = result.toJSON ? result.toJSON() : result;
+    // User response without password
+    const userResponse = user.toJSON();
+    delete userResponse.password;
 
     res.status(201).json({
       success: true,
-      message:
-        "User registered successfully" +
-        (!isDBConnected() ? " (demo mode)" : ""),
+      message: "User registered successfully",
       user: userResponse,
-      token: accessToken, // Frontend expects 'token', not 'tokens'
+      token: accessToken,
       refreshToken,
     });
   } catch (error: any) {
     console.error("Registration error:", error);
-
-    if (error.message.includes("User already exists")) {
-      return res.status(409).json({
-        success: false,
-        message: error.message,
-      });
-    }
-
     res.status(500).json({
       success: false,
-      message: "Registration failed",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
+      message: "Server error during registration",
     });
   }
-};
+});
 
-// @route   POST /api/auth/login
-// @desc    Login user
-// @access  Public
-export const login: RequestHandler = async (req, res) => {
+// User Login
+router.post("/login", async (req, res) => {
   try {
-    const { email, password, rememberMe = false } = req.body;
+    const { email, password } = req.body;
 
     // Validation
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Please provide email and password",
+        message: "Email and password are required",
       });
     }
 
-    // Use safe database operation
-    const user = await withDB(
-      async () => {
-        // Find user and include password for comparison
-        const foundUser = await User.findOne({ email: email.toLowerCase() })
-          .select("+password")
-          .exec();
-        return foundUser;
-      },
-      // Fallback: Check mock users
-      (() => {
-        console.log("⚠️  Database unavailable, checking mock users");
-        const mockUser = mockUsers.find((u) => u.email === email.toLowerCase());
+    // Database connection check
+    if (!isDBConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database service unavailable. Please try again later.",
+      });
+    }
 
-        // Simple demo authentication - accept any password for demo users
-        if (mockUser && (password === "demo123" || email.includes("demo"))) {
-          return mockUser;
-        }
-        return null;
-      })(),
-    );
+    // Find user
+    const user = await User.findOne({ 
+      email: email.toLowerCase(),
+      isActive: true 
+    }).select('+password');
 
-    if (!user) {
+    if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
     }
 
-    // Check if user is active
-    if (!user.isActive) {
-      return res.status(403).json({
-        success: false,
-        message: "Your account has been deactivated. Please contact support.",
-      });
-    }
-
-    // Check password (skip for mock users)
-    if (isDBConnected() && user.comparePassword) {
-      const isPasswordValid = await user.comparePassword(password);
-      if (!isPasswordValid) {
-        return res.status(401).json({
-          success: false,
-          message: "Invalid email or password",
-        });
-      }
-    }
-
-    // Update login history (only for real users)
-    if (isDBConnected() && user.save) {
-      user.loginHistory = user.loginHistory || [];
-      user.loginHistory.push({
-        ip: req.ip,
-        userAgent: req.get("User-Agent") || "Unknown",
-        timestamp: new Date(),
-      } as any);
-
-      // Keep only last 10 login records
-      if (user.loginHistory.length > 10) {
-        user.loginHistory = user.loginHistory.slice(-10);
-      }
-
-      user.lastLogin = new Date();
-      user.lastActivity = new Date();
-      await user.save();
-    }
-
     // Generate tokens
-    const accessTokenExpiry = rememberMe ? "30d" : "7d";
     const accessToken = jwt.sign(
-      {
-        userId: user._id,
-        email: user.email,
-        role: user.role,
-      },
+      { userId: user._id, role: user.role },
       JWT_SECRET,
-      { expiresIn: accessTokenExpiry },
+      { expiresIn: "24h" }
     );
-    const refreshToken = generateRefreshToken(user as any);
 
-    // Remove password from response
-    const userResponse = user.toJSON ? user.toJSON() : user;
+    const refreshToken = jwt.sign(
+      { userId: user._id, type: "refresh" },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
-    console.log(`✅ Login successful for ${user.email}:`, {
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save();
+
+    // User response without password
+    const userResponse = user.toJSON();
+    delete userResponse.password;
+
+    console.log(`✅ Login successful for ${email}:`, {
       userId: user._id,
       role: user.role,
-      demo: !isDBConnected(),
       tokenGenerated: !!accessToken,
     });
 
     res.json({
       success: true,
-      message: "Login successful" + (!isDBConnected() ? " (demo mode)" : ""),
+      message: "Login successful",
       user: userResponse,
-      token: accessToken, // Frontend expects 'token', not 'tokens'
+      token: accessToken,
       refreshToken,
-      demo: !isDBConnected(),
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
     console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      message: "Login failed",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
+      message: "Server error during login",
     });
   }
-};
+});
 
-// @route   POST /api/auth/verify-token
-// @desc    Verify JWT token
-// @access  Public
-export const verifyToken: RequestHandler = async (req, res) => {
+// Token Verification
+router.post("/verify-token", async (req, res) => {
   try {
-    const { token } = req.body;
+    const token = req.headers.authorization?.replace("Bearer ", "");
 
     if (!token) {
       return res.status(401).json({
@@ -350,532 +196,153 @@ export const verifyToken: RequestHandler = async (req, res) => {
       });
     }
 
+    // Verify token
     const decoded = jwt.verify(token, JWT_SECRET) as any;
 
-    // Use safe database operation with fallback
-    const user = await withDB(
-      async () => {
-        const foundUser = await User.findById(decoded.userId);
-        return foundUser;
-      },
-      // Fallback: Check mock users
-      (() => {
-        console.log(
-          "⚠️  Database unavailable, checking mock users for token verification",
-        );
-        const mockUser = mockUsers.find((u) => u._id === decoded.userId);
-        return mockUser || null;
-      })(),
-    );
-
-    if (!user) {
-      return res.status(401).json({
+    // Database connection check
+    if (!isDBConnected()) {
+      return res.status(503).json({
         success: false,
-        message: "Invalid token - user not found",
+        message: "Database service unavailable",
       });
     }
 
-    if (!user.isActive) {
-      return res.status(403).json({
-        success: false,
-        message: "Account deactivated",
-      });
-    }
-
-    // Update last activity (only for real users)
-    if (isDBConnected() && user.save) {
-      user.lastActivity = new Date();
-      await user.save();
-    }
-
-    res.json({
-      success: true,
-      user: user.toJSON ? user.toJSON() : user,
-      tokenValid: true,
-    });
-  } catch (error: any) {
-    console.error("Token verification error:", error);
-
-    if (error.name === "TokenExpiredError") {
-      return res.status(401).json({
-        success: false,
-        message: "Token expired",
-        tokenExpired: true,
-      });
-    }
-
-    res.status(401).json({
-      success: false,
-      message: "Invalid token",
-    });
-  }
-};
-
-// @route   POST /api/auth/refresh-token
-// @desc    Refresh access token
-// @access  Public
-export const refreshToken: RequestHandler = async (req, res) => {
-  try {
-    const { refreshToken } = req.body;
-
-    if (!refreshToken) {
-      return res.status(401).json({
-        success: false,
-        message: "Refresh token required",
-      });
-    }
-
-    const decoded = jwt.verify(refreshToken, JWT_SECRET) as any;
-
-    if (decoded.type !== "refresh") {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid refresh token",
-      });
-    }
-
+    // Find user
     const user = await User.findById(decoded.userId);
 
     if (!user || !user.isActive) {
       return res.status(401).json({
         success: false,
-        message: "Invalid refresh token",
+        message: "User not found or inactive",
       });
     }
 
-    // Generate new access token
-    const newAccessToken = generateToken(user);
+    // User response without password
+    const userResponse = user.toJSON();
+    delete userResponse.password;
 
     res.json({
       success: true,
-      accessToken: newAccessToken,
+      user: userResponse,
+      token,
     });
   } catch (error: any) {
-    console.error("Refresh token error:", error);
+    console.error("Token verification error:", error);
     res.status(401).json({
       success: false,
-      message: "Invalid refresh token",
+      message: "Invalid token",
     });
   }
-};
+});
 
-// @route   POST /api/auth/logout
-// @desc    Logout user (invalidate tokens)
-// @access  Private
-export const logout: RequestHandler = async (req, res) => {
+// Extend Token (for remember me functionality)
+router.post("/extend-token", authenticate, async (req, res) => {
   try {
-    // In a production app, you'd maintain a blacklist of invalidated tokens
-    // For now, we'll just return success
+    if (!isDBConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database service unavailable",
+      });
+    }
+
+    const user = await User.findById(req.user.userId);
+    if (!user || !user.isActive) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Generate new extended token (30 days for remember me)
+    const extendedToken = jwt.sign(
+      { userId: user._id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "30d" }
+    );
+
     res.json({
       success: true,
-      message: "Logged out successfully",
+      token: extendedToken,
+      message: "Token extended successfully",
     });
   } catch (error: any) {
-    console.error("Logout error:", error);
+    console.error("Extend token error:", error);
     res.status(500).json({
       success: false,
-      message: "Logout failed",
+      message: "Server error extending token",
     });
   }
-};
+});
 
-// @route   POST /api/auth/forgot-password
-// @desc    Request password reset
-// @access  Public
-export const forgotPassword: RequestHandler = async (req, res) => {
+// Forgot Password
+router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
 
     if (!email) {
       return res.status(400).json({
         success: false,
-        message: "Email address is required",
+        message: "Email is required",
       });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!isDBConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database service unavailable. Please try again later.",
+      });
+    }
+
+    const user = await User.findOne({ 
+      email: email.toLowerCase(),
+      isActive: true 
+    });
 
     if (!user) {
-      // Don't reveal if email exists for security
+      // Don't reveal if user exists for security
       return res.json({
         success: true,
-        message:
-          "If an account with that email exists, password reset instructions have been sent",
+        message: "If an account with this email exists, a reset link has been sent.",
       });
     }
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
-    user.verification.resetPasswordToken = resetToken;
-    user.verification.resetPasswordExpires = new Date(
-      Date.now() + 15 * 60 * 1000,
-    ); // 15 minutes
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
 
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpiry = resetTokenExpiry;
     await user.save();
 
-    // In a real app, send email here
-    console.log(`Password reset token for ${email}: ${resetToken}`);
+    // Send email
+    try {
+      await emailService.sendPasswordResetEmail(user.email, user.name, resetToken);
+      console.log(`📧 Password reset email sent to ${user.email}`);
+    } catch (emailError) {
+      console.error("Failed to send password reset email:", emailError);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send reset email. Please try again later.",
+      });
+    }
 
     res.json({
       success: true,
-      message: "Password reset instructions sent to your email",
-      // Include token in response for testing (remove in production)
-      ...(process.env.NODE_ENV === "development" && { resetToken }),
+      message: "Password reset link has been sent to your email.",
     });
   } catch (error: any) {
     console.error("Forgot password error:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to process password reset request",
+      message: "Server error processing request",
     });
   }
-};
+});
 
-// @route   POST /api/auth/reset-password
-// @desc    Reset password with token
-// @access  Public
-export const resetPassword: RequestHandler = async (req, res) => {
+// Verify Reset Token
+router.post("/verify-reset-token", async (req, res) => {
   try {
-    const { token, newPassword } = req.body;
-
-    if (!token || !newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "Token and new password are required",
-      });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must be at least 6 characters long",
-      });
-    }
-
-    const user = await User.findOne({
-      "verification.resetPasswordToken": token,
-      "verification.resetPasswordExpires": { $gt: new Date() },
-    });
-
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired reset token",
-      });
-    }
-
-    // Update password
-    user.password = newPassword;
-    user.verification.resetPasswordToken = undefined;
-    user.verification.resetPasswordExpires = undefined;
-
-    await user.save();
-
-    res.json({
-      success: true,
-      message: "Password reset successfully",
-    });
-  } catch (error: any) {
-    console.error("Reset password error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to reset password",
-    });
-  }
-};
-
-// @route   POST /api/auth/change-password
-// @desc    Change password for authenticated user
-// @access  Private
-export const changePassword: RequestHandler = async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-    const userId = (req as any).user.userId;
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "Current password and new password are required",
-      });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message: "New password must be at least 6 characters long",
-      });
-    }
-
-    const user = await User.findById(userId).select("+password");
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    // Verify current password
-    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
-
-    if (!isCurrentPasswordValid) {
-      return res.status(400).json({
-        success: false,
-        message: "Current password is incorrect",
-      });
-    }
-
-    // Update password
-    user.password = newPassword;
-    await user.save();
-
-    res.json({
-      success: true,
-      message: "Password changed successfully",
-    });
-  } catch (error: any) {
-    console.error("Change password error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to change password",
-    });
-  }
-};
-
-// Set up routes
-router.post("/register", register);
-router.post("/login", login);
-router.post("/verify-token", verifyToken);
-router.post("/refresh-token", refreshToken);
-router.post("/logout", logout);
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password", resetPassword);
-router.post("/change-password", authenticate, changePassword);
-
-// @route   POST /api/auth/request-email-change
-// @desc    Request email change with verification
-// @access  Private
-export const requestEmailChange: RequestHandler = async (req, res) => {
-  try {
-    const { newEmail } = req.body;
-    const userId = (req as any).user?.id;
-
-    if (!newEmail) {
-      return res.status(400).json({
-        success: false,
-        message: "New email is required",
-      });
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(newEmail)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid email format",
-      });
-    }
-
-    if (!isDBConnected()) {
-      // Mock response for demo mode
-      const verificationCode = Math.floor(
-        100000 + Math.random() * 900000,
-      ).toString();
-      console.log(
-        `📧 Demo email verification code for ${newEmail}: ${verificationCode}`,
-      );
-
-      return res.json({
-        success: true,
-        message: "Verification code sent successfully",
-        demo: true,
-        // Include code in response for testing (remove in production)
-        ...(process.env.NODE_ENV === "development" && { verificationCode }),
-      });
-    }
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    // Check if email is already in use
-    const existingUser = await User.findOne({ email: newEmail });
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "Email already in use",
-      });
-    }
-
-    // Generate verification code
-    const verificationCode = Math.floor(
-      100000 + Math.random() * 900000,
-    ).toString();
-
-    // Store pending email change
-    user.verification.emailChangeToken = verificationCode;
-    user.verification.emailChangeExpires = new Date(
-      Date.now() + 15 * 60 * 1000,
-    ); // 15 minutes
-    user.verification.pendingEmail = newEmail;
-
-    await user.save();
-
-    // Send verification email
-    try {
-      await emailService.sendVerificationCode(
-        newEmail,
-        verificationCode,
-        "email-change",
-      );
-      console.log(`📧 Email verification code sent to ${newEmail}`);
-    } catch (emailError) {
-      console.error(
-        "Failed to send email, but continuing with demo mode:",
-        emailError,
-      );
-    }
-
-    res.json({
-      success: true,
-      message: "Verification code sent to your new email",
-      // Include code in response for testing (remove in production)
-      ...(process.env.NODE_ENV === "development" && { verificationCode }),
-    });
-  } catch (error: any) {
-    console.error("Request email change error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to send verification code",
-    });
-  }
-};
-
-// @route   POST /api/auth/change-email
-// @desc    Change email with verification code
-// @access  Private
-export const changeEmail: RequestHandler = async (req, res) => {
-  try {
-    const { newEmail, verificationCode } = req.body;
-    const userId = (req as any).user?.id;
-
-    if (!newEmail || !verificationCode) {
-      return res.status(400).json({
-        success: false,
-        message: "New email and verification code are required",
-      });
-    }
-
-    if (!isDBConnected()) {
-      // Mock response for demo mode
-      return res.json({
-        success: true,
-        message: "Email changed successfully",
-        demo: true,
-      });
-    }
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    // Verify the code and check expiration
-    if (
-      user.verification.emailChangeToken !== verificationCode ||
-      !user.verification.emailChangeExpires ||
-      user.verification.emailChangeExpires < new Date()
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification code",
-      });
-    }
-
-    // Verify the email matches what was requested
-    if (user.verification.pendingEmail !== newEmail) {
-      return res.status(400).json({
-        success: false,
-        message: "Email doesn't match the requested change",
-      });
-    }
-
-    // Update email
-    user.email = newEmail;
-    user.verification.emailChangeToken = undefined;
-    user.verification.emailChangeExpires = undefined;
-    user.verification.pendingEmail = undefined;
-
-    await user.save();
-
-    res.json({
-      success: true,
-      message: "Email changed successfully",
-    });
-  } catch (error: any) {
-    console.error("Change email error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to change email",
-    });
-  }
-};
-
-// @route   POST /api/auth/extend-token
-// @desc    Extend token expiry for remember me
-// @access  Private
-export const extendToken: RequestHandler = async (req, res) => {
-  try {
-    const { rememberMe } = req.body;
-    const user = req.user as any;
-
-    if (!rememberMe) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid request",
-      });
-    }
-
-    // Generate new token with extended expiry (30 days)
-    const jwt = require("jsonwebtoken");
-    const JWT_SECRET = process.env.JWT_SECRET || "kanxasafari_jwt_secret_key";
-
-    const extendedToken = jwt.sign(
-      {
-        userId: user._id,
-        email: user.email,
-        role: user.role,
-      },
-      JWT_SECRET,
-      { expiresIn: "30d" }, // 30 days for remember me
-    );
-
-    res.json({
-      success: true,
-      token: extendedToken,
-    });
-  } catch (error: any) {
-    console.error("Extend token error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to extend token",
-    });
-  }
-};
-
-// @route   GET /api/auth/verify-reset-token
-// @desc    Verify password reset token validity
-// @access  Public
-export const verifyResetToken: RequestHandler = async (req, res) => {
-  try {
-    const { token } = req.query;
+    const { token } = req.body;
 
     if (!token) {
       return res.status(400).json({
@@ -884,10 +351,17 @@ export const verifyResetToken: RequestHandler = async (req, res) => {
       });
     }
 
-    // Find user with valid reset token
+    if (!isDBConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database service unavailable",
+      });
+    }
+
     const user = await User.findOne({
-      "verification.resetPasswordToken": token,
-      "verification.resetPasswordExpires": { $gt: new Date() },
+      resetPasswordToken: token,
+      resetPasswordExpiry: { $gt: new Date() },
+      isActive: true,
     });
 
     if (!user) {
@@ -905,14 +379,75 @@ export const verifyResetToken: RequestHandler = async (req, res) => {
     console.error("Verify reset token error:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to verify reset token",
+      message: "Server error verifying token",
     });
   }
-};
+});
 
-router.post("/request-email-change", authenticate, requestEmailChange);
-router.post("/change-email", authenticate, changeEmail);
-router.post("/extend-token", authenticate, extendToken);
-router.get("/verify-reset-token", verifyResetToken);
+// Reset Password
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Token and new password are required",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters long",
+      });
+    }
+
+    if (!isDBConnected()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database service unavailable",
+      });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpiry: { $gt: new Date() },
+      isActive: true,
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired reset token",
+      });
+    }
+
+    // Update password
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiry = undefined;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error: any) {
+    console.error("Reset password error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error resetting password",
+    });
+  }
+});
+
+// Logout (client-side token removal)
+router.post("/logout", (req, res) => {
+  res.json({
+    success: true,
+    message: "Logout successful",
+  });
+});
 
 export default router;
