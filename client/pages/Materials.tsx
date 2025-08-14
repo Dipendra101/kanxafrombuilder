@@ -594,6 +594,7 @@ export default function Materials() {
           amount={getTotalPrice()}
           service="Construction Materials"
           serviceId="materials-order"
+          bookingId={`materials-${Date.now()}`}
         />
 
         <div className="flex gap-3">
