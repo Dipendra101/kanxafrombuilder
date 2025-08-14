@@ -177,6 +177,35 @@ export default function Header() {
 
         {/* Right side actions */}
         <div className="flex items-center space-x-2 sm:space-x-4">
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="hover:bg-accent hover:text-accent-foreground"
+            title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+          >
+            {theme === 'light' ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
+          </Button>
+
+          {/* Language Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleLanguage}
+            className="hover:bg-accent hover:text-accent-foreground relative"
+            title={language === 'en' ? 'नेपालीमा परिवर्तन गर्नुहोस्' : 'Switch to English'}
+          >
+            <Languages className="h-4 w-4" />
+            <span className="absolute -bottom-1 -right-1 text-[8px] font-bold bg-primary text-primary-foreground rounded-full w-3 h-3 flex items-center justify-center">
+              {language.toUpperCase()}
+            </span>
+          </Button>
+
           <Button variant="ghost" size="icon" className="hidden sm:flex">
             <Phone className="h-4 w-4" />
           </Button>
