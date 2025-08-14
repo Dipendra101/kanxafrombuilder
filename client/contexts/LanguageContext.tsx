@@ -76,6 +76,13 @@ const translations: Record<Language, Record<string, string>> = {
     'home.hero.subtitle': 'Your trusted partner for transportation, construction materials, and professional services across Nepal',
     'home.services.title': 'Our Services',
     'home.services.subtitle': 'Comprehensive solutions for all your transportation and construction needs',
+    'home.bookNow': 'Book Now',
+    'home.exploreServices': 'Explore Services',
+    'home.whyChooseUs': 'Why Choose Kanxa Safari?',
+    'home.professionalService': 'Professional Service',
+    'home.reliableTransport': 'Reliable Transportation',
+    'home.competitivePrices': 'Competitive Prices',
+    'home.customerSupport': '24/7 Customer Support',
   },
   ne: {
     // Header (Nepali translations)
@@ -88,7 +95,7 @@ const translations: Record<Language, Record<string, string>> = {
     'header.customTours': 'कस्टम टुर',
     'header.buildingMaterials': 'निर्माण सामग्री',
     'header.machinery': 'मेसिनरी',
-    'header.signIn': 'साइन इ���',
+    'header.signIn': 'साइन इन',
     'header.getStarted': 'सुरु गर्नुहोस्',
     'header.profile': 'प्रोफाइल',
     'header.myBookings': 'मेरो बुकिङ',
@@ -99,7 +106,7 @@ const translations: Record<Language, Record<string, string>> = {
     'header.adminPanel': 'एडमिन प्यानल',
     'header.welcome': 'स्वागत',
     'header.createAccount': 'खाता बनाउनुहोस्',
-    'header.exitGuestMode': 'गेस्ट मोडबाट बाहिर निस्कनुहोस्',
+    'header.exitGuestMode': 'ग���स्ट मोडबाट बाहिर निस्कनुहोस्',
     
     // Transportation descriptions (Nepali)
     'nav.transportation.desc': 'बस, कार्गो ट्रक र कस्टम टुर बुक गर्नुहोस्',
@@ -107,7 +114,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.cargoTrucks.desc': 'मालवाहक र रसद सेवाहरू',
     'nav.customTours.desc': 'आरक्षित टुर सेवाहरू',
     'nav.construction.desc': 'निर्माण सामग्री र मेसिनरी',
-    'nav.buildingMaterials.desc': 'सिमेन्ट, ब्��क, पाइप र अन्य',
+    'nav.buildingMaterials.desc': 'सिमेन्ट, ब्लक, पाइप र अन्य',
     'nav.machinery.desc': 'जेसीबी, मिक्सर र ट्र्याक्टर',
     
     // Common (Nepali)
@@ -117,7 +124,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.contactUs': 'सम्पर्क गर्नुहोस्',
     'common.search': 'खोज्नुहोस्',
     'common.filter': 'फिल्टर',
-    'common.loading': 'लोड हुँदै...',
+    'common.loading': '���ोड हुँदै...',
     'common.error': 'त्रुटि',
     'common.success': 'सफल',
     'common.cancel': 'रद्द गर्नुहोस्',
@@ -129,7 +136,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Home page (Nepali)
     'home.hero.title': 'नेपालमा भरपर्दो यातायात र निर्माण सेवाहरू',
-    'home.hero.subtitle': 'नेपालभरि यातायात, निर्माण साम���्री र व्यावसायिक सेवाहरूको लागि तपाईंको भरपर्दो साझेदार',
+    'home.hero.subtitle': 'नेपालभरि यातायात, निर्माण सामग्री र व्यावसायिक सेवाहरूको लागि तपाईंको भरपर्दो साझेदार',
     'home.services.title': 'हाम्रा सेवाहरू',
     'home.services.subtitle': 'तपाईंका सबै यातायात र निर्माण आवश्यकताहरूको लागि व्यापक समाधानहरू',
   },
