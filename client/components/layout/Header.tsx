@@ -300,17 +300,17 @@ export default function Header() {
                 <>
                   <DropdownMenuItem disabled>
                     <Badge variant="outline" className="text-orange-600">
-                      Guest Mode
+                      {t('header.guestMode')}
                     </Badge>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/login">Sign In</Link>
+                    <Link to="/login">{t('header.signIn')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/signup">Create Account</Link>
+                    <Link to="/signup">{t('header.createAccount')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={logout}>
-                    Exit Guest Mode
+                    {t('header.exitGuestMode')}
                   </DropdownMenuItem>
                 </>
               ) : (
