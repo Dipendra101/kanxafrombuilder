@@ -44,12 +44,22 @@ const generateVehiclePlate = (serviceType: string, serviceId: string) => {
 };
 
 export default function Payment() {
+  const { isAuthenticated, isGuest } = useAuth();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(
     null,
   );
+
+  // Redirect guests to login page with return URL
+  useEffect(() => {
+    if (!isAuthenticated || isGuest) {
+      const currentUrl = window.location.pathname + window.location.search;
+      navigate(`/login?returnUrl=${encodeURIComponent(currentUrl)}`);
+      return;
+    }
+  }, [isAuthenticated, isGuest, navigate]);
 
   useEffect(() => {
     const serviceId = searchParams.get("service");
