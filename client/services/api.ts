@@ -263,6 +263,13 @@ export const authAPI = {
       body: JSON.stringify({ email }),
     });
   },
+
+  smsLogin: async (credentials: { phone: string; code: string }) => {
+    return apiRequest("/auth/sms-login", {
+      method: "POST",
+      body: JSON.stringify(credentials),
+    });
+  },
 };
 
 // User API
