@@ -137,8 +137,8 @@ export function PaymentOptions({
         } else {
           // Demo mode - simulate the payment process
           toast({
-            title: "Demo Payment Mode",
-            description: "Simulating eSewa payment process...",
+            title: "Initiating eSewa Payment",
+            description: "Processing your payment request...",
           });
 
           // Simulate payment delay
