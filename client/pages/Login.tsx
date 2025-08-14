@@ -110,9 +110,19 @@ export default function Login() {
         ),
       });
 
-      // Store remember me preference
+      // Store remember me preference and email
       if (rememberMe) {
         localStorage.setItem("kanxa_remember", "true");
+        localStorage.setItem("kanxa_remembered_email", formData.email);
+        // Set longer token expiry for remember me (30 days instead of 7)
+        const extendedToken = await extendTokenExpiry(loginResponse.token);
+        if (extendedToken) {
+          localStorage.setItem("authToken", extendedToken);
+        }
+      } else {
+        // Clear remember me data if unchecked
+        localStorage.removeItem("kanxa_remember");
+        localStorage.removeItem("kanxa_remembered_email");
       }
 
       // Redirect based on user role from login response
