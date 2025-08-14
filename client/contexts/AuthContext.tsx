@@ -14,11 +14,20 @@ interface User {
   phone: string;
   role: string;
   profilePicture?: string;
-  address?: string;
+  avatar?: string;
+  address?: string | object;
   dateOfBirth?: string;
   preferences?: any;
   isEmailVerified?: boolean;
   createdAt?: string;
+  profile?: {
+    bio?: string;
+    company?: string;
+    occupation?: string;
+    website?: string;
+  };
+  bio?: string;
+  company?: string;
 }
 
 interface AuthContextType {
@@ -153,7 +162,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               error.name === "TypeError";
 
             if (isNetworkError) {
-              console.log("🌐 Network issue detected during auth init");
+              console.log("���� Network issue detected during auth init");
               setNetworkError(true);
 
               // Use cached data during network issues
