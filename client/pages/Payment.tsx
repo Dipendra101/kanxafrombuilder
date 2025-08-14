@@ -186,11 +186,41 @@ export default function Payment() {
     );
   };
 
-  if (!serviceDetails) {
+  // Show loading if not authenticated or details not loaded
+  if (!isAuthenticated || isGuest || !serviceDetails) {
     return (
       <Layout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kanxa-blue"></div>
+        <div className="container py-16">
+          <div className="max-w-md mx-auto text-center">
+            {!isAuthenticated || isGuest ? (
+              <Card className="border-orange-200 bg-orange-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-center gap-2 text-orange-800">
+                    <Lock className="h-6 w-6" />
+                    Authentication Required
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto">
+                    <User className="h-8 w-8 text-orange-600" />
+                  </div>
+                  <p className="text-orange-700">
+                    You need to log in to access the payment page.
+                  </p>
+                  <Alert>
+                    <Lock className="h-4 w-4" />
+                    <AlertDescription>
+                      Redirecting to login page...
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-kanxa-blue"></div>
+              </div>
+            )}
+          </div>
         </div>
       </Layout>
     );
