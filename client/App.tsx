@@ -39,6 +39,7 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Chat from "./pages/Chat";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminDashboardSimple from "./pages/AdminDashboardSimple";
