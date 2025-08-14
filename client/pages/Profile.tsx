@@ -1104,6 +1104,7 @@ export default function Profile() {
                     <Button
                       variant="outline"
                       className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
+                      onClick={() => setPasswordDialogOpen(true)}
                     >
                       <Shield className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Change Password
@@ -1111,6 +1112,7 @@ export default function Profile() {
                     <Button
                       variant="outline"
                       className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
+                      onClick={() => setPaymentDialogOpen(true)}
                     >
                       <CreditCard className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Manage Payment Methods
@@ -1118,6 +1120,7 @@ export default function Profile() {
                     <Button
                       variant="outline"
                       className="w-full justify-start text-xs sm:text-sm h-auto py-2 sm:py-2.5"
+                      onClick={() => setEmailDialogOpen(true)}
                     >
                       <Mail className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Update Email Address
