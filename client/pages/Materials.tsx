@@ -17,6 +17,7 @@ import {
   Weight,
   Ruler,
 } from "lucide-react";
+import { PaymentOptions } from "@/components/ui/payment-options";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +47,7 @@ export default function Materials() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [cart, setCart] = useState<{ [key: string]: number }>({});
   const [sortBy, setSortBy] = useState("name");
+  const [showPayment, setShowPayment] = useState(false);
 
   const categories = [
     { id: "all", name: "All Materials", icon: "🏗️" },
@@ -408,7 +410,11 @@ export default function Materials() {
               </Alert>
 
               <div className="flex gap-4">
-                <Button className="flex-1 bg-kanxa-orange hover:bg-kanxa-orange/90">
+                <Button
+                  className="flex-1 bg-kanxa-orange hover:bg-kanxa-orange/90"
+                  onClick={() => setShowPayment(true)}
+                  disabled={Object.keys(cart).length === 0}
+                >
                   Proceed to Checkout
                 </Button>
                 <Button variant="outline" onClick={() => setCart({})}>
@@ -418,6 +424,70 @@ export default function Materials() {
             </div>
           </>
         )}
+      </div>
+    </DialogContent>
+  );
+
+  const PaymentDialog = () => (
+    <DialogContent className="max-w-lg">
+      <DialogHeader>
+        <DialogTitle className="text-2xl font-bold text-kanxa-navy">
+          Complete Your Order
+        </DialogTitle>
+      </DialogHeader>
+
+      <div className="space-y-6">
+        {/* Order Summary */}
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h4 className="font-medium text-kanxa-navy mb-3">Order Summary</h4>
+          <div className="space-y-2">
+            {Object.entries(cart).map(([materialId, quantity]) => {
+              const material = materials.find((m) => m.id === materialId);
+              if (!material) return null;
+
+              return (
+                <div key={materialId} className="flex justify-between text-sm">
+                  <span>
+                    {material.name} x {quantity}
+                  </span>
+                  <span className="font-medium">
+                    Rs {(material.price * quantity).toLocaleString()}
+                  </span>
+                </div>
+              );
+            })}
+            <Separator />
+            <div className="flex justify-between font-bold">
+              <span>Total:</span>
+              <span className="text-kanxa-blue">
+                Rs {getTotalPrice().toLocaleString()}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Options */}
+        <PaymentOptions
+          amount={getTotalPrice()}
+          service="Construction Materials"
+          serviceId="materials-order"
+          onPaymentSelect={(method) => {
+            // Handle successful payment
+            console.log(`Payment completed with ${method}`);
+            setCart({});
+            setShowPayment(false);
+          }}
+        />
+
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowPayment(false)}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+        </div>
       </div>
     </DialogContent>
   );
@@ -498,6 +568,11 @@ export default function Materials() {
                   </Button>
                 </DialogTrigger>
                 <CartDialog />
+              </Dialog>
+
+              {/* Payment Dialog */}
+              <Dialog open={showPayment} onOpenChange={setShowPayment}>
+                <PaymentDialog />
               </Dialog>
             </div>
           </div>
