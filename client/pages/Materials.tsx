@@ -471,12 +471,6 @@ export default function Materials() {
           amount={getTotalPrice()}
           service="Construction Materials"
           serviceId="materials-order"
-          onPaymentSelect={(method) => {
-            // Handle successful payment
-            console.log(`Payment completed with ${method}`);
-            setCart({});
-            setShowPayment(false);
-          }}
         />
 
         <div className="flex gap-3">
