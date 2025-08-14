@@ -60,9 +60,37 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+      <div> {/* Wrapper div for react-hot-toast */}
+        <Toaster  // react-hot-toast Toaster
+          position="top-center"
+          reverseOrder={false}
+          toastOptions={{
+            // Define default options
+            duration: 5000,
+            style: {
+              background: '#1f2937',
+              color: '#fff',
+              borderRadius: '8px',
+              fontSize: '14px',
+            },
+            // Default options for specific types
+            success: {
+              duration: 3000,
+              iconTheme: {
+                primary: '#22c55e',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              duration: 5000,
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+        <BrowserRouter>
         <AuthProvider>
           <TokenExpiryHandler />
           <Routes>
@@ -137,7 +165,8 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </div>
     </TooltipProvider>
   </QueryClientProvider>
 );
