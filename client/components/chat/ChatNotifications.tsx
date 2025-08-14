@@ -122,9 +122,7 @@ export default function ChatNotifications() {
           ? "hover:bg-gray-50"
           : "bg-blue-50 hover:bg-blue-100"
       }`}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      onClick={() => {
         markAsRead(notification.id);
         // Navigate to chat
         window.location.href = `/chat#${notification.chatId}`;
