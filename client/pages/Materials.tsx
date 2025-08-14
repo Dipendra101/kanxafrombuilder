@@ -47,11 +47,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Layout from "@/components/layout/Layout";
 
 export default function Materials() {
+  const { isAuthenticated, isGuest } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [cart, setCart] = useState<{ [key: string]: number }>({});
   const [sortBy, setSortBy] = useState("name");
   const [showPayment, setShowPayment] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   // Listen for payment completion events
   useEffect(() => {
