@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Bell, Menu, User, Search, Phone, MessageCircle } from "lucide-react";
+import { Bell, Menu, User, Search, Phone, MessageCircle, Moon, Sun, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
