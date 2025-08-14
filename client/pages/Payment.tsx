@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Layout from "@/components/layout/Layout";
 import { PaymentOptions } from "@/components/ui/payment-options";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface ServiceDetails {

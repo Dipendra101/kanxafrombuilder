@@ -41,7 +41,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Layout from "@/components/layout/Layout";
 import { servicesAPI } from "@/services/api";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast-simple";
 import { SeatSelectionDialog } from "@/components/bus/SeatSelectionDialog";
 
 const busRoutes = [
