@@ -58,17 +58,14 @@ const apiRequest = async (
         const responseOk = response.ok;
         const responseStatusText = response.statusText;
 
-        // Clone response to avoid "body stream already read" error
-        const responseClone = response.clone();
-
-        // Read response body immediately and store it
+        // Read response body immediately and store it - no cloning needed
         let responseText: string;
         let data: any;
         let parseSuccess = false;
 
         try {
           // Read response as text first (only way to safely read once)
-          responseText = await responseClone.text();
+          responseText = await response.text();
 
           // Try to parse as JSON
           if (responseText) {
