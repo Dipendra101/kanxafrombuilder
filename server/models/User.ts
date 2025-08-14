@@ -153,6 +153,9 @@ const userSchema = new Schema<IUser>({
     phoneToken: String,
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+    emailChangeToken: String,
+    emailChangeExpires: Date,
+    pendingEmail: String,
   },
   loginHistory: [{
     ip: String,
