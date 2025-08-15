@@ -146,7 +146,7 @@ export default function Buses() {
     };
 
     loadBuses();
-  }, [toast]);
+  }, []); // Remove toast dependency to prevent infinite loop
 
   // Filter and sort buses
   const filteredBuses = buses
