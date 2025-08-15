@@ -387,53 +387,101 @@ export const getAnalytics: RequestHandler = async (req, res) => {
         // Calculate date range based on period
         const now = new Date();
         let startDate = new Date();
+        let previousStartDate = new Date();
 
         switch (period) {
           case "7d":
             startDate.setDate(now.getDate() - 7);
+            previousStartDate.setDate(now.getDate() - 14);
             break;
           case "30d":
             startDate.setDate(now.getDate() - 30);
+            previousStartDate.setDate(now.getDate() - 60);
             break;
           case "90d":
             startDate.setDate(now.getDate() - 90);
+            previousStartDate.setDate(now.getDate() - 180);
+            break;
+          case "1y":
+            startDate.setFullYear(now.getFullYear() - 1);
+            previousStartDate.setFullYear(now.getFullYear() - 2);
             break;
           default:
             startDate.setDate(now.getDate() - 30);
+            previousStartDate.setDate(now.getDate() - 60);
         }
 
-        // Revenue by service type
-        const revenueByType = await Booking.aggregate([
+        // Current period stats
+        const [
+          totalRevenue,
+          previousRevenue,
+          totalBookings,
+          previousBookings,
+          completedBookings,
+          pendingBookings,
+          cancelledBookings,
+          totalUsers,
+          activeUsers,
+          newUsers,
+        ] = await Promise.all([
+          // Total revenue current period
+          Booking.aggregate([
+            {
+              $match: {
+                paymentStatus: "completed",
+                createdAt: { $gte: startDate },
+              },
+            },
+            { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+          ]).then((result) => result[0]?.total || 0),
+
+          // Previous period revenue for growth calculation
+          Booking.aggregate([
+            {
+              $match: {
+                paymentStatus: "completed",
+                createdAt: { $gte: previousStartDate, $lt: startDate },
+              },
+            },
+            { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+          ]).then((result) => result[0]?.total || 0),
+
+          // Total bookings current period
+          Booking.countDocuments({ createdAt: { $gte: startDate } }),
+
+          // Previous period bookings
+          Booking.countDocuments({
+            createdAt: { $gte: previousStartDate, $lt: startDate },
+          }),
+
+          // Booking status counts
+          Booking.countDocuments({
+            status: "confirmed",
+            createdAt: { $gte: startDate },
+          }),
+          Booking.countDocuments({
+            status: "pending",
+            createdAt: { $gte: startDate },
+          }),
+          Booking.countDocuments({
+            status: "cancelled",
+            createdAt: { $gte: startDate },
+          }),
+
+          // User stats
+          User.countDocuments({ createdAt: { $gte: startDate } }),
+          User.countDocuments({
+            isActive: true,
+            lastActivity: { $gte: startDate },
+          }),
+          User.countDocuments({ createdAt: { $gte: startDate } }),
+        ]);
+
+        // Monthly revenue trend
+        const monthlyRevenue = await Booking.aggregate([
           {
             $match: {
               paymentStatus: "completed",
-              createdAt: { $gte: startDate },
-            },
-          },
-          {
-            $lookup: {
-              from: "services",
-              localField: "serviceId",
-              foreignField: "_id",
-              as: "service",
-            },
-          },
-          {
-            $unwind: "$service",
-          },
-          {
-            $group: {
-              _id: "$service.type",
-              revenue: { $sum: "$totalAmount" },
-              count: { $sum: 1 },
-            },
-          },
-        ]);
-
-        // User growth
-        const userGrowth = await User.aggregate([
-          {
-            $match: {
               createdAt: { $gte: startDate },
             },
           },
@@ -442,35 +490,220 @@ export const getAnalytics: RequestHandler = async (req, res) => {
               _id: {
                 year: { $year: "$createdAt" },
                 month: { $month: "$createdAt" },
-                day: { $dayOfMonth: "$createdAt" },
               },
-              count: { $sum: 1 },
+              revenue: { $sum: "$totalAmount" },
+              bookings: { $sum: 1 },
             },
           },
-          {
-            $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 },
-          },
+          { $sort: { "_id.year": 1, "_id.month": 1 } },
         ]);
 
+        // Popular services
+        const popularServices = await Booking.aggregate([
+          { $match: { createdAt: { $gte: startDate } } },
+          {
+            $lookup: {
+              from: "services",
+              localField: "serviceId",
+              foreignField: "_id",
+              as: "service",
+            },
+          },
+          { $unwind: "$service" },
+          {
+            $group: {
+              _id: "$service.name",
+              bookings: { $sum: 1 },
+              revenue: {
+                $sum: {
+                  $cond: [
+                    { $eq: ["$paymentStatus", "completed"] },
+                    "$totalAmount",
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+          { $sort: { bookings: -1 } },
+          { $limit: 5 },
+        ]);
+
+        // Geographic distribution (assuming address field exists)
+        const geographic = await Booking.aggregate([
+          { $match: { createdAt: { $gte: startDate } } },
+          {
+            $lookup: {
+              from: "users",
+              localField: "userId",
+              foreignField: "_id",
+              as: "user",
+            },
+          },
+          { $unwind: "$user" },
+          {
+            $group: {
+              _id: { $ifNull: ["$user.address.city", "Unknown"] },
+              bookings: { $sum: 1 },
+              revenue: {
+                $sum: {
+                  $cond: [
+                    { $eq: ["$paymentStatus", "completed"] },
+                    "$totalAmount",
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+          { $sort: { bookings: -1 } },
+          { $limit: 6 },
+        ]);
+
+        // Time series data for charts (last 8 periods)
+        const timeSeriesData = await Booking.aggregate([
+          { $match: { createdAt: { $gte: startDate } } },
+          {
+            $group: {
+              _id: {
+                year: { $year: "$createdAt" },
+                month: { $month: "$createdAt" },
+                day: { $dayOfMonth: "$createdAt" },
+              },
+              revenue: {
+                $sum: {
+                  $cond: [
+                    { $eq: ["$paymentStatus", "completed"] },
+                    "$totalAmount",
+                    0,
+                  ],
+                },
+              },
+              bookings: { $sum: 1 },
+            },
+          },
+          { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } },
+          { $limit: 30 },
+        ]);
+
+        // Calculate growth percentages
+        const revenueGrowth =
+          previousRevenue > 0
+            ? ((totalRevenue - previousRevenue) / previousRevenue) * 100
+            : 0;
+        const bookingGrowth =
+          previousBookings > 0
+            ? ((totalBookings - previousBookings) / previousBookings) * 100
+            : 0;
+        const conversionRate =
+          totalBookings > 0 ? (completedBookings / totalBookings) * 100 : 0;
+
+        // Format data to match PremiumAnalytics interface
         return {
-          revenueByType,
-          userGrowth,
-          period,
+          revenue: {
+            total: totalRevenue,
+            monthly: monthlyRevenue.reduce(
+              (sum, month) => sum + month.revenue,
+              0,
+            ),
+            growth: Math.round(revenueGrowth * 10) / 10,
+            trend: revenueGrowth >= 0 ? "up" : "down",
+          },
+          bookings: {
+            total: totalBookings,
+            completed: completedBookings,
+            pending: pendingBookings,
+            cancelled: cancelledBookings,
+            conversionRate: Math.round(conversionRate * 10) / 10,
+          },
+          users: {
+            total: totalUsers,
+            active: activeUsers,
+            new: newUsers,
+            retention: 78.9, // This would need more complex calculation
+          },
+          services: {
+            total: await Service.countDocuments({ isActive: true }),
+            popular: popularServices.map((service) => ({
+              name: service._id,
+              bookings: service.bookings,
+              revenue: service.revenue,
+            })),
+            performance: popularServices.map((service) => ({
+              name: service._id,
+              rating: 4.5, // This would come from reviews/ratings
+              bookings: service.bookings,
+            })),
+          },
+          geographic: geographic.map((location) => ({
+            location: location._id,
+            bookings: location.bookings,
+            revenue: location.revenue,
+          })),
+          timeSeriesData: timeSeriesData.map((item) => ({
+            date: `${item._id.year}-${String(item._id.month).padStart(2, "0")}`,
+            revenue: item.revenue,
+            bookings: item.bookings,
+            users: Math.floor(item.bookings * 0.8), // Approximate users from bookings
+          })),
         };
       },
-      // Fallback mock analytics
+      // Enhanced fallback mock analytics
       {
-        revenueByType: [
-          { _id: "bus", revenue: 75000, count: 150 },
-          { _id: "tour", revenue: 45000, count: 30 },
-          { _id: "construction", revenue: 30000, count: 20 },
+        revenue: {
+          total: 2500000,
+          monthly: 450000,
+          growth: 15.3,
+          trend: "up",
+        },
+        bookings: {
+          total: 3450,
+          completed: 2890,
+          pending: 420,
+          cancelled: 140,
+          conversionRate: 83.8,
+        },
+        users: {
+          total: 1847,
+          active: 1456,
+          new: 234,
+          retention: 78.9,
+        },
+        services: {
+          total: 48,
+          popular: [
+            { name: "Bus Transportation", bookings: 1250, revenue: 875000 },
+            { name: "Cargo Services", bookings: 820, revenue: 640000 },
+            { name: "Construction Materials", bookings: 650, revenue: 520000 },
+            { name: "Tours & Packages", bookings: 480, revenue: 360000 },
+            { name: "Machinery Rental", bookings: 250, revenue: 180000 },
+          ],
+          performance: [
+            { name: "Bus Services", rating: 4.8, bookings: 1250 },
+            { name: "Tour Packages", rating: 4.7, bookings: 480 },
+            { name: "Cargo", rating: 4.6, bookings: 820 },
+            { name: "Construction", rating: 4.5, bookings: 650 },
+            { name: "Machinery", rating: 4.4, bookings: 250 },
+          ],
+        },
+        geographic: [
+          { location: "Kathmandu", bookings: 1200, revenue: 850000 },
+          { location: "Pokhara", bookings: 680, revenue: 420000 },
+          { location: "Lamjung", bookings: 520, revenue: 320000 },
+          { location: "Chitwan", bookings: 380, revenue: 280000 },
+          { location: "Bhaktapur", bookings: 320, revenue: 240000 },
+          { location: "Others", bookings: 350, revenue: 180000 },
         ],
-        userGrowth: [
-          { _id: { year: 2024, month: 8, day: 10 }, count: 5 },
-          { _id: { year: 2024, month: 8, day: 11 }, count: 8 },
-          { _id: { year: 2024, month: 8, day: 12 }, count: 3 },
+        timeSeriesData: [
+          { date: "2024-01", revenue: 180000, bookings: 240, users: 45 },
+          { date: "2024-02", revenue: 220000, bookings: 290, users: 52 },
+          { date: "2024-03", revenue: 280000, bookings: 350, users: 68 },
+          { date: "2024-04", revenue: 320000, bookings: 420, users: 78 },
+          { date: "2024-05", revenue: 380000, bookings: 480, users: 89 },
+          { date: "2024-06", revenue: 450000, bookings: 560, users: 112 },
+          { date: "2024-07", revenue: 520000, bookings: 640, users: 134 },
+          { date: "2024-08", revenue: 480000, bookings: 580, users: 125 },
         ],
-        period,
       },
     );
 

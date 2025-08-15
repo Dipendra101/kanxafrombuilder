@@ -57,35 +57,43 @@ export default function Profile() {
   const defaultImage =
     "https://cdn.builder.io/api/v1/image/assets%2Fe0e990aaf8214381b9783ad82133cc2a%2F726cd8591a334f858722142910fcf4de?format=webp&width=800";
 
+  // Helper function to convert address to string
+  const addressToString = (address: string | object | undefined): string => {
+    if (!address) return "";
+    if (typeof address === "string") return address;
+    if (typeof address === "object") return Object.values(address).join(", ");
+    return "";
+  };
+
   const [profile, setProfile] = useState({
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
-    address: user?.address || "",
-    company: "",
+    address: addressToString(user?.address),
+    company: user?.profile?.company || user?.company || "",
     dateJoined: user?.createdAt
       ? new Date(user.createdAt).toISOString().split("T")[0]
       : new Date().toISOString().split("T")[0],
-    bio: "",
+    bio: user?.profile?.bio || user?.bio || "",
   });
 
   // Update profile when user data changes
   useEffect(() => {
-  if (user) {
-    setProfile({
-      name: user.name || "",
-      email: user.email || "",
-      phone: user.phone || "",
-      address: user.address || "",
-      company: user.company || "", // Update this line
-      dateJoined: user.createdAt
-        ? new Date(user.createdAt).toISOString().split("T")[0]
-        : new Date().toISOString().split("T")[0],
-      bio: user.bio || "", // Update this line
-    });
-    setProfilePicture(user.profilePicture || null);
-  }
-}, [user]);
+    if (user) {
+      setProfile({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: addressToString(user.address),
+        company: user.profile?.company || user.company || "",
+        dateJoined: user.createdAt
+          ? new Date(user.createdAt).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
+        bio: user.profile?.bio || user.bio || "",
+      });
+      setProfilePicture(user.profilePicture || user.avatar || null);
+    }
+  }, [user]);
 
   const [notifications, setNotifications] = useState({
     bookingUpdates: true,
@@ -126,7 +134,14 @@ export default function Profile() {
         email: profile.email,
         phone: profile.phone,
         address: profile.address,
+        avatar: profilePicture || undefined,
         profilePicture: profilePicture || undefined,
+        profile: {
+          bio: profile.bio,
+          company: profile.company,
+        },
+        bio: profile.bio,
+        company: profile.company,
       });
 
       setIsEditing(false);
@@ -737,11 +752,7 @@ export default function Profile() {
                           </Label>
                           <Input
                             id="address"
-                            value={
-                              typeof profile.address === "object" && profile.address
-                                ? Object.values(profile.address).join(", ")
-                                : profile.address
-                            }
+                            value={profile.address}
                             onChange={(e) =>
                               setProfile({
                                 ...profile,
@@ -799,9 +810,7 @@ export default function Profile() {
                               Location
                             </p>
                             <p className="font-medium text-sm sm:text-base truncate">
-                              {typeof profile.address === "object" && profile.address
-                                ? Object.values(profile.address).join(", ")
-                                : profile.address}
+                              {profile.address}
                             </p>
                           </div>
                         </div>
@@ -904,12 +913,13 @@ export default function Profile() {
                         >
                           <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                             <div
-                              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${activity.type === "booking"
-                                ? "bg-kanxa-light-blue"
-                                : activity.type === "order"
-                                  ? "bg-kanxa-light-orange"
-                                  : "bg-kanxa-light-green"
-                                }`}
+                              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                activity.type === "booking"
+                                  ? "bg-kanxa-light-blue"
+                                  : activity.type === "order"
+                                    ? "bg-kanxa-light-orange"
+                                    : "bg-kanxa-light-green"
+                              }`}
                             >
                               {activity.type === "booking" && (
                                 <Calendar className="h-3 w-3 sm:h-5 sm:w-5 text-kanxa-blue" />
@@ -931,12 +941,13 @@ export default function Profile() {
                             </div>
                           </div>
                           <Badge
-                            className={`text-xs flex-shrink-0 ${activity.status === "completed"
-                              ? "bg-green-100 text-green-800"
-                              : activity.status === "delivered"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-yellow-100 text-yellow-800"
-                              }`}
+                            className={`text-xs flex-shrink-0 ${
+                              activity.status === "completed"
+                                ? "bg-green-100 text-green-800"
+                                : activity.status === "delivered"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-yellow-100 text-yellow-800"
+                            }`}
                           >
                             {activity.status}
                           </Badge>
