@@ -76,7 +76,7 @@ export default function PaymentEsewaSuccess() {
     };
 
     verifyPayment();
-  }, [searchParams, toast]);
+  }, [searchParams]); // Remove toast dependency to prevent infinite loop
 
   if (isVerifying) {
     return (
