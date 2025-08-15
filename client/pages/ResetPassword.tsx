@@ -72,7 +72,7 @@ export default function ResetPassword() {
     };
 
     checkToken();
-  }, [token, toast]);
+  }, [token]); // Remove toast dependency to prevent infinite loop
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
