@@ -353,6 +353,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log("✅ AuthContext: User profile updated successfully", {
           userId: updatedUser.id,
           name: updatedUser.name,
+          bio: updatedUser.bio || updatedUser.profile?.bio,
+          company: updatedUser.company || updatedUser.profile?.company,
+          avatar: updatedUser.avatar || updatedUser.profilePicture,
         });
       } else {
         const errorMessage = response.message || "Profile update failed";
