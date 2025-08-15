@@ -298,6 +298,16 @@ export const userAPI = {
     address?: string;
     dateOfBirth?: string;
     preferences?: any;
+    profilePicture?: string;
+    avatar?: string;
+    bio?: string;
+    company?: string;
+    profile?: {
+      bio?: string;
+      company?: string;
+      occupation?: string;
+      website?: string;
+    };
   }) => {
     return apiRequest("/users/profile", {
       method: "PUT",
