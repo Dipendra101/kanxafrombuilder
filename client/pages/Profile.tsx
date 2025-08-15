@@ -71,7 +71,6 @@ export default function Profile() {
 
   // Update profile when user data changes
   useEffect(() => {
-<<<<<<< HEAD
     if (user) {
       setProfile({
         name: user.name || "",
@@ -87,23 +86,6 @@ export default function Profile() {
       setProfilePicture(user.profilePicture || user.avatar || null);
     }
   }, [user]);
-=======
-  if (user) {
-    setProfile({
-      name: user.name || "",
-      email: user.email || "",
-      phone: user.phone || "",
-      address: user.address || "",
-      company: user.company || "", // Update this line
-      dateJoined: user.createdAt
-        ? new Date(user.createdAt).toISOString().split("T")[0]
-        : new Date().toISOString().split("T")[0],
-      bio: user.bio || "", // Update this line
-    });
-    setProfilePicture(user.profilePicture || null);
-  }
-}, [user]);
->>>>>>> a8d607f032a33ef91d6f166efe17b69fdf86bb3f
 
   const [notifications, setNotifications] = useState({
     bookingUpdates: true,
@@ -763,12 +745,8 @@ export default function Profile() {
                           <Input
                             id="address"
                             value={
-<<<<<<< HEAD
                               typeof profile.address === "object" &&
                               profile.address
-=======
-                              typeof profile.address === "object" && profile.address
->>>>>>> a8d607f032a33ef91d6f166efe17b69fdf86bb3f
                                 ? Object.values(profile.address).join(", ")
                                 : profile.address
                             }
@@ -829,12 +807,8 @@ export default function Profile() {
                               Location
                             </p>
                             <p className="font-medium text-sm sm:text-base truncate">
-<<<<<<< HEAD
                               {typeof profile.address === "object" &&
                               profile.address
-=======
-                              {typeof profile.address === "object" && profile.address
->>>>>>> a8d607f032a33ef91d6f166efe17b69fdf86bb3f
                                 ? Object.values(profile.address).join(", ")
                                 : profile.address}
                             </p>
