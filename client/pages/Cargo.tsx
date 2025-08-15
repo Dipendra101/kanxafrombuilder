@@ -207,7 +207,7 @@ export default function Cargo() {
     };
 
     loadCargoServices();
-  }, [toast]);
+  }, []); // Remove toast dependency to prevent infinite loop
 
   // Get available truck types (from API or defaults)
   const truckTypes =

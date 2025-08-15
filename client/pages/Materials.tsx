@@ -101,7 +101,7 @@ export default function Materials() {
         handlePaymentCompleted as EventListener,
       );
     };
-  }, [toast]);
+  }, []); // Remove toast dependency to prevent infinite loop
 
   // Fetch materials from API
   const fetchMaterials = async () => {

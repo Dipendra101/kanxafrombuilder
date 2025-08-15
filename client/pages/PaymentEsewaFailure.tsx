@@ -18,7 +18,7 @@ export default function PaymentEsewaFailure() {
       description: "Your eSewa payment was cancelled or failed.",
       variant: "destructive",
     });
-  }, [toast]);
+  }, []); // Remove toast dependency to prevent infinite loop
 
   const error = searchParams.get("error") || "Payment was cancelled or failed";
   const transactionId = searchParams.get("transaction_uuid") || "Unknown";
