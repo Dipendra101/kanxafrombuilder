@@ -339,6 +339,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     console.log("🔄 AuthContext: Updating user profile", {
       userId: user?.id,
       updatingFields: Object.keys(userData),
+      userData: userData, // Debug: log the actual data being sent
     });
 
     try {
@@ -428,7 +429,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(null);
         }
       } catch (error: any) {
-        console.error("❌ Connection retry failed:", error);
+        console.error("��� Connection retry failed:", error);
         setNetworkError(true);
       }
     } else {
