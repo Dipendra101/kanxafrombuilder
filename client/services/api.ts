@@ -309,10 +309,13 @@ export const userAPI = {
       website?: string;
     };
   }) => {
-    return apiRequest("/users/profile", {
+    console.log("🔄 API: Updating profile with data:", profileData);
+    const response = await apiRequest("/users/profile", {
       method: "PUT",
       body: JSON.stringify(profileData),
     });
+    console.log("✅ API: Profile update response:", response);
+    return response;
   },
 
   changePassword: async (passwordData: {
