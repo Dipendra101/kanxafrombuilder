@@ -139,7 +139,7 @@ export default function Payment() {
     }
 
     setServiceDetails(details);
-  }, [searchParams, navigate, toast]);
+  }, [searchParams, navigate]); // Remove toast dependency to prevent infinite loop
 
   const getCargoServiceName = (id: string) => {
     const cargoNames: { [key: string]: string } = {
