@@ -752,12 +752,7 @@ export default function Profile() {
                           </Label>
                           <Input
                             id="address"
-                            value={
-                              typeof profile.address === "object" &&
-                              profile.address
-                                ? Object.values(profile.address).join(", ")
-                                : profile.address
-                            }
+                            value={profile.address}
                             onChange={(e) =>
                               setProfile({
                                 ...profile,
