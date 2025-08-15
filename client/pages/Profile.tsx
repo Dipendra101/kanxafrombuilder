@@ -128,21 +128,28 @@ export default function Profile() {
 
   const handleSave = async () => {
     setIsLoading(true);
-    try {
-      await updateUser({
-        name: profile.name,
-        email: profile.email,
-        phone: profile.phone,
-        address: profile.address,
-        avatar: profilePicture || undefined,
-        profilePicture: profilePicture || undefined,
-        profile: {
-          bio: profile.bio,
-          company: profile.company,
-        },
+
+    const updateData = {
+      name: profile.name,
+      email: profile.email,
+      phone: profile.phone,
+      address: profile.address,
+      avatar: profilePicture || undefined,
+      profilePicture: profilePicture || undefined,
+      profile: {
         bio: profile.bio,
         company: profile.company,
-      });
+      },
+      bio: profile.bio,
+      company: profile.company,
+    };
+
+    console.log("🔄 Profile: Saving profile data:", updateData);
+    console.log("🔄 Profile: Current profile state:", profile);
+    console.log("🔄 Profile: Current profilePicture:", profilePicture);
+
+    try {
+      await updateUser(updateData);
 
       setIsEditing(false);
       toast({
