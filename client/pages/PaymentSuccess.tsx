@@ -112,7 +112,7 @@ export default function PaymentSuccess() {
     };
 
     verifyPayment();
-  }, [method, pidx, oid, amt, refId, toast, navigate]);
+  }, [method, pidx, oid, amt, refId, navigate]); // Remove toast dependency to prevent infinite loop
 
   if (isVerifying) {
     return (
