@@ -84,7 +84,7 @@ export default function Profile() {
         name: user.name || "",
         email: user.email || "",
         phone: user.phone || "",
-        address: user.address || "",
+        address: addressToString(user.address),
         company: user.profile?.company || user.company || "",
         dateJoined: user.createdAt
           ? new Date(user.createdAt).toISOString().split("T")[0]
