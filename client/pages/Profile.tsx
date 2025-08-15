@@ -810,10 +810,7 @@ export default function Profile() {
                               Location
                             </p>
                             <p className="font-medium text-sm sm:text-base truncate">
-                              {typeof profile.address === "object" &&
-                              profile.address
-                                ? Object.values(profile.address).join(", ")
-                                : profile.address}
+                              {profile.address}
                             </p>
                           </div>
                         </div>
