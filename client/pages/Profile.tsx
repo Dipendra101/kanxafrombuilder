@@ -57,11 +57,19 @@ export default function Profile() {
   const defaultImage =
     "https://cdn.builder.io/api/v1/image/assets%2Fe0e990aaf8214381b9783ad82133cc2a%2F726cd8591a334f858722142910fcf4de?format=webp&width=800";
 
+  // Helper function to convert address to string
+  const addressToString = (address: string | object | undefined): string => {
+    if (!address) return "";
+    if (typeof address === "string") return address;
+    if (typeof address === "object") return Object.values(address).join(", ");
+    return "";
+  };
+
   const [profile, setProfile] = useState({
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
-    address: user?.address || "",
+    address: addressToString(user?.address),
     company: user?.profile?.company || user?.company || "",
     dateJoined: user?.createdAt
       ? new Date(user.createdAt).toISOString().split("T")[0]
