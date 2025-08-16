@@ -161,6 +161,14 @@ const mockAnalyticsData: AnalyticsData = {
     { date: "2024-07", revenue: 520000, bookings: 640, users: 134 },
     { date: "2024-08", revenue: 480000, bookings: 580, users: 125 },
   ],
+  growth: {
+    users: 12.5,
+    services: 8.3,
+    bookings: 15.7,
+    revenue: 22.4,
+    conversionRate: 2.4,
+    userRetention: 5.8,
+  },
 };
 
 export function PremiumAnalytics() {
