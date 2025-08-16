@@ -100,6 +100,13 @@ export const getDashboard: RequestHandler = async (req, res) => {
         activeServices: 48,
         pendingBookings: 15,
         monthlyRevenue: 186000,
+        servicesByType: {
+          bus: 15,
+          cargo: 12,
+          construction: 8,
+          tour: 6,
+          garage: 7,
+        },
       },
     );
 
