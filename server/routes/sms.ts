@@ -92,8 +92,15 @@ export const sendSMSCode: RequestHandler = async (req, res) => {
         console.log(`📱 Fallback - SMS Code for ${formattedPhone}: ${code}`);
       }
     } else {
-      // Fallback simulation for development
-      console.log(`📱 SMS Code for ${formattedPhone}: ${code}`);
+      // Development mode - Enhanced SMS simulation
+      console.log("\n" + "=".repeat(60));
+      console.log("🔔 SMS SIMULATION MODE (Development)");
+      console.log("=".repeat(60));
+      console.log(`📱 Phone Number: ${formattedPhone}`);
+      console.log(`🔐 Verification Code: ${code}`);
+      console.log(`⏰ Expires in: 10 minutes`);
+      console.log(`💡 Use this code in your app to complete authentication`);
+      console.log("=".repeat(60) + "\n");
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
