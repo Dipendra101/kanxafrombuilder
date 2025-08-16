@@ -62,12 +62,14 @@ interface AnalyticsData {
     pending: number;
     cancelled: number;
     conversionRate: number;
+    growth?: number;
   };
   users: {
     total: number;
     active: number;
     new: number;
     retention: number;
+    growth?: number;
   };
   services: {
     total: number;
@@ -81,6 +83,14 @@ interface AnalyticsData {
     bookings: number;
     users: number;
   }>;
+  growth?: {
+    users: number;
+    services: number;
+    bookings: number;
+    revenue: number;
+    conversionRate: number;
+    userRetention: number;
+  };
 }
 
 const COLORS = [
