@@ -58,6 +58,58 @@ export const getDashboard: RequestHandler = async (req, res) => {
         ]);
         const monthlyRevenue = monthlyRevenueResult[0]?.monthlyRevenue || 0;
 
+        // Calculate previous month for growth comparisons
+        const previousMonthStart = new Date(monthStart);
+        previousMonthStart.setMonth(previousMonthStart.getMonth() - 1);
+        const previousMonthEnd = new Date(monthStart);
+
+        const [
+          previousMonthUsers,
+          previousMonthBookings,
+          previousMonthRevenueResult,
+          previousServiceCount,
+        ] = await Promise.all([
+          User.countDocuments({
+            createdAt: { $gte: previousMonthStart, $lt: previousMonthEnd },
+            isActive: true,
+          }),
+          Booking.countDocuments({
+            createdAt: { $gte: previousMonthStart, $lt: previousMonthEnd },
+          }),
+          Booking.aggregate([
+            {
+              $match: {
+                paymentStatus: "completed",
+                createdAt: { $gte: previousMonthStart, $lt: previousMonthEnd },
+              },
+            },
+            { $group: { _id: null, revenue: { $sum: "$totalAmount" } } },
+          ]),
+          Service.countDocuments({
+            isActive: true,
+            createdAt: { $gte: previousMonthStart, $lt: previousMonthEnd },
+          }),
+        ]);
+
+        const previousMonthRevenue = previousMonthRevenueResult[0]?.revenue || 0;
+
+        // Calculate growth percentages
+        const userGrowth = previousMonthUsers > 0
+          ? ((monthlyUsers - previousMonthUsers) / previousMonthUsers) * 100
+          : monthlyUsers > 0 ? 100 : 0;
+
+        const bookingGrowth = previousMonthBookings > 0
+          ? ((monthlyBookings - previousMonthBookings) / previousMonthBookings) * 100
+          : monthlyBookings > 0 ? 100 : 0;
+
+        const revenueGrowth = previousMonthRevenue > 0
+          ? ((monthlyRevenue - previousMonthRevenue) / previousMonthRevenue) * 100
+          : monthlyRevenue > 0 ? 100 : 0;
+
+        const serviceGrowth = previousServiceCount > 0
+          ? ((serviceCount - previousServiceCount) / previousServiceCount) * 100
+          : serviceCount > 0 ? 100 : 0;
+
         // Get service type breakdown
         const servicesByType = await Service.aggregate([
           { $match: { isActive: true } },
@@ -79,6 +131,28 @@ export const getDashboard: RequestHandler = async (req, res) => {
           }
         });
 
+        // Calculate conversion rate (completed bookings / total bookings)
+        const completedBookings = await Booking.countDocuments({
+          status: "confirmed",
+          createdAt: { $gte: monthStart }
+        });
+        const conversionRate = monthlyBookings > 0
+          ? (completedBookings / monthlyBookings) * 100
+          : 0;
+
+        // Calculate user retention (active users who logged in this month vs last month)
+        const activeUsersThisMonth = await User.countDocuments({
+          isActive: true,
+          lastActivity: { $gte: monthStart }
+        });
+        const activeUsersPreviousMonth = await User.countDocuments({
+          isActive: true,
+          lastActivity: { $gte: previousMonthStart, $lt: previousMonthEnd }
+        });
+        const userRetentionRate = activeUsersPreviousMonth > 0
+          ? (activeUsersThisMonth / activeUsersPreviousMonth) * 100
+          : activeUsersThisMonth > 0 ? 100 : 0;
+
         return {
           totalUsers: userCount,
           totalServices: serviceCount,
@@ -89,6 +163,15 @@ export const getDashboard: RequestHandler = async (req, res) => {
           pendingBookings: await Booking.countDocuments({ status: "pending" }),
           monthlyRevenue,
           servicesByType: serviceTypeCounts,
+          // Growth metrics
+          growth: {
+            users: Math.round(userGrowth * 10) / 10,
+            services: Math.round(serviceGrowth * 10) / 10,
+            bookings: Math.round(bookingGrowth * 10) / 10,
+            revenue: Math.round(revenueGrowth * 10) / 10,
+            conversionRate: Math.round(conversionRate * 10) / 10,
+            userRetention: Math.round(userRetentionRate * 10) / 10,
+          },
         };
       },
       // Fallback mock data
