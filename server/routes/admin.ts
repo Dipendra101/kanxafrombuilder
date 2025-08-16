@@ -191,6 +191,14 @@ export const getDashboard: RequestHandler = async (req, res) => {
           tour: 6,
           garage: 7,
         },
+        growth: {
+          users: 12.5,
+          services: 8.3,
+          bookings: 15.7,
+          revenue: 22.4,
+          conversionRate: 85.2,
+          userRetention: 78.9,
+        },
       },
     );
 
