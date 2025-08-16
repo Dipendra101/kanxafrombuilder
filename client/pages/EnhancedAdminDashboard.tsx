@@ -524,9 +524,13 @@ export default function EnhancedAdminDashboard() {
                         {stats.totalUsers.toLocaleString()}
                       </p>
                       <div className="flex items-center">
-                        <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                        <span className="text-sm font-medium text-green-600">
-                          +12%
+                        {stats.growth.users >= 0 ? (
+                          <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                        ) : (
+                          <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                        )}
+                        <span className={`text-sm font-medium ${stats.growth.users >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {stats.growth.users >= 0 ? '+' : ''}{stats.growth.users}%
                         </span>
                         <span className="text-sm text-gray-500 ml-1">
                           from last month
@@ -551,12 +555,16 @@ export default function EnhancedAdminDashboard() {
                         {stats.activeServices.toString()}
                       </p>
                       <div className="flex items-center">
-                        <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                        <span className="text-sm font-medium text-green-600">
-                          +5%
+                        {stats.growth.services >= 0 ? (
+                          <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                        ) : (
+                          <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                        )}
+                        <span className={`text-sm font-medium ${stats.growth.services >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {stats.growth.services >= 0 ? '+' : ''}{stats.growth.services}%
                         </span>
                         <span className="text-sm text-gray-500 ml-1">
-                          this week
+                          from last month
                         </span>
                       </div>
                     </div>
@@ -578,9 +586,13 @@ export default function EnhancedAdminDashboard() {
                         {stats.totalBookings.toLocaleString()}
                       </p>
                       <div className="flex items-center">
-                        <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                        <span className="text-sm font-medium text-green-600">
-                          +8%
+                        {stats.growth.bookings >= 0 ? (
+                          <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                        ) : (
+                          <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                        )}
+                        <span className={`text-sm font-medium ${stats.growth.bookings >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {stats.growth.bookings >= 0 ? '+' : ''}{stats.growth.bookings}%
                         </span>
                         <span className="text-sm text-gray-500 ml-1">
                           from last month
@@ -605,9 +617,13 @@ export default function EnhancedAdminDashboard() {
                         ₨ {stats.totalRevenue.toLocaleString()}
                       </p>
                       <div className="flex items-center">
-                        <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                        <span className="text-sm font-medium text-green-600">
-                          +15%
+                        {stats.growth.revenue >= 0 ? (
+                          <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                        ) : (
+                          <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                        )}
+                        <span className={`text-sm font-medium ${stats.growth.revenue >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {stats.growth.revenue >= 0 ? '+' : ''}{stats.growth.revenue}%
                         </span>
                         <span className="text-sm text-gray-500 ml-1">
                           from last month
