@@ -361,8 +361,15 @@ export const resendSMSCode: RequestHandler = async (req, res) => {
         );
       }
     } else {
-      // Fallback simulation for development
-      console.log(`📱 Resent SMS Code for ${formattedPhone}: ${code}`);
+      // Development mode - Enhanced SMS resend simulation
+      console.log("\n" + "=".repeat(60));
+      console.log("🔔 SMS RESEND SIMULATION MODE (Development)");
+      console.log("=".repeat(60));
+      console.log(`📱 Phone Number: ${formattedPhone}`);
+      console.log(`🔐 NEW Verification Code: ${code}`);
+      console.log(`⏰ Expires in: 10 minutes`);
+      console.log(`💡 Use this NEW code in your app to complete authentication`);
+      console.log("=".repeat(60) + "\n");
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
