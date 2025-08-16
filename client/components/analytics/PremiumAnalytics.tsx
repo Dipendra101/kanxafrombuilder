@@ -320,24 +320,24 @@ export function PremiumAnalytics() {
         <MetricCard
           title="Conversion Rate"
           value={`${data.bookings.conversionRate}%`}
-          change="+2.4%"
-          trend="up"
+          change={`${data.growth?.conversionRate >= 0 ? '+' : ''}${data.growth?.conversionRate || data.bookings.growth || 2.4}%`}
+          trend={data.growth?.conversionRate >= 0 ? "up" : "down"}
           icon={Target}
           color="green"
         />
         <MetricCard
           title="Active Users"
           value={data.users.active.toLocaleString()}
-          change="+12.5%"
-          trend="up"
+          change={`${data.growth?.users >= 0 ? '+' : ''}${data.growth?.users || data.users.growth || 12.5}%`}
+          trend={data.growth?.users >= 0 ? "up" : "down"}
           icon={Users}
           color="purple"
         />
         <MetricCard
           title="User Retention"
           value={`${data.users.retention}%`}
-          change="+5.8%"
-          trend="up"
+          change={`${data.growth?.userRetention >= 0 ? '+' : ''}${data.growth?.userRetention || 5.8}%`}
+          trend={data.growth?.userRetention >= 0 ? "up" : "down"}
           icon={Award}
           color="orange"
         />
