@@ -368,7 +368,9 @@ export const resendSMSCode: RequestHandler = async (req, res) => {
       console.log(`📱 Phone Number: ${formattedPhone}`);
       console.log(`🔐 NEW Verification Code: ${code}`);
       console.log(`⏰ Expires in: 10 minutes`);
-      console.log(`💡 Use this NEW code in your app to complete authentication`);
+      console.log(
+        `💡 Use this NEW code in your app to complete authentication`,
+      );
       console.log("=".repeat(60) + "\n");
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
