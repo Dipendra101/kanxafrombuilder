@@ -529,8 +529,11 @@ export default function EnhancedAdminDashboard() {
                         ) : (
                           <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
                         )}
-                        <span className={`text-sm font-medium ${stats.growth.users >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {stats.growth.users >= 0 ? '+' : ''}{stats.growth.users}%
+                        <span
+                          className={`text-sm font-medium ${stats.growth.users >= 0 ? "text-green-600" : "text-red-600"}`}
+                        >
+                          {stats.growth.users >= 0 ? "+" : ""}
+                          {stats.growth.users}%
                         </span>
                         <span className="text-sm text-gray-500 ml-1">
                           from last month
@@ -560,8 +563,11 @@ export default function EnhancedAdminDashboard() {
                         ) : (
                           <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
                         )}
-                        <span className={`text-sm font-medium ${stats.growth.services >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {stats.growth.services >= 0 ? '+' : ''}{stats.growth.services}%
+                        <span
+                          className={`text-sm font-medium ${stats.growth.services >= 0 ? "text-green-600" : "text-red-600"}`}
+                        >
+                          {stats.growth.services >= 0 ? "+" : ""}
+                          {stats.growth.services}%
                         </span>
                         <span className="text-sm text-gray-500 ml-1">
                           from last month
@@ -591,8 +597,11 @@ export default function EnhancedAdminDashboard() {
                         ) : (
                           <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
                         )}
-                        <span className={`text-sm font-medium ${stats.growth.bookings >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {stats.growth.bookings >= 0 ? '+' : ''}{stats.growth.bookings}%
+                        <span
+                          className={`text-sm font-medium ${stats.growth.bookings >= 0 ? "text-green-600" : "text-red-600"}`}
+                        >
+                          {stats.growth.bookings >= 0 ? "+" : ""}
+                          {stats.growth.bookings}%
                         </span>
                         <span className="text-sm text-gray-500 ml-1">
                           from last month
@@ -622,8 +631,11 @@ export default function EnhancedAdminDashboard() {
                         ) : (
                           <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
                         )}
-                        <span className={`text-sm font-medium ${stats.growth.revenue >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {stats.growth.revenue >= 0 ? '+' : ''}{stats.growth.revenue}%
+                        <span
+                          className={`text-sm font-medium ${stats.growth.revenue >= 0 ? "text-green-600" : "text-red-600"}`}
+                        >
+                          {stats.growth.revenue >= 0 ? "+" : ""}
+                          {stats.growth.revenue}%
                         </span>
                         <span className="text-sm text-gray-500 ml-1">
                           from last month

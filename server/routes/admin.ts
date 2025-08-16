@@ -91,24 +91,41 @@ export const getDashboard: RequestHandler = async (req, res) => {
           }),
         ]);
 
-        const previousMonthRevenue = previousMonthRevenueResult[0]?.revenue || 0;
+        const previousMonthRevenue =
+          previousMonthRevenueResult[0]?.revenue || 0;
 
         // Calculate growth percentages
-        const userGrowth = previousMonthUsers > 0
-          ? ((monthlyUsers - previousMonthUsers) / previousMonthUsers) * 100
-          : monthlyUsers > 0 ? 100 : 0;
+        const userGrowth =
+          previousMonthUsers > 0
+            ? ((monthlyUsers - previousMonthUsers) / previousMonthUsers) * 100
+            : monthlyUsers > 0
+              ? 100
+              : 0;
 
-        const bookingGrowth = previousMonthBookings > 0
-          ? ((monthlyBookings - previousMonthBookings) / previousMonthBookings) * 100
-          : monthlyBookings > 0 ? 100 : 0;
+        const bookingGrowth =
+          previousMonthBookings > 0
+            ? ((monthlyBookings - previousMonthBookings) /
+                previousMonthBookings) *
+              100
+            : monthlyBookings > 0
+              ? 100
+              : 0;
 
-        const revenueGrowth = previousMonthRevenue > 0
-          ? ((monthlyRevenue - previousMonthRevenue) / previousMonthRevenue) * 100
-          : monthlyRevenue > 0 ? 100 : 0;
+        const revenueGrowth =
+          previousMonthRevenue > 0
+            ? ((monthlyRevenue - previousMonthRevenue) / previousMonthRevenue) *
+              100
+            : monthlyRevenue > 0
+              ? 100
+              : 0;
 
-        const serviceGrowth = previousServiceCount > 0
-          ? ((serviceCount - previousServiceCount) / previousServiceCount) * 100
-          : serviceCount > 0 ? 100 : 0;
+        const serviceGrowth =
+          previousServiceCount > 0
+            ? ((serviceCount - previousServiceCount) / previousServiceCount) *
+              100
+            : serviceCount > 0
+              ? 100
+              : 0;
 
         // Get service type breakdown
         const servicesByType = await Service.aggregate([
@@ -134,24 +151,26 @@ export const getDashboard: RequestHandler = async (req, res) => {
         // Calculate conversion rate (completed bookings / total bookings)
         const completedBookings = await Booking.countDocuments({
           status: "confirmed",
-          createdAt: { $gte: monthStart }
+          createdAt: { $gte: monthStart },
         });
-        const conversionRate = monthlyBookings > 0
-          ? (completedBookings / monthlyBookings) * 100
-          : 0;
+        const conversionRate =
+          monthlyBookings > 0 ? (completedBookings / monthlyBookings) * 100 : 0;
 
         // Calculate user retention (active users who logged in this month vs last month)
         const activeUsersThisMonth = await User.countDocuments({
           isActive: true,
-          lastActivity: { $gte: monthStart }
+          lastActivity: { $gte: monthStart },
         });
         const activeUsersPreviousMonth = await User.countDocuments({
           isActive: true,
-          lastActivity: { $gte: previousMonthStart, $lt: previousMonthEnd }
+          lastActivity: { $gte: previousMonthStart, $lt: previousMonthEnd },
         });
-        const userRetentionRate = activeUsersPreviousMonth > 0
-          ? (activeUsersThisMonth / activeUsersPreviousMonth) * 100
-          : activeUsersThisMonth > 0 ? 100 : 0;
+        const userRetentionRate =
+          activeUsersPreviousMonth > 0
+            ? (activeUsersThisMonth / activeUsersPreviousMonth) * 100
+            : activeUsersThisMonth > 0
+              ? 100
+              : 0;
 
         return {
           totalUsers: userCount,
