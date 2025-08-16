@@ -117,12 +117,14 @@ const mockAnalyticsData: AnalyticsData = {
     pending: 420,
     cancelled: 140,
     conversionRate: 83.8,
+    growth: 12.4,
   },
   users: {
     total: 1847,
     active: 1456,
     new: 234,
     retention: 78.9,
+    growth: 8.7,
   },
   services: {
     total: 48,
