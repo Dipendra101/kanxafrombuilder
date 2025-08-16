@@ -58,6 +58,26 @@ export const getDashboard: RequestHandler = async (req, res) => {
         ]);
         const monthlyRevenue = monthlyRevenueResult[0]?.monthlyRevenue || 0;
 
+        // Get service type breakdown
+        const servicesByType = await Service.aggregate([
+          { $match: { isActive: true } },
+          { $group: { _id: "$type", count: { $sum: 1 } } },
+        ]);
+
+        const serviceTypeCounts = {
+          bus: 0,
+          cargo: 0,
+          construction: 0,
+          tour: 0,
+          garage: 0,
+        };
+
+        servicesByType.forEach(item => {
+          if (serviceTypeCounts.hasOwnProperty(item._id)) {
+            serviceTypeCounts[item._id as keyof typeof serviceTypeCounts] = item.count;
+          }
+        });
+
         return {
           totalUsers: userCount,
           totalServices: serviceCount,
@@ -67,6 +87,7 @@ export const getDashboard: RequestHandler = async (req, res) => {
           activeServices: serviceCount,
           pendingBookings: await Booking.countDocuments({ status: "pending" }),
           monthlyRevenue,
+          servicesByType: serviceTypeCounts,
         };
       },
       // Fallback mock data
