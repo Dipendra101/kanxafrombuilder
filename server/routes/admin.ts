@@ -72,9 +72,10 @@ export const getDashboard: RequestHandler = async (req, res) => {
           garage: 0,
         };
 
-        servicesByType.forEach(item => {
+        servicesByType.forEach((item) => {
           if (serviceTypeCounts.hasOwnProperty(item._id)) {
-            serviceTypeCounts[item._id as keyof typeof serviceTypeCounts] = item.count;
+            serviceTypeCounts[item._id as keyof typeof serviceTypeCounts] =
+              item.count;
           }
         });
 

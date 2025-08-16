@@ -34,7 +34,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, Edit, Trash2, MoreVertical, Search, Bus, MapPin, Clock } from "lucide-react";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  MoreVertical,
+  Search,
+  Bus,
+  MapPin,
+  Clock,
+} from "lucide-react";
 import { servicesAPI } from "@/services/api";
 import { useToast } from "@/hooks/use-toast-simple";
 
@@ -115,7 +124,15 @@ export default function BusServiceManager() {
           departureTime: "",
           arrivalTime: "",
           frequency: "daily",
-          daysOfOperation: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+          daysOfOperation: [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+          ],
           isActive: true,
         },
       ],
@@ -147,7 +164,16 @@ export default function BusServiceManager() {
   });
 
   const busTypes = ["AC Deluxe", "Non-AC", "Tourist Bus", "VIP", "Ordinary"];
-  const commonAmenities = ["AC", "WiFi", "Entertainment", "Charging Port", "Reclining Seats", "Snacks", "Water", "Blanket"];
+  const commonAmenities = [
+    "AC",
+    "WiFi",
+    "Entertainment",
+    "Charging Port",
+    "Reclining Seats",
+    "Snacks",
+    "Water",
+    "Blanket",
+  ];
 
   useEffect(() => {
     loadBusServices();
@@ -156,7 +182,10 @@ export default function BusServiceManager() {
   const loadBusServices = async () => {
     try {
       setIsLoading(true);
-      const response = await servicesAPI.getAllServices({ type: "bus", limit: 100 });
+      const response = await servicesAPI.getAllServices({
+        type: "bus",
+        limit: 100,
+      });
       setBusServices(response.services || []);
     } catch (error: any) {
       toast({
@@ -255,7 +284,15 @@ export default function BusServiceManager() {
             departureTime: "",
             arrivalTime: "",
             frequency: "daily",
-            daysOfOperation: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+            daysOfOperation: [
+              "monday",
+              "tuesday",
+              "wednesday",
+              "thursday",
+              "friday",
+              "saturday",
+              "sunday",
+            ],
             isActive: true,
           },
         ],
@@ -290,36 +327,43 @@ export default function BusServiceManager() {
 
   const addAmenity = (amenity: string) => {
     if (!formData.busService.vehicle.amenities.includes(amenity)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         busService: {
           ...prev.busService,
           vehicle: {
             ...prev.busService.vehicle,
-            amenities: [...prev.busService.vehicle.amenities, amenity]
-          }
-        }
+            amenities: [...prev.busService.vehicle.amenities, amenity],
+          },
+        },
       }));
     }
   };
 
   const removeAmenity = (amenity: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       busService: {
         ...prev.busService,
         vehicle: {
           ...prev.busService.vehicle,
-          amenities: prev.busService.vehicle.amenities.filter(a => a !== amenity)
-        }
-      }
+          amenities: prev.busService.vehicle.amenities.filter(
+            (a) => a !== amenity,
+          ),
+        },
+      },
     }));
   };
 
-  const filteredServices = busServices.filter(service =>
-    service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    service.busService?.route?.from?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    service.busService?.route?.to?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredServices = busServices.filter(
+    (service) =>
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.busService?.route?.from
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      service.busService?.route?.to
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -330,7 +374,9 @@ export default function BusServiceManager() {
             <Bus className="w-6 h-6" />
             Bus Services Management
           </h2>
-          <p className="text-gray-600">Manage bus routes, schedules, and vehicles</p>
+          <p className="text-gray-600">
+            Manage bus routes, schedules, and vehicles
+          </p>
         </div>
         <Button onClick={() => setIsDialogOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
@@ -377,8 +423,14 @@ export default function BusServiceManager() {
                           {service.description}
                         </p>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline">{service.busService?.operator?.name}</Badge>
-                          {service.isFeatured && <Badge className="bg-yellow-100 text-yellow-800">Featured</Badge>}
+                          <Badge variant="outline">
+                            {service.busService?.operator?.name}
+                          </Badge>
+                          {service.isFeatured && (
+                            <Badge className="bg-yellow-100 text-yellow-800">
+                              Featured
+                            </Badge>
+                          )}
                         </div>
                       </div>
                     </TableCell>
@@ -387,21 +439,27 @@ export default function BusServiceManager() {
                         <div className="flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-gray-400" />
                           <span className="text-sm">
-                            {service.busService?.route?.from} → {service.busService?.route?.to}
+                            {service.busService?.route?.from} →{" "}
+                            {service.busService?.route?.to}
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="w-3 h-3 text-gray-400" />
                           <span className="text-xs text-gray-600">
-                            {service.busService?.route?.duration} • {service.busService?.route?.distance}km
+                            {service.busService?.route?.duration} •{" "}
+                            {service.busService?.route?.distance}km
                           </span>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <p className="text-sm font-medium">{service.busService?.vehicle?.busNumber}</p>
-                        <p className="text-xs text-gray-600">{service.busService?.vehicle?.busType}</p>
+                        <p className="text-sm font-medium">
+                          {service.busService?.vehicle?.busNumber}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {service.busService?.vehicle?.busType}
+                        </p>
                         <p className="text-xs text-gray-600">
                           {service.busService?.vehicle?.totalSeats} seats
                         </p>
@@ -410,13 +468,18 @@ export default function BusServiceManager() {
                     <TableCell>
                       <div>
                         <p className="font-medium">
-                          {service.pricing?.currency} {service.pricing?.basePrice?.toLocaleString()}
+                          {service.pricing?.currency}{" "}
+                          {service.pricing?.basePrice?.toLocaleString()}
                         </p>
-                        <p className="text-xs text-gray-600">{service.pricing?.priceType}</p>
+                        <p className="text-xs text-gray-600">
+                          {service.pricing?.priceType}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={service.isActive ? "default" : "secondary"}>
+                      <Badge
+                        variant={service.isActive ? "default" : "secondary"}
+                      >
                         {service.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </TableCell>
@@ -471,7 +534,9 @@ export default function BusServiceManager() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, name: e.target.value }))
+                    }
                     placeholder="e.g., Kathmandu Express"
                   />
                 </div>
@@ -480,13 +545,18 @@ export default function BusServiceManager() {
                   <Input
                     id="operator"
                     value={formData.busService.operator.name}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      busService: {
-                        ...prev.busService,
-                        operator: { ...prev.busService.operator, name: e.target.value }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        busService: {
+                          ...prev.busService,
+                          operator: {
+                            ...prev.busService.operator,
+                            name: e.target.value,
+                          },
+                        },
+                      }))
+                    }
                     placeholder="e.g., Kanxa Transport"
                   />
                 </div>
@@ -496,7 +566,12 @@ export default function BusServiceManager() {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="Detailed description of the bus service"
                 />
               </div>
@@ -511,13 +586,18 @@ export default function BusServiceManager() {
                   <Input
                     id="from"
                     value={formData.busService.route.from}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      busService: {
-                        ...prev.busService,
-                        route: { ...prev.busService.route, from: e.target.value }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        busService: {
+                          ...prev.busService,
+                          route: {
+                            ...prev.busService.route,
+                            from: e.target.value,
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Starting location"
                   />
                 </div>
@@ -526,13 +606,18 @@ export default function BusServiceManager() {
                   <Input
                     id="to"
                     value={formData.busService.route.to}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      busService: {
-                        ...prev.busService,
-                        route: { ...prev.busService.route, to: e.target.value }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        busService: {
+                          ...prev.busService,
+                          route: {
+                            ...prev.busService.route,
+                            to: e.target.value,
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Destination"
                   />
                 </div>
@@ -544,13 +629,18 @@ export default function BusServiceManager() {
                     id="distance"
                     type="number"
                     value={formData.busService.route.distance}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      busService: {
-                        ...prev.busService,
-                        route: { ...prev.busService.route, distance: Number(e.target.value) }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        busService: {
+                          ...prev.busService,
+                          route: {
+                            ...prev.busService.route,
+                            distance: Number(e.target.value),
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Distance in kilometers"
                   />
                 </div>
@@ -559,13 +649,18 @@ export default function BusServiceManager() {
                   <Input
                     id="duration"
                     value={formData.busService.route.duration}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      busService: {
-                        ...prev.busService,
-                        route: { ...prev.busService.route, duration: e.target.value }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        busService: {
+                          ...prev.busService,
+                          route: {
+                            ...prev.busService.route,
+                            duration: e.target.value,
+                          },
+                        },
+                      }))
+                    }
                     placeholder="e.g., 6 hours"
                   />
                 </div>
@@ -581,13 +676,18 @@ export default function BusServiceManager() {
                   <Input
                     id="busNumber"
                     value={formData.busService.vehicle.busNumber}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      busService: {
-                        ...prev.busService,
-                        vehicle: { ...prev.busService.vehicle, busNumber: e.target.value }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        busService: {
+                          ...prev.busService,
+                          vehicle: {
+                            ...prev.busService.vehicle,
+                            busNumber: e.target.value,
+                          },
+                        },
+                      }))
+                    }
                     placeholder="e.g., KP-1001"
                   />
                 </div>
@@ -595,20 +695,27 @@ export default function BusServiceManager() {
                   <Label htmlFor="busType">Bus Type</Label>
                   <Select
                     value={formData.busService.vehicle.busType}
-                    onValueChange={(value) => setFormData(prev => ({
-                      ...prev,
-                      busService: {
-                        ...prev.busService,
-                        vehicle: { ...prev.busService.vehicle, busType: value }
-                      }
-                    }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        busService: {
+                          ...prev.busService,
+                          vehicle: {
+                            ...prev.busService.vehicle,
+                            busType: value,
+                          },
+                        },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {busTypes.map(type => (
-                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                      {busTypes.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -619,13 +726,18 @@ export default function BusServiceManager() {
                     id="totalSeats"
                     type="number"
                     value={formData.busService.vehicle.totalSeats}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      busService: {
-                        ...prev.busService,
-                        vehicle: { ...prev.busService.vehicle, totalSeats: Number(e.target.value) }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        busService: {
+                          ...prev.busService,
+                          vehicle: {
+                            ...prev.busService.vehicle,
+                            totalSeats: Number(e.target.value),
+                          },
+                        },
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -633,14 +745,22 @@ export default function BusServiceManager() {
               <div>
                 <Label>Amenities</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {commonAmenities.map(amenity => (
+                  {commonAmenities.map((amenity) => (
                     <Button
                       key={amenity}
                       type="button"
-                      variant={formData.busService.vehicle.amenities.includes(amenity) ? "default" : "outline"}
+                      variant={
+                        formData.busService.vehicle.amenities.includes(amenity)
+                          ? "default"
+                          : "outline"
+                      }
                       size="sm"
                       onClick={() => {
-                        if (formData.busService.vehicle.amenities.includes(amenity)) {
+                        if (
+                          formData.busService.vehicle.amenities.includes(
+                            amenity,
+                          )
+                        ) {
                           removeAmenity(amenity);
                         } else {
                           addAmenity(amenity);
@@ -664,16 +784,20 @@ export default function BusServiceManager() {
                     id="departureTime"
                     type="time"
                     value={formData.busService.schedule[0]?.departureTime}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      busService: {
-                        ...prev.busService,
-                        schedule: [{
-                          ...prev.busService.schedule[0],
-                          departureTime: e.target.value
-                        }]
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        busService: {
+                          ...prev.busService,
+                          schedule: [
+                            {
+                              ...prev.busService.schedule[0],
+                              departureTime: e.target.value,
+                            },
+                          ],
+                        },
+                      }))
+                    }
                   />
                 </div>
                 <div>
@@ -682,16 +806,20 @@ export default function BusServiceManager() {
                     id="arrivalTime"
                     type="time"
                     value={formData.busService.schedule[0]?.arrivalTime}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      busService: {
-                        ...prev.busService,
-                        schedule: [{
-                          ...prev.busService.schedule[0],
-                          arrivalTime: e.target.value
-                        }]
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        busService: {
+                          ...prev.busService,
+                          schedule: [
+                            {
+                              ...prev.busService.schedule[0],
+                              arrivalTime: e.target.value,
+                            },
+                          ],
+                        },
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -707,20 +835,27 @@ export default function BusServiceManager() {
                     id="basePrice"
                     type="number"
                     value={formData.pricing.basePrice}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      pricing: { ...prev.pricing, basePrice: Number(e.target.value) }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        pricing: {
+                          ...prev.pricing,
+                          basePrice: Number(e.target.value),
+                        },
+                      }))
+                    }
                   />
                 </div>
                 <div>
                   <Label htmlFor="currency">Currency</Label>
                   <Select
                     value={formData.pricing.currency}
-                    onValueChange={(value) => setFormData(prev => ({
-                      ...prev,
-                      pricing: { ...prev.pricing, currency: value }
-                    }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        pricing: { ...prev.pricing, currency: value },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />

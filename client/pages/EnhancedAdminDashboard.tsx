@@ -19,7 +19,7 @@ import {
   Plus,
   Download,
   Bell,
-  Activity
+  Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -145,15 +145,12 @@ export default function EnhancedAdminDashboard() {
 
         console.log("Loading enhanced admin dashboard data...");
 
-        const [
-          dashboardResponse,
-          usersResponse,
-          bookingsResponse,
-        ] = await Promise.all([
-          adminAPI.getDashboard(),
-          userAPI.getAllUsers(),
-          bookingsAPI.getAllBookings({ limit: 100 }),
-        ]);
+        const [dashboardResponse, usersResponse, bookingsResponse] =
+          await Promise.all([
+            adminAPI.getDashboard(),
+            userAPI.getAllUsers(),
+            bookingsAPI.getAllBookings({ limit: 100 }),
+          ]);
 
         // Set stats
         setStats(dashboardResponse.data);
@@ -208,11 +205,7 @@ export default function EnhancedAdminDashboard() {
     const config =
       statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
 
-    return (
-      <Badge className={`${config.color}`}>
-        {config.label}
-      </Badge>
-    );
+    return <Badge className={`${config.color}`}>{config.label}</Badge>;
   };
 
   const serviceTypeStats = [
@@ -222,15 +215,15 @@ export default function EnhancedAdminDashboard() {
       icon: Bus,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
-      description: "Transportation routes"
+      description: "Transportation routes",
     },
     {
-      title: "Cargo Services", 
+      title: "Cargo Services",
       value: stats.servicesByType?.cargo || 0,
       icon: Truck,
       color: "text-green-600",
       bgColor: "bg-green-50",
-      description: "Logistics & delivery"
+      description: "Logistics & delivery",
     },
     {
       title: "Construction Materials",
@@ -238,7 +231,7 @@ export default function EnhancedAdminDashboard() {
       icon: Hammer,
       color: "text-orange-600",
       bgColor: "bg-orange-50",
-      description: "Building supplies"
+      description: "Building supplies",
     },
     {
       title: "Tour Packages",
@@ -246,7 +239,7 @@ export default function EnhancedAdminDashboard() {
       icon: MapPin,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
-      description: "Adventure tours"
+      description: "Adventure tours",
     },
     {
       title: "Garage Services",
@@ -254,7 +247,7 @@ export default function EnhancedAdminDashboard() {
       icon: Wrench,
       color: "text-red-600",
       bgColor: "bg-red-50",
-      description: "Vehicle maintenance"
+      description: "Vehicle maintenance",
     },
   ];
 
@@ -264,29 +257,29 @@ export default function EnhancedAdminDashboard() {
       description: "Create new bus route",
       icon: Bus,
       action: () => setActiveTab("bus-services"),
-      color: "bg-blue-500"
+      color: "bg-blue-500",
     },
     {
       title: "Add Cargo Service",
       description: "Setup cargo transport",
       icon: Truck,
       action: () => setActiveTab("cargo-services"),
-      color: "bg-green-500"
+      color: "bg-green-500",
     },
     {
       title: "Add Materials",
       description: "List construction items",
       icon: Hammer,
       action: () => setActiveTab("materials-services"),
-      color: "bg-orange-500"
+      color: "bg-orange-500",
     },
     {
       title: "View Analytics",
       description: "Detailed insights",
       icon: BarChart3,
       action: () => setActiveTab("premium"),
-      color: "bg-purple-500"
-    }
+      color: "bg-purple-500",
+    },
   ];
 
   // Access denied for non-admin users
@@ -363,7 +356,8 @@ export default function EnhancedAdminDashboard() {
               Enhanced Admin Dashboard
             </h1>
             <p className="text-gray-600">
-              Welcome back, {user.name}! Manage your transportation and logistics platform.
+              Welcome back, {user.name}! Manage your transportation and
+              logistics platform.
             </p>
           </div>
           <div className="flex items-center space-x-4 mt-4 lg:mt-0">
@@ -418,7 +412,10 @@ export default function EnhancedAdminDashboard() {
           {serviceTypeStats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
+              <Card
+                key={index}
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+              >
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
@@ -487,7 +484,9 @@ export default function EnhancedAdminDashboard() {
                         </div>
                         <div className="text-center">
                           <p className="font-medium text-sm">{action.title}</p>
-                          <p className="text-xs text-gray-600">{action.description}</p>
+                          <p className="text-xs text-gray-600">
+                            {action.description}
+                          </p>
                         </div>
                       </Button>
                     );

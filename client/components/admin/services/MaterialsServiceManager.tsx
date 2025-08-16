@@ -34,7 +34,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, Edit, Trash2, MoreVertical, Search, Hammer, Package2, Star } from "lucide-react";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  MoreVertical,
+  Search,
+  Hammer,
+  Package2,
+  Star,
+} from "lucide-react";
 import { servicesAPI } from "@/services/api";
 import { useToast } from "@/hooks/use-toast-simple";
 
@@ -75,10 +84,14 @@ interface MaterialsService {
 }
 
 export default function MaterialsServiceManager() {
-  const [materialsServices, setMaterialsServices] = useState<MaterialsService[]>([]);
+  const [materialsServices, setMaterialsServices] = useState<
+    MaterialsService[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingService, setEditingService] = useState<MaterialsService | null>(null);
+  const [editingService, setEditingService] = useState<MaterialsService | null>(
+    null,
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
@@ -119,19 +132,28 @@ export default function MaterialsServiceManager() {
   ];
 
   const units = [
-    "pieces", "kg", "tons", "bags", "cubic meter", "square meter", 
-    "linear meter", "sets", "boxes", "rolls", "sheets"
+    "pieces",
+    "kg",
+    "tons",
+    "bags",
+    "cubic meter",
+    "square meter",
+    "linear meter",
+    "sets",
+    "boxes",
+    "rolls",
+    "sheets",
   ];
 
   const commonCertifications = [
     "ISO 9001",
     "Bureau of Indian Standards (BIS)",
-    "Nepal Bureau of Standards (NBS)", 
+    "Nepal Bureau of Standards (NBS)",
     "CE Marking",
     "ISI Mark",
     "Quality Assurance Certificate",
     "Environmental Compliance",
-    "Safety Standard Certification"
+    "Safety Standard Certification",
   ];
 
   const materialCategories = {
@@ -139,35 +161,35 @@ export default function MaterialsServiceManager() {
       "Cement & Concrete",
       "Steel & Metal",
       "Bricks & Blocks",
-      "Sand & Aggregates", 
+      "Sand & Aggregates",
       "Timber & Wood",
       "Roofing Materials",
       "Plumbing Materials",
       "Electrical Materials",
       "Paint & Coatings",
-      "Tiles & Flooring"
+      "Tiles & Flooring",
     ],
     machinery: [
       "Excavators",
-      "Bulldozers", 
+      "Bulldozers",
       "Concrete Mixers",
       "Cranes",
       "Compactors",
       "Generators",
       "Welding Equipment",
       "Pumps",
-      "Lifting Equipment"
+      "Lifting Equipment",
     ],
     tool: [
       "Hand Tools",
       "Power Tools",
-      "Measuring Equipment", 
+      "Measuring Equipment",
       "Safety Equipment",
       "Cutting Tools",
       "Drilling Equipment",
       "Fasteners",
-      "Hardware"
-    ]
+      "Hardware",
+    ],
   };
 
   useEffect(() => {
@@ -177,7 +199,10 @@ export default function MaterialsServiceManager() {
   const loadMaterialsServices = async () => {
     try {
       setIsLoading(true);
-      const response = await servicesAPI.getAllServices({ type: "construction", limit: 100 });
+      const response = await servicesAPI.getAllServices({
+        type: "construction",
+        limit: 100,
+      });
       setMaterialsServices(response.services || []);
     } catch (error: any) {
       toast({
@@ -240,7 +265,8 @@ export default function MaterialsServiceManager() {
   };
 
   const handleDelete = async (serviceId: string) => {
-    if (!confirm("Are you sure you want to delete this materials service?")) return;
+    if (!confirm("Are you sure you want to delete this materials service?"))
+      return;
 
     try {
       await servicesAPI.deleteService(serviceId);
@@ -292,31 +318,46 @@ export default function MaterialsServiceManager() {
   };
 
   const addCertification = (certification: string) => {
-    if (!formData.constructionService.qualityCertifications.includes(certification)) {
-      setFormData(prev => ({
+    if (
+      !formData.constructionService.qualityCertifications.includes(
+        certification,
+      )
+    ) {
+      setFormData((prev) => ({
         ...prev,
         constructionService: {
           ...prev.constructionService,
-          qualityCertifications: [...prev.constructionService.qualityCertifications, certification]
-        }
+          qualityCertifications: [
+            ...prev.constructionService.qualityCertifications,
+            certification,
+          ],
+        },
       }));
     }
   };
 
   const removeCertification = (certification: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       constructionService: {
         ...prev.constructionService,
-        qualityCertifications: prev.constructionService.qualityCertifications.filter(c => c !== certification)
-      }
+        qualityCertifications:
+          prev.constructionService.qualityCertifications.filter(
+            (c) => c !== certification,
+          ),
+      },
     }));
   };
 
-  const filteredServices = materialsServices.filter(service =>
-    service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    service.constructionService?.itemType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    service.constructionService?.supplier?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredServices = materialsServices.filter(
+    (service) =>
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.constructionService?.itemType
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      service.constructionService?.supplier?.name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -327,7 +368,9 @@ export default function MaterialsServiceManager() {
             <Hammer className="w-6 h-6" />
             Construction Materials Management
           </h2>
-          <p className="text-gray-600">Manage construction materials, machinery, and tools</p>
+          <p className="text-gray-600">
+            Manage construction materials, machinery, and tools
+          </p>
         </div>
         <Button onClick={() => setIsDialogOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
@@ -375,12 +418,22 @@ export default function MaterialsServiceManager() {
                           {service.description}
                         </p>
                         <div className="flex gap-1 mt-1">
-                          {service.constructionService?.qualityCertifications?.slice(0, 2).map((cert, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {cert}
+                          {service.constructionService?.qualityCertifications
+                            ?.slice(0, 2)
+                            .map((cert, index) => (
+                              <Badge
+                                key={index}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {cert}
+                              </Badge>
+                            ))}
+                          {service.isFeatured && (
+                            <Badge className="bg-yellow-100 text-yellow-800">
+                              Featured
                             </Badge>
-                          ))}
-                          {service.isFeatured && <Badge className="bg-yellow-100 text-yellow-800">Featured</Badge>}
+                          )}
                         </div>
                       </div>
                     </TableCell>
@@ -388,48 +441,68 @@ export default function MaterialsServiceManager() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-1">
                           <Package2 className="w-3 h-3 text-gray-400" />
-                          <span className="text-sm capitalize">{service.constructionService?.itemType}</span>
+                          <span className="text-sm capitalize">
+                            {service.constructionService?.itemType}
+                          </span>
                         </div>
                         <div className="text-xs text-gray-600">
-                          {Object.keys(service.constructionService?.specifications || {}).length > 0 && (
-                            <span>Specs available</span>
-                          )}
+                          {Object.keys(
+                            service.constructionService?.specifications || {},
+                          ).length > 0 && <span>Specs available</span>}
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <p className="text-sm font-medium">{service.constructionService?.supplier?.name}</p>
+                        <p className="text-sm font-medium">
+                          {service.constructionService?.supplier?.name}
+                        </p>
                         <div className="flex items-center gap-1">
                           <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                          <span className="text-xs">{service.constructionService?.supplier?.rating}/5</span>
+                          <span className="text-xs">
+                            {service.constructionService?.supplier?.rating}/5
+                          </span>
                         </div>
-                        <p className="text-xs text-gray-600">{service.constructionService?.supplier?.address}</p>
+                        <p className="text-xs text-gray-600">
+                          {service.constructionService?.supplier?.address}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <Badge 
-                          variant={service.constructionService?.availability?.inStock ? "default" : "secondary"}
+                        <Badge
+                          variant={
+                            service.constructionService?.availability?.inStock
+                              ? "default"
+                              : "secondary"
+                          }
                           className="text-xs"
                         >
-                          {service.constructionService?.availability?.inStock ? "In Stock" : "Out of Stock"}
+                          {service.constructionService?.availability?.inStock
+                            ? "In Stock"
+                            : "Out of Stock"}
                         </Badge>
                         <p className="text-xs text-gray-600">
-                          {service.constructionService?.availability?.quantity} {service.constructionService?.availability?.unit}
+                          {service.constructionService?.availability?.quantity}{" "}
+                          {service.constructionService?.availability?.unit}
                         </p>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div>
                         <p className="font-medium">
-                          {service.pricing?.currency} {service.pricing?.basePrice?.toLocaleString()}
+                          {service.pricing?.currency}{" "}
+                          {service.pricing?.basePrice?.toLocaleString()}
                         </p>
-                        <p className="text-xs text-gray-600">{service.pricing?.priceType}</p>
+                        <p className="text-xs text-gray-600">
+                          {service.pricing?.priceType}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={service.isActive ? "default" : "secondary"}>
+                      <Badge
+                        variant={service.isActive ? "default" : "secondary"}
+                      >
                         {service.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </TableCell>
@@ -467,10 +540,13 @@ export default function MaterialsServiceManager() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingService ? "Edit Construction Item" : "Add New Construction Item"}
+              {editingService
+                ? "Edit Construction Item"
+                : "Add New Construction Item"}
             </DialogTitle>
             <DialogDescription>
-              Add construction materials, machinery, or tools with detailed specifications
+              Add construction materials, machinery, or tools with detailed
+              specifications
             </DialogDescription>
           </DialogHeader>
 
@@ -484,7 +560,9 @@ export default function MaterialsServiceManager() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, name: e.target.value }))
+                    }
                     placeholder="e.g., Premium Cement OPC 53"
                   />
                 </div>
@@ -492,17 +570,24 @@ export default function MaterialsServiceManager() {
                   <Label htmlFor="itemType">Item Type</Label>
                   <Select
                     value={formData.constructionService.itemType}
-                    onValueChange={(value: "material" | "machinery" | "tool") => setFormData(prev => ({
-                      ...prev,
-                      constructionService: { ...prev.constructionService, itemType: value }
-                    }))}
+                    onValueChange={(value: "material" | "machinery" | "tool") =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        constructionService: {
+                          ...prev.constructionService,
+                          itemType: value,
+                        },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {itemTypes.map(type => (
-                        <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                      {itemTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -513,7 +598,12 @@ export default function MaterialsServiceManager() {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="Detailed description of the construction item"
                 />
               </div>
@@ -528,13 +618,18 @@ export default function MaterialsServiceManager() {
                   <Input
                     id="supplierName"
                     value={formData.constructionService.supplier.name}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      constructionService: {
-                        ...prev.constructionService,
-                        supplier: { ...prev.constructionService.supplier, name: e.target.value }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        constructionService: {
+                          ...prev.constructionService,
+                          supplier: {
+                            ...prev.constructionService.supplier,
+                            name: e.target.value,
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Supplier company name"
                   />
                 </div>
@@ -543,13 +638,18 @@ export default function MaterialsServiceManager() {
                   <Input
                     id="supplierContact"
                     value={formData.constructionService.supplier.contact}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      constructionService: {
-                        ...prev.constructionService,
-                        supplier: { ...prev.constructionService.supplier, contact: e.target.value }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        constructionService: {
+                          ...prev.constructionService,
+                          supplier: {
+                            ...prev.constructionService.supplier,
+                            contact: e.target.value,
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Phone number"
                   />
                 </div>
@@ -560,13 +660,18 @@ export default function MaterialsServiceManager() {
                   <Input
                     id="supplierAddress"
                     value={formData.constructionService.supplier.address}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      constructionService: {
-                        ...prev.constructionService,
-                        supplier: { ...prev.constructionService.supplier, address: e.target.value }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        constructionService: {
+                          ...prev.constructionService,
+                          supplier: {
+                            ...prev.constructionService.supplier,
+                            address: e.target.value,
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Supplier address"
                   />
                 </div>
@@ -574,21 +679,26 @@ export default function MaterialsServiceManager() {
                   <Label htmlFor="supplierRating">Supplier Rating</Label>
                   <Select
                     value={formData.constructionService.supplier.rating.toString()}
-                    onValueChange={(value) => setFormData(prev => ({
-                      ...prev,
-                      constructionService: {
-                        ...prev.constructionService,
-                        supplier: { ...prev.constructionService.supplier, rating: Number(value) }
-                      }
-                    }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        constructionService: {
+                          ...prev.constructionService,
+                          supplier: {
+                            ...prev.constructionService.supplier,
+                            rating: Number(value),
+                          },
+                        },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {[1, 2, 3, 4, 5].map(rating => (
+                      {[1, 2, 3, 4, 5].map((rating) => (
                         <SelectItem key={rating} value={rating.toString()}>
-                          {rating} Star{rating > 1 ? 's' : ''}
+                          {rating} Star{rating > 1 ? "s" : ""}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -607,13 +717,18 @@ export default function MaterialsServiceManager() {
                     id="quantity"
                     type="number"
                     value={formData.constructionService.availability.quantity}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      constructionService: {
-                        ...prev.constructionService,
-                        availability: { ...prev.constructionService.availability, quantity: Number(e.target.value) }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        constructionService: {
+                          ...prev.constructionService,
+                          availability: {
+                            ...prev.constructionService.availability,
+                            quantity: Number(e.target.value),
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Available quantity"
                   />
                 </div>
@@ -621,20 +736,27 @@ export default function MaterialsServiceManager() {
                   <Label htmlFor="unit">Unit</Label>
                   <Select
                     value={formData.constructionService.availability.unit}
-                    onValueChange={(value) => setFormData(prev => ({
-                      ...prev,
-                      constructionService: {
-                        ...prev.constructionService,
-                        availability: { ...prev.constructionService.availability, unit: value }
-                      }
-                    }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        constructionService: {
+                          ...prev.constructionService,
+                          availability: {
+                            ...prev.constructionService.availability,
+                            unit: value,
+                          },
+                        },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {units.map(unit => (
-                        <SelectItem key={unit} value={unit}>{unit}</SelectItem>
+                      {units.map((unit) => (
+                        <SelectItem key={unit} value={unit}>
+                          {unit}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -644,13 +766,18 @@ export default function MaterialsServiceManager() {
                     type="checkbox"
                     id="inStock"
                     checked={formData.constructionService.availability.inStock}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      constructionService: {
-                        ...prev.constructionService,
-                        availability: { ...prev.constructionService.availability, inStock: e.target.checked }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        constructionService: {
+                          ...prev.constructionService,
+                          availability: {
+                            ...prev.constructionService.availability,
+                            inStock: e.target.checked,
+                          },
+                        },
+                      }))
+                    }
                   />
                   <Label htmlFor="inStock">In Stock</Label>
                 </div>
@@ -662,14 +789,24 @@ export default function MaterialsServiceManager() {
               <h3 className="text-lg font-semibold">Quality Certifications</h3>
               <div className="space-y-2">
                 <div className="flex flex-wrap gap-2">
-                  {commonCertifications.map(cert => (
+                  {commonCertifications.map((cert) => (
                     <Button
                       key={cert}
                       type="button"
-                      variant={formData.constructionService.qualityCertifications.includes(cert) ? "default" : "outline"}
+                      variant={
+                        formData.constructionService.qualityCertifications.includes(
+                          cert,
+                        )
+                          ? "default"
+                          : "outline"
+                      }
                       size="sm"
                       onClick={() => {
-                        if (formData.constructionService.qualityCertifications.includes(cert)) {
+                        if (
+                          formData.constructionService.qualityCertifications.includes(
+                            cert,
+                          )
+                        ) {
                           removeCertification(cert);
                         } else {
                           addCertification(cert);
@@ -680,15 +817,23 @@ export default function MaterialsServiceManager() {
                     </Button>
                   ))}
                 </div>
-                {formData.constructionService.qualityCertifications.length > 0 && (
+                {formData.constructionService.qualityCertifications.length >
+                  0 && (
                   <div>
                     <Label>Selected Certifications:</Label>
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {formData.constructionService.qualityCertifications.map(cert => (
-                        <Badge key={cert} variant="default" className="cursor-pointer" onClick={() => removeCertification(cert)}>
-                          {cert} ×
-                        </Badge>
-                      ))}
+                      {formData.constructionService.qualityCertifications.map(
+                        (cert) => (
+                          <Badge
+                            key={cert}
+                            variant="default"
+                            className="cursor-pointer"
+                            onClick={() => removeCertification(cert)}
+                          >
+                            {cert} ×
+                          </Badge>
+                        ),
+                      )}
                     </div>
                   </div>
                 )}
@@ -705,20 +850,27 @@ export default function MaterialsServiceManager() {
                     id="basePrice"
                     type="number"
                     value={formData.pricing.basePrice}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      pricing: { ...prev.pricing, basePrice: Number(e.target.value) }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        pricing: {
+                          ...prev.pricing,
+                          basePrice: Number(e.target.value),
+                        },
+                      }))
+                    }
                   />
                 </div>
                 <div>
                   <Label htmlFor="currency">Currency</Label>
                   <Select
                     value={formData.pricing.currency}
-                    onValueChange={(value) => setFormData(prev => ({
-                      ...prev,
-                      pricing: { ...prev.pricing, currency: value }
-                    }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        pricing: { ...prev.pricing, currency: value },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -733,10 +885,12 @@ export default function MaterialsServiceManager() {
                   <Label htmlFor="priceType">Price Type</Label>
                   <Select
                     value={formData.pricing.priceType}
-                    onValueChange={(value) => setFormData(prev => ({
-                      ...prev,
-                      pricing: { ...prev.pricing, priceType: value }
-                    }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        pricing: { ...prev.pricing, priceType: value },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />

@@ -34,7 +34,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, Edit, Trash2, MoreVertical, Search, Truck, Package, Weight } from "lucide-react";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  MoreVertical,
+  Search,
+  Truck,
+  Package,
+  Weight,
+} from "lucide-react";
 import { servicesAPI } from "@/services/api";
 import { useToast } from "@/hooks/use-toast-simple";
 
@@ -76,7 +85,9 @@ export default function CargoServiceManager() {
   const [cargoServices, setCargoServices] = useState<CargoService[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingService, setEditingService] = useState<CargoService | null>(null);
+  const [editingService, setEditingService] = useState<CargoService | null>(
+    null,
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
@@ -110,14 +121,14 @@ export default function CargoServiceManager() {
 
   const vehicleTypes = [
     "Light Truck",
-    "Medium Truck", 
+    "Medium Truck",
     "Heavy Truck",
     "Container Truck",
     "Refrigerated Truck",
     "Flatbed Truck",
     "Tanker Truck",
     "Van",
-    "Pickup"
+    "Pickup",
   ];
 
   const commonRoutes = [
@@ -129,7 +140,7 @@ export default function CargoServiceManager() {
     "Local Delivery",
     "Express Delivery",
     "Inter-city",
-    "Cross-border"
+    "Cross-border",
   ];
 
   const commonRestrictions = [
@@ -139,7 +150,7 @@ export default function CargoServiceManager() {
     "Weight Limit Enforced",
     "Size Restrictions",
     "Documentation Required",
-    "Insurance Mandatory"
+    "Insurance Mandatory",
   ];
 
   const additionalServices = [
@@ -151,7 +162,7 @@ export default function CargoServiceManager() {
     "Door-to-Door",
     "24/7 Support",
     "Warehousing",
-    "Documentation"
+    "Documentation",
   ];
 
   useEffect(() => {
@@ -161,7 +172,10 @@ export default function CargoServiceManager() {
   const loadCargoServices = async () => {
     try {
       setIsLoading(true);
-      const response = await servicesAPI.getAllServices({ type: "cargo", limit: 100 });
+      const response = await servicesAPI.getAllServices({
+        type: "cargo",
+        limit: 100,
+      });
       setCargoServices(response.services || []);
     } catch (error: any) {
       toast({
@@ -275,73 +289,85 @@ export default function CargoServiceManager() {
 
   const addRoute = (route: string) => {
     if (!formData.cargoService.availableRoutes.includes(route)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         cargoService: {
           ...prev.cargoService,
-          availableRoutes: [...prev.cargoService.availableRoutes, route]
-        }
+          availableRoutes: [...prev.cargoService.availableRoutes, route],
+        },
       }));
     }
   };
 
   const removeRoute = (route: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       cargoService: {
         ...prev.cargoService,
-        availableRoutes: prev.cargoService.availableRoutes.filter(r => r !== route)
-      }
+        availableRoutes: prev.cargoService.availableRoutes.filter(
+          (r) => r !== route,
+        ),
+      },
     }));
   };
 
   const addRestriction = (restriction: string) => {
     if (!formData.cargoService.restrictions.includes(restriction)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         cargoService: {
           ...prev.cargoService,
-          restrictions: [...prev.cargoService.restrictions, restriction]
-        }
+          restrictions: [...prev.cargoService.restrictions, restriction],
+        },
       }));
     }
   };
 
   const removeRestriction = (restriction: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       cargoService: {
         ...prev.cargoService,
-        restrictions: prev.cargoService.restrictions.filter(r => r !== restriction)
-      }
+        restrictions: prev.cargoService.restrictions.filter(
+          (r) => r !== restriction,
+        ),
+      },
     }));
   };
 
   const addAdditionalService = (service: string) => {
     if (!formData.cargoService.additionalServices.includes(service)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         cargoService: {
           ...prev.cargoService,
-          additionalServices: [...prev.cargoService.additionalServices, service]
-        }
+          additionalServices: [
+            ...prev.cargoService.additionalServices,
+            service,
+          ],
+        },
       }));
     }
   };
 
   const removeAdditionalService = (service: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       cargoService: {
         ...prev.cargoService,
-        additionalServices: prev.cargoService.additionalServices.filter(s => s !== service)
-      }
+        additionalServices: prev.cargoService.additionalServices.filter(
+          (s) => s !== service,
+        ),
+      },
     }));
   };
 
-  const filteredServices = cargoServices.filter(service =>
-    service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    service.cargoService?.vehicleType?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredServices = cargoServices.filter(
+    (service) =>
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.cargoService?.vehicleType
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -352,7 +378,9 @@ export default function CargoServiceManager() {
             <Truck className="w-6 h-6" />
             Cargo Services Management
           </h2>
-          <p className="text-gray-600">Manage cargo transportation and logistics services</p>
+          <p className="text-gray-600">
+            Manage cargo transportation and logistics services
+          </p>
         </div>
         <Button onClick={() => setIsDialogOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
@@ -398,14 +426,20 @@ export default function CargoServiceManager() {
                         <p className="text-sm text-gray-600 max-w-xs truncate">
                           {service.description}
                         </p>
-                        {service.isFeatured && <Badge className="mt-1 bg-yellow-100 text-yellow-800">Featured</Badge>}
+                        {service.isFeatured && (
+                          <Badge className="mt-1 bg-yellow-100 text-yellow-800">
+                            Featured
+                          </Badge>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
                         <div className="flex items-center gap-1">
                           <Truck className="w-3 h-3 text-gray-400" />
-                          <span className="text-sm">{service.cargoService?.vehicleType}</span>
+                          <span className="text-sm">
+                            {service.cargoService?.vehicleType}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Weight className="w-3 h-3 text-gray-400" />
@@ -423,14 +457,24 @@ export default function CargoServiceManager() {
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        {service.cargoService?.availableRoutes?.slice(0, 2).map((route, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {route}
-                          </Badge>
-                        ))}
-                        {(service.cargoService?.availableRoutes?.length || 0) > 2 && (
+                        {service.cargoService?.availableRoutes
+                          ?.slice(0, 2)
+                          .map((route, index) => (
+                            <Badge
+                              key={index}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {route}
+                            </Badge>
+                          ))}
+                        {(service.cargoService?.availableRoutes?.length || 0) >
+                          2 && (
                           <Badge variant="outline" className="text-xs">
-                            +{(service.cargoService?.availableRoutes?.length || 0) - 2} more
+                            +
+                            {(service.cargoService?.availableRoutes?.length ||
+                              0) - 2}{" "}
+                            more
                           </Badge>
                         )}
                       </div>
@@ -438,13 +482,18 @@ export default function CargoServiceManager() {
                     <TableCell>
                       <div>
                         <p className="font-medium">
-                          {service.pricing?.currency} {service.pricing?.basePrice?.toLocaleString()}
+                          {service.pricing?.currency}{" "}
+                          {service.pricing?.basePrice?.toLocaleString()}
                         </p>
-                        <p className="text-xs text-gray-600">{service.pricing?.priceType}</p>
+                        <p className="text-xs text-gray-600">
+                          {service.pricing?.priceType}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={service.isActive ? "default" : "secondary"}>
+                      <Badge
+                        variant={service.isActive ? "default" : "secondary"}
+                      >
                         {service.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </TableCell>
@@ -499,7 +548,9 @@ export default function CargoServiceManager() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, name: e.target.value }))
+                    }
                     placeholder="e.g., Heavy Cargo Transport"
                   />
                 </div>
@@ -507,17 +558,24 @@ export default function CargoServiceManager() {
                   <Label htmlFor="vehicleType">Vehicle Type</Label>
                   <Select
                     value={formData.cargoService.vehicleType}
-                    onValueChange={(value) => setFormData(prev => ({
-                      ...prev,
-                      cargoService: { ...prev.cargoService, vehicleType: value }
-                    }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        cargoService: {
+                          ...prev.cargoService,
+                          vehicleType: value,
+                        },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {vehicleTypes.map(type => (
-                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                      {vehicleTypes.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -528,7 +586,12 @@ export default function CargoServiceManager() {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="Detailed description of the cargo service"
                 />
               </div>
@@ -544,13 +607,18 @@ export default function CargoServiceManager() {
                     id="weight"
                     type="number"
                     value={formData.cargoService.capacity.weight}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      cargoService: {
-                        ...prev.cargoService,
-                        capacity: { ...prev.cargoService.capacity, weight: Number(e.target.value) }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        cargoService: {
+                          ...prev.cargoService,
+                          capacity: {
+                            ...prev.cargoService.capacity,
+                            weight: Number(e.target.value),
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Maximum weight capacity"
                   />
                 </div>
@@ -561,13 +629,18 @@ export default function CargoServiceManager() {
                     type="number"
                     step="0.1"
                     value={formData.cargoService.capacity.volume}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      cargoService: {
-                        ...prev.cargoService,
-                        capacity: { ...prev.cargoService.capacity, volume: Number(e.target.value) }
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        cargoService: {
+                          ...prev.cargoService,
+                          capacity: {
+                            ...prev.cargoService.capacity,
+                            volume: Number(e.target.value),
+                          },
+                        },
+                      }))
+                    }
                     placeholder="Volume capacity"
                   />
                 </div>
@@ -578,46 +651,61 @@ export default function CargoServiceManager() {
                       type="number"
                       placeholder="L"
                       value={formData.cargoService.capacity.dimensions.length}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        cargoService: {
-                          ...prev.cargoService,
-                          capacity: {
-                            ...prev.cargoService.capacity,
-                            dimensions: { ...prev.cargoService.capacity.dimensions, length: Number(e.target.value) }
-                          }
-                        }
-                      }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          cargoService: {
+                            ...prev.cargoService,
+                            capacity: {
+                              ...prev.cargoService.capacity,
+                              dimensions: {
+                                ...prev.cargoService.capacity.dimensions,
+                                length: Number(e.target.value),
+                              },
+                            },
+                          },
+                        }))
+                      }
                     />
                     <Input
                       type="number"
                       placeholder="W"
                       value={formData.cargoService.capacity.dimensions.width}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        cargoService: {
-                          ...prev.cargoService,
-                          capacity: {
-                            ...prev.cargoService.capacity,
-                            dimensions: { ...prev.cargoService.capacity.dimensions, width: Number(e.target.value) }
-                          }
-                        }
-                      }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          cargoService: {
+                            ...prev.cargoService,
+                            capacity: {
+                              ...prev.cargoService.capacity,
+                              dimensions: {
+                                ...prev.cargoService.capacity.dimensions,
+                                width: Number(e.target.value),
+                              },
+                            },
+                          },
+                        }))
+                      }
                     />
                     <Input
                       type="number"
                       placeholder="H"
                       value={formData.cargoService.capacity.dimensions.height}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        cargoService: {
-                          ...prev.cargoService,
-                          capacity: {
-                            ...prev.cargoService.capacity,
-                            dimensions: { ...prev.cargoService.capacity.dimensions, height: Number(e.target.value) }
-                          }
-                        }
-                      }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          cargoService: {
+                            ...prev.cargoService,
+                            capacity: {
+                              ...prev.cargoService.capacity,
+                              dimensions: {
+                                ...prev.cargoService.capacity.dimensions,
+                                height: Number(e.target.value),
+                              },
+                            },
+                          },
+                        }))
+                      }
                     />
                   </div>
                 </div>
@@ -629,14 +717,20 @@ export default function CargoServiceManager() {
               <h3 className="text-lg font-semibold">Available Routes</h3>
               <div className="space-y-2">
                 <div className="flex flex-wrap gap-2">
-                  {commonRoutes.map(route => (
+                  {commonRoutes.map((route) => (
                     <Button
                       key={route}
                       type="button"
-                      variant={formData.cargoService.availableRoutes.includes(route) ? "default" : "outline"}
+                      variant={
+                        formData.cargoService.availableRoutes.includes(route)
+                          ? "default"
+                          : "outline"
+                      }
                       size="sm"
                       onClick={() => {
-                        if (formData.cargoService.availableRoutes.includes(route)) {
+                        if (
+                          formData.cargoService.availableRoutes.includes(route)
+                        ) {
                           removeRoute(route);
                         } else {
                           addRoute(route);
@@ -651,8 +745,13 @@ export default function CargoServiceManager() {
                   <div>
                     <Label>Selected Routes:</Label>
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {formData.cargoService.availableRoutes.map(route => (
-                        <Badge key={route} variant="default" className="cursor-pointer" onClick={() => removeRoute(route)}>
+                      {formData.cargoService.availableRoutes.map((route) => (
+                        <Badge
+                          key={route}
+                          variant="default"
+                          className="cursor-pointer"
+                          onClick={() => removeRoute(route)}
+                        >
                           {route} ×
                         </Badge>
                       ))}
@@ -667,14 +766,22 @@ export default function CargoServiceManager() {
               <h3 className="text-lg font-semibold">Restrictions</h3>
               <div className="space-y-2">
                 <div className="flex flex-wrap gap-2">
-                  {commonRestrictions.map(restriction => (
+                  {commonRestrictions.map((restriction) => (
                     <Button
                       key={restriction}
                       type="button"
-                      variant={formData.cargoService.restrictions.includes(restriction) ? "default" : "outline"}
+                      variant={
+                        formData.cargoService.restrictions.includes(restriction)
+                          ? "default"
+                          : "outline"
+                      }
                       size="sm"
                       onClick={() => {
-                        if (formData.cargoService.restrictions.includes(restriction)) {
+                        if (
+                          formData.cargoService.restrictions.includes(
+                            restriction,
+                          )
+                        ) {
                           removeRestriction(restriction);
                         } else {
                           addRestriction(restriction);
@@ -693,14 +800,24 @@ export default function CargoServiceManager() {
               <h3 className="text-lg font-semibold">Additional Services</h3>
               <div className="space-y-2">
                 <div className="flex flex-wrap gap-2">
-                  {additionalServices.map(service => (
+                  {additionalServices.map((service) => (
                     <Button
                       key={service}
                       type="button"
-                      variant={formData.cargoService.additionalServices.includes(service) ? "default" : "outline"}
+                      variant={
+                        formData.cargoService.additionalServices.includes(
+                          service,
+                        )
+                          ? "default"
+                          : "outline"
+                      }
                       size="sm"
                       onClick={() => {
-                        if (formData.cargoService.additionalServices.includes(service)) {
+                        if (
+                          formData.cargoService.additionalServices.includes(
+                            service,
+                          )
+                        ) {
                           removeAdditionalService(service);
                         } else {
                           addAdditionalService(service);
@@ -724,20 +841,27 @@ export default function CargoServiceManager() {
                     id="basePrice"
                     type="number"
                     value={formData.pricing.basePrice}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      pricing: { ...prev.pricing, basePrice: Number(e.target.value) }
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        pricing: {
+                          ...prev.pricing,
+                          basePrice: Number(e.target.value),
+                        },
+                      }))
+                    }
                   />
                 </div>
                 <div>
                   <Label htmlFor="currency">Currency</Label>
                   <Select
                     value={formData.pricing.currency}
-                    onValueChange={(value) => setFormData(prev => ({
-                      ...prev,
-                      pricing: { ...prev.pricing, currency: value }
-                    }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        pricing: { ...prev.pricing, currency: value },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -752,10 +876,12 @@ export default function CargoServiceManager() {
                   <Label htmlFor="priceType">Price Type</Label>
                   <Select
                     value={formData.pricing.priceType}
-                    onValueChange={(value) => setFormData(prev => ({
-                      ...prev,
-                      pricing: { ...prev.pricing, priceType: value }
-                    }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        pricing: { ...prev.pricing, priceType: value },
+                      }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
