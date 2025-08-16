@@ -126,6 +126,14 @@ export default function EnhancedAdminDashboard() {
       tour: 0,
       garage: 0,
     },
+    growth: {
+      users: 0,
+      services: 0,
+      bookings: 0,
+      revenue: 0,
+      conversionRate: 0,
+      userRetention: 0,
+    },
   });
 
   const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([]);
