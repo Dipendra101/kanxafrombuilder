@@ -66,6 +66,14 @@ interface DashboardStats {
     tour: number;
     garage: number;
   };
+  growth: {
+    users: number;
+    services: number;
+    bookings: number;
+    revenue: number;
+    conversionRate: number;
+    userRetention: number;
+  };
 }
 
 interface RecentBooking {
